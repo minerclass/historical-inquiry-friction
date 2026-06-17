@@ -221,6 +221,19 @@
       font-size: clamp(0.86rem, 1.1vw, 1.05rem);
     }
 
+    a.badge {
+      text-decoration: none;
+      transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+    }
+
+    a.badge:hover,
+    a.badge:focus-visible {
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.18);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
     .light .badge {
       border-color: var(--line2);
       background: rgba(255, 255, 255, 0.72);
@@ -585,6 +598,7 @@
           <span class="badge">Micah Miner</span>
           <span class="badge">Beach Park District 3</span>
           <span class="badge">Social studies inquiry</span>
+          <a class="badge" href="../">Full interactive deck</a>
         </div>
       </div>
       <div class="footer"><span>Interactive session deck candidate</span><span>1</span></div>
@@ -990,6 +1004,7 @@
           <div class="card"><h3>Balanced history blog draft</h3><p>Polarization, civil discourse, multiple perspectives, and teaching students how to think.</p></div>
           <div class="card"><h3>Strategy spreadsheet</h3><p>Algorithm audits, AI Devil's Advocate, friction logs, primary-document comparison, and civic debates.</p></div>
         </div>
+        <div class="takeaway">Switch versions: <a href="../" style="color: inherit;">open the full interactive deck</a>.</div>
       </div>
       <div class="footer"><span>Internal source slide for presenter orientation.</span><span>25</span></div>
       <aside class="speaker-notes">This slide can be hidden for a live audience if desired. It is included to make the deck's source basis transparent for presenter planning without exposing private Drive links.</aside>
