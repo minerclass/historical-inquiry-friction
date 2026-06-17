@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Keepers of Inquiry | Social Studies AI Friction Game</title>
+  <style>
+    :root {
+      --ink: #101923;
+      --ink-2: #172433;
+      --paper: #f4ead7;
+      --paper-2: #fff8ea;
+      --line: rgba(244, 234, 215, 0.18);
+      --line-dark: rgba(16, 25, 35, 0.18);
+      --teal: #64c6bd;
+      --teal-dark: #2b837e;
+      --gold: #d7a13d;
+      --rose: #d4685d;
+      --green: #78a86e;
+      --blue: #7d9fd6;
+      --muted: #a9b6b8;
+      --radius: 10px;
+      --shadow: 0 26px 70px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 15% 12%, rgba(100, 198, 189, 0.14), transparent 28%),
+        radial-gradient(circle at 90% 0%, rgba(215, 161, 61, 0.14), transparent 24%),
+        linear-gradient(135deg, #0d151e, #152231 50%, #101923);
+      color: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body { overflow-x: hidden; }
+
+    button, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px clamp(18px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(13, 21, 30, 0.78);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(215, 161, 61, 0.55);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      background: rgba(244, 234, 215, 0.06);
+      box-shadow: inset 0 0 0 8px rgba(215, 161, 61, 0.06);
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.45rem, 2.8vw, 2.35rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .ghost, .primary {
+      border-radius: 999px;
+      padding: 11px 15px;
+      font-weight: 800;
+      color: var(--paper);
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.07);
+      text-decoration: none;
+    }
+
+    .primary {
+      color: #101923;
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .game {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.9fr) minmax(420px, 1.25fr) minmax(300px, 0.95fr);
+      gap: 18px;
+      padding: clamp(18px, 3vw, 34px);
+      height: calc(100vh - 86px);
+      min-height: 0;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(244, 234, 215, 0.06);
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .left, .right {
+      display: grid;
+      align-content: start;
+      gap: 14px;
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .section-title {
+      margin: 0;
+      color: var(--teal);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .scenario-card {
+      border: 1px solid rgba(215, 161, 61, 0.4);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(244, 234, 215, 0.98), rgba(244, 234, 215, 0.86));
+      color: var(--ink);
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .scenario-card h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.55rem, 2vw, 2.1rem);
+      line-height: 1.05;
+    }
+
+    .ai-claim {
+      border-left: 5px solid var(--rose);
+      padding: 12px 14px;
+      background: rgba(212, 104, 93, 0.1);
+      font-size: 1.02rem;
+      line-height: 1.35;
+    }
+
+    .scenario-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid rgba(16, 25, 35, 0.16);
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #30404d;
+      background: rgba(255, 255, 255, 0.45);
+    }
+
+    .scenario-select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      color: var(--paper);
+      background: rgba(16, 25, 35, 0.74);
+    }
+
+    .move-deck {
+      display: grid;
+      gap: 10px;
+    }
+
+    .move {
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      color: var(--paper);
+      background: rgba(244, 234, 215, 0.07);
+      display: grid;
+      gap: 7px;
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .move:hover:not(:disabled),
+    .move:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--gold);
+      background: rgba(215, 161, 61, 0.13);
+      outline: none;
+    }
+
+    .move:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .move strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.12rem;
+      color: var(--gold);
+    }
+
+    .move span {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.32;
+    }
+
+    .board {
+      position: relative;
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .board-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .board-head h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.5rem, 2.45vw, 2.45rem);
+      line-height: 1;
+    }
+
+    .turns {
+      display: grid;
+      gap: 6px;
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .map {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(90deg, rgba(244, 234, 215, 0.035) 1px, transparent 1px),
+        linear-gradient(rgba(244, 234, 215, 0.035) 1px, transparent 1px),
+        rgba(8, 14, 20, 0.36);
+      background-size: 44px 44px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .map svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .node {
+      position: absolute;
+      width: min(30%, 180px);
+      min-height: 94px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 13px;
+      color: var(--paper);
+      background: rgba(16, 25, 35, 0.9);
+      display: grid;
+      align-content: center;
+      gap: 6px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.26);
+    }
+
+    .node.unlocked {
+      border-color: rgba(100, 198, 189, 0.74);
+      background: linear-gradient(180deg, rgba(28, 65, 70, 0.96), rgba(16, 25, 35, 0.92));
+    }
+
+    .node.warning {
+      border-color: rgba(212, 104, 93, 0.72);
+    }
+
+    .node b {
+      color: var(--gold);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.25;
+    }
+
+    .n-source { left: 5%; top: 12%; }
+    .n-context { right: 6%; top: 12%; }
+    .n-corroborate { left: 35%; top: 40%; }
+    .n-agency { left: 8%; bottom: 10%; }
+    .n-access { right: 8%; bottom: 10%; }
+
+    .verdict {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: rgba(100, 198, 189, 0.08);
+      min-height: 96px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .verdict h3 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--teal);
+      font-size: 1.35rem;
+    }
+
+    .verdict p {
+      margin: 0;
+      color: var(--paper);
+      line-height: 1.35;
+    }
+
+    .meter-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meter {
+      display: grid;
+      gap: 7px;
+    }
+
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .bar {
+      height: 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(244, 234, 215, 0.08);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 40%;
+      background: linear-gradient(90deg, var(--rose), var(--gold), var(--teal));
+      transition: width 0.25s ease;
+    }
+
+    .integrity {
+      display: grid;
+      grid-template-columns: 126px 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid rgba(215, 161, 61, 0.4);
+      border-radius: var(--radius);
+      background: rgba(215, 161, 61, 0.08);
+    }
+
+    .dial {
+      width: 112px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--teal) 0deg, var(--teal) 144deg, rgba(244, 234, 215, 0.12) 144deg);
+      box-shadow: inset 0 0 0 12px rgba(16, 25, 35, 0.84);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem;
+      color: var(--paper);
+    }
+
+    .integrity h3 {
+      margin: 0 0 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--gold);
+      font-size: 1.35rem;
+    }
+
+    .integrity p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 0.94rem;
+    }
+
+    .friction-track {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(244, 234, 215, 0.05);
+    }
+
+    .friction-track h3,
+    .log h3 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--paper);
+      font-size: 1.2rem;
+    }
+
+    .friction-scale {
+      position: relative;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--rose), var(--gold) 48%, var(--teal) 62%, var(--gold) 76%, var(--rose));
+    }
+
+    .pin {
+      position: absolute;
+      top: -7px;
+      left: 42%;
+      width: 30px;
+      height: 30px;
+      border: 4px solid var(--paper);
+      border-radius: 50%;
+      background: var(--ink);
+      transform: translateX(-50%);
+      transition: left 0.22s ease;
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .log {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: rgba(244, 234, 215, 0.05);
+      display: grid;
+      gap: 10px;
+    }
+
+    .log-list {
+      display: grid;
+      gap: 8px;
+      max-height: 190px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .log-item {
+      border-left: 4px solid var(--teal);
+      padding: 9px 10px;
+      background: rgba(100, 198, 189, 0.08);
+      color: var(--paper);
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+
+    .debrief {
+      display: none;
+      border: 1px solid rgba(100, 198, 189, 0.5);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: rgba(100, 198, 189, 0.08);
+      color: var(--paper);
+    }
+
+    .debrief.active { display: grid; gap: 10px; }
+
+    .debrief h3 {
+      margin: 0;
+      color: var(--teal);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.4rem;
+    }
+
+    .debrief ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.38;
+    }
+
+    .scenario-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 980px) {
+      .game {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .board {
+        min-height: 620px;
+      }
+
+      .map {
+        min-height: 430px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .game {
+        padding: 14px;
+      }
+
+      .board {
+        min-height: 700px;
+      }
+
+      .map {
+        min-height: 520px;
+      }
+
+      .node {
+        width: 42%;
+        min-height: 92px;
+      }
+
+      .n-corroborate {
+        left: 29%;
+        top: 42%;
+      }
+
+      .integrity {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" role="img" aria-label="">
+            <path d="M5 4h12a2 2 0 0 1 2 2v13H7a2 2 0 0 1-2-2V4Z" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path d="M8 8h8M8 12h6M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div>
+          <h1>Keepers of Inquiry</h1>
+          <p>A social studies game about AI, evidence, and historical judgment.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="ghost" href="../">Full deck</a>
+        <a class="ghost" href="../ncss-historical-inquiry/">NCSS deck</a>
+        <button class="primary" type="button" id="newRound">New round</button>
+      </div>
+    </header>
+
+    <main class="game">
+      <section class="panel left" aria-label="Scenario and moves">
+        <p class="section-title">Scenario</p>
+        <select class="scenario-select" id="scenarioSelect" aria-label="Choose historical scenario"></select>
+        <article class="scenario-card">
+          <div class="scenario-meta" id="scenarioMeta"></div>
+          <h2 id="scenarioTitle"></h2>
+          <div class="ai-claim" id="aiClaim"></div>
+          <p id="scenarioPrompt"></p>
+        </article>
+
+        <p class="section-title">Inquiry Moves</p>
+        <div class="move-deck" id="moveDeck"></div>
+      </section>
+
+      <section class="panel board" aria-label="Inquiry map">
+        <div class="board-head">
+          <div>
+            <p class="section-title">Inquiry Map</p>
+            <h2>Protect the thinking before accepting the claim.</h2>
+          </div>
+          <div class="turns">
+            <span id="turnsLeft">4 moves left</span>
+            <span id="statusText">Inquiry open</span>
+          </div>
+        </div>
+
+        <div class="map" aria-label="Historical inquiry map">
+          <svg viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+            <path id="lineSource" d="M185 145 C330 180 390 245 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
+            <path id="lineContext" d="M815 145 C670 180 610 245 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
+            <path id="lineAgency" d="M210 520 C330 455 390 390 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
+            <path id="lineAccess" d="M790 520 C670 455 610 390 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
+          </svg>
+          <div class="node n-source" data-node="sourcing"><b>Sourcing</b><span>Who made the claim, why, and from what evidence?</span></div>
+          <div class="node n-context" data-node="context"><b>Context</b><span>What conditions shaped the event and the source?</span></div>
+          <div class="node n-corroborate warning" data-node="corroboration"><b>Corroboration</b><span>Where do accounts conflict, converge, or stay silent?</span></div>
+          <div class="node n-agency" data-node="agency"><b>Agency</b><span>What judgment must students still own?</span></div>
+          <div class="node n-access" data-node="access"><b>Access</b><span>Which barriers can be reduced without erasing inquiry?</span></div>
+        </div>
+
+        <div class="verdict">
+          <h3 id="verdictTitle">Start with the AI claim as a contested text.</h3>
+          <p id="verdictBody">Choose up to four moves. Your goal is productive friction: enough challenge to build historical thinking, not so much that students cannot enter the work.</p>
+        </div>
+      </section>
+
+      <aside class="panel right" aria-label="Meters and debrief">
+        <div class="integrity">
+          <div class="dial" id="integrityDial">40</div>
+          <div>
+            <h3>Inquiry Integrity</h3>
+            <p id="integrityCopy">The artifact is smooth, but the inquiry is not yet visible.</p>
+          </div>
+        </div>
+
+        <div class="friction-track">
+          <h3>Friction Meter</h3>
+          <div class="friction-scale" aria-hidden="true"><span class="pin" id="frictionPin"></span></div>
+          <div class="scale-labels"><span>Bypass</span><span>Productive</span><span>Blocked</span></div>
+        </div>
+
+        <div class="meter-stack" id="meterStack"></div>
+
+        <div class="scenario-actions">
+          <button class="ghost" type="button" id="acceptClaim">Accept claim</button>
+          <button class="primary" type="button" id="debriefBtn">Debrief</button>
+        </div>
+
+        <div class="debrief" id="debrief">
+          <h3>Debrief</h3>
+          <ul id="debriefList"></ul>
+        </div>
+
+        <div class="log">
+          <h3>Move Log</h3>
+          <div class="log-list" id="logList"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const scenarios = [
+      {
+        id: "revolution",
+        title: "American Revolution",
+        meta: ["Grade 8-11", "causation", "primary sources"],
+        claim: "The American Revolution happened because colonists wanted freedom from unfair British taxes.",
+        prompt: "The AI answer is clear, fast, and incomplete. Keep students from mistaking a clean cause for a historical explanation.",
+        risk: "It flattens loyalist perspectives, imperial context, Indigenous stakes, economic interests, and source conflict.",
+        start: { sourcing: 18, context: 20, corroboration: 16, agency: 18, access: 44, friction: 28 }
+      },
+      {
+        id: "federalist",
+        title: "Federalist No. 10",
+        meta: ["High school", "argument", "civic reasoning"],
+        claim: "Federalist No. 10 proves that a large republic is always the best solution to faction.",
+        prompt: "The AI output sounds decisive. Students need to test the interpretation against the text and counterarguments.",
+        risk: "It converts an argument into a settled answer and hides assumptions about faction, scale, representation, and power.",
+        start: { sourcing: 24, context: 18, corroboration: 18, agency: 16, access: 40, friction: 30 }
+      },
+      {
+        id: "civil-rights",
+        title: "Civil Rights Movement",
+        meta: ["High school", "perspective", "continuity and change"],
+        claim: "The Civil Rights Movement succeeded because peaceful protest changed public opinion.",
+        prompt: "The AI summary is plausible but too smooth. Students need to recover local agency, conflict, backlash, and unfinished struggle.",
+        risk: "It narrows the movement to a single tactic and obscures organizing, legal strategy, youth activism, economic pressure, and resistance.",
+        start: { sourcing: 20, context: 22, corroboration: 18, agency: 20, access: 42, friction: 32 }
+      }
+    ];
+
+    const moves = [
+      {
+        id: "source-first",
+        title: "Source First",
+        text: "Students inspect two primary sources before seeing any AI synthesis.",
+        nodes: ["sourcing"],
+        delta: { sourcing: 28, context: 6, agency: 5, friction: 12 },
+        log: "You protected sourcing before synthesis. Students now have evidence to compare against the AI claim."
+      },
+      {
+        id: "ai-rival",
+        title: "AI as Rival",
+        text: "Use AI to generate a competing interpretation that students must test.",
+        nodes: ["agency", "corroboration"],
+        delta: { corroboration: 18, agency: 18, friction: 10 },
+        log: "AI became a challenger rather than an answer machine. Students must decide what survives evidence."
+      },
+      {
+        id: "context-window",
+        title: "Context Window",
+        text: "Pause for a mini-map of actors, constraints, time, place, and omitted voices.",
+        nodes: ["context"],
+        delta: { context: 28, sourcing: 4, friction: 8 },
+        log: "You added context so the claim sits inside conditions, not just a polished summary."
+      },
+      {
+        id: "corroboration",
+        title: "Corroboration Sprint",
+        text: "Students find one source that supports, complicates, and challenges the claim.",
+        nodes: ["corroboration", "sourcing"],
+        delta: { corroboration: 26, sourcing: 8, agency: 4, friction: 14 },
+        log: "The claim is now contestable. Students have to triangulate instead of accept fluency."
+      },
+      {
+        id: "access",
+        title: "Access Scaffold",
+        text: "Reduce exclusionary barriers with vocabulary support and source-reading bridges.",
+        nodes: ["access"],
+        delta: { access: 24, context: 4, friction: -7 },
+        log: "You lowered a barrier without removing the historical thinking."
+      },
+      {
+        id: "friction-log",
+        title: "Friction Log",
+        text: "Students write what confused them, what they tested, and how their thinking changed.",
+        nodes: ["agency"],
+        delta: { agency: 22, corroboration: 8, friction: 9 },
+        log: "The invisible struggle became assessable evidence of learning."
+      }
+    ];
+
+    const state = {
+      scenario: scenarios[0],
+      metrics: {},
+      used: new Set(),
+      movesLeft: 4,
+      logs: []
+    };
+
+    const scenarioSelect = document.getElementById("scenarioSelect");
+    const scenarioTitle = document.getElementById("scenarioTitle");
+    const scenarioMeta = document.getElementById("scenarioMeta");
+    const aiClaim = document.getElementById("aiClaim");
+    const scenarioPrompt = document.getElementById("scenarioPrompt");
+    const moveDeck = document.getElementById("moveDeck");
+    const turnsLeft = document.getElementById("turnsLeft");
+    const statusText = document.getElementById("statusText");
+    const meterStack = document.getElementById("meterStack");
+    const logList = document.getElementById("logList");
+    const verdictTitle = document.getElementById("verdictTitle");
+    const verdictBody = document.getElementById("verdictBody");
+    const integrityDial = document.getElementById("integrityDial");
+    const integrityCopy = document.getElementById("integrityCopy");
+    const frictionPin = document.getElementById("frictionPin");
+    const debrief = document.getElementById("debrief");
+    const debriefList = document.getElementById("debriefList");
+
+    function clamp(value) {
+      return Math.max(0, Math.min(100, value));
+    }
+
+    function integrityScore() {
+      const m = state.metrics;
+      const thinking = (m.sourcing + m.context + m.corroboration + m.agency + m.access) / 5;
+      const frictionPenalty = Math.abs(58 - m.friction) * 0.28;
+      return Math.round(clamp(30 + thinking * 0.85 - frictionPenalty));
+    }
+
+    function frictionStatus() {
+      const f = state.metrics.friction;
+      if (f < 38) return "too little friction: AI is still doing too much thinking";
+      if (f > 78) return "too much friction: access may be blocked";
+      return "productive friction: the struggle is doing instructional work";
+    }
+
+    function renderScenarioOptions() {
+      scenarioSelect.innerHTML = scenarios.map((scenario) => `<option value="${scenario.id}">${scenario.title}</option>`).join("");
+    }
+
+    function renderMoves() {
+      moveDeck.innerHTML = moves.map((move) => `
+        <button class="move" type="button" data-move="${move.id}">
+          <strong>${move.title}</strong>
+          <span>${move.text}</span>
+        </button>
+      `).join("");
+
+      moveDeck.querySelectorAll(".move").forEach((button) => {
+        button.addEventListener("click", () => playMove(button.dataset.move));
+      });
+    }
+
+    function renderMeters() {
+      const labels = {
+        sourcing: "Sourcing",
+        context: "Context",
+        corroboration: "Corroboration",
+        agency: "Agency",
+        access: "Access"
+      };
+
+      meterStack.innerHTML = Object.entries(labels).map(([key, label]) => `
+        <div class="meter">
+          <div class="meter-label"><span>${label}</span><span>${Math.round(state.metrics[key])}</span></div>
+          <div class="bar"><span style="width:${state.metrics[key]}%"></span></div>
+        </div>
+      `).join("");
+    }
+
+    function renderNodes() {
+      document.querySelectorAll(".node").forEach((node) => {
+        const key = node.dataset.node;
+        node.classList.toggle("unlocked", state.metrics[key] >= 45);
+        node.classList.toggle("warning", state.metrics[key] < 30);
+      });
+    }
+
+    function renderLog() {
+      if (!state.logs.length) {
+        logList.innerHTML = `<div class="log-item">No moves yet. The AI claim is still mostly untested.</div>`;
+        return;
+      }
+      logList.innerHTML = state.logs.map((log) => `<div class="log-item">${log}</div>`).join("");
+    }
+
+    function render() {
+      scenarioTitle.textContent = state.scenario.title;
+      aiClaim.textContent = state.scenario.claim;
+      scenarioPrompt.textContent = state.scenario.prompt;
+      scenarioMeta.innerHTML = state.scenario.meta.map((item) => `<span class="chip">${item}</span>`).join("");
+
+      const score = integrityScore();
+      integrityDial.textContent = score;
+      integrityDial.style.background = `conic-gradient(var(--teal) 0deg, var(--teal) ${score * 3.6}deg, rgba(244, 234, 215, 0.12) ${score * 3.6}deg)`;
+      integrityCopy.textContent = score >= 78 ? "The class has evidence of inquiry, not just evidence of completion." : score >= 55 ? "The inquiry is forming, but one or two historical thinking moves still need protection." : "The artifact is smooth, but the inquiry is not yet visible.";
+      frictionPin.style.left = `${state.metrics.friction}%`;
+      turnsLeft.textContent = `${state.movesLeft} move${state.movesLeft === 1 ? "" : "s"} left`;
+      statusText.textContent = frictionStatus();
+      verdictTitle.textContent = score >= 78 ? "Inquiry protected" : score >= 55 ? "Inquiry emerging" : "Inquiry still fragile";
+      verdictBody.textContent = score >= 78
+        ? "The AI output is now an object of historical investigation, not a substitute for the investigation."
+        : `Main risk: ${state.scenario.risk}`;
+
+      document.querySelectorAll(".move").forEach((button) => {
+        button.disabled = state.movesLeft === 0 || state.used.has(button.dataset.move);
+      });
+
+      renderMeters();
+      renderNodes();
+      renderLog();
+    }
+
+    function resetScenario(id = state.scenario.id) {
+      state.scenario = scenarios.find((scenario) => scenario.id === id) || scenarios[0];
+      state.metrics = { ...state.scenario.start };
+      state.used = new Set();
+      state.movesLeft = 4;
+      state.logs = [];
+      debrief.classList.remove("active");
+      scenarioSelect.value = state.scenario.id;
+      render();
+    }
+
+    function playMove(id) {
+      if (state.movesLeft <= 0 || state.used.has(id)) return;
+      const move = moves.find((item) => item.id === id);
+      if (!move) return;
+
+      Object.entries(move.delta).forEach(([key, value]) => {
+        state.metrics[key] = clamp((state.metrics[key] || 0) + value);
+      });
+      state.used.add(id);
+      state.movesLeft -= 1;
+      state.logs.unshift(move.log);
+
+      move.nodes.forEach((node) => {
+        const el = document.querySelector(`[data-node="${node}"]`);
+        if (el) {
+          el.animate([
+            { transform: "scale(1)", boxShadow: "0 18px 48px rgba(0,0,0,.26)" },
+            { transform: "scale(1.04)", boxShadow: "0 24px 68px rgba(100,198,189,.28)" },
+            { transform: "scale(1)", boxShadow: "0 18px 48px rgba(0,0,0,.26)" }
+          ], { duration: 420, easing: "ease-out" });
+        }
+      });
+
+      render();
+    }
+
+    function showDebrief(accepted = false) {
+      const score = integrityScore();
+      const weak = Object.entries(state.metrics)
+        .filter(([key]) => ["sourcing", "context", "corroboration", "agency", "access"].includes(key))
+        .sort((a, b) => a[1] - b[1])
+        .slice(0, 2)
+        .map(([key]) => key);
+
+      const outcome = accepted && score < 70
+        ? "You accepted the claim before the class had enough evidence of inquiry."
+        : score >= 78
+          ? "Students can now treat AI as part of the inquiry instead of the end of inquiry."
+          : "The design is close, but the task still needs one more protected thinking move.";
+
+      debriefList.innerHTML = [
+        outcome,
+        `Friction status: ${frictionStatus()}.`,
+        `Watch next: ${weak.join(" and ")}.`,
+        `Transfer question: what must students still source, compare, revise, or defend?`
+      ].map((item) => `<li>${item}</li>`).join("");
+      debrief.classList.add("active");
+    }
+
+    renderScenarioOptions();
+    renderMoves();
+    resetScenario("revolution");
+
+    scenarioSelect.addEventListener("change", (event) => resetScenario(event.target.value));
+    document.getElementById("newRound").addEventListener("click", () => resetScenario());
+    document.getElementById("debriefBtn").addEventListener("click", () => showDebrief(false));
+    document.getElementById("acceptClaim").addEventListener("click", () => showDebrief(true));
+  </script>
+</body>
+</html>

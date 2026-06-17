@@ -12,6 +12,7 @@ This repository hosts interactive presentation versions for the session **When A
 | --- | --- | --- |
 | Full interactive deck | `index.html` | `https://minerclass.github.io/historical-inquiry-friction/` |
 | NCSS historical inquiry version | `ncss-historical-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/ncss-historical-inquiry/` |
+| Keepers of Inquiry game | `keepers-of-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/keepers-of-inquiry/` |
 
 ## Source base
 
@@ -34,6 +35,7 @@ Then visit:
 
 - `http://localhost:8000/`
 - `http://localhost:8000/ncss-historical-inquiry/`
+- `http://localhost:8000/keepers-of-inquiry/`
 
 ## Controls
 
@@ -46,6 +48,12 @@ The NCSS historical inquiry version includes:
 - Space or Page Down to advance
 - Home and End for first or last slide
 - Clickable audience prompts and facilitation cards
+
+The Keepers of Inquiry game includes:
+
+- Three social studies scenarios
+- Inquiry moves that protect sourcing, context, corroboration, agency, and access
+- A friction meter, inquiry integrity score, move log, and debrief
 
 ## Privacy
 
