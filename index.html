@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="When AI Does the Thinking: an interactive secondary-level session on preserving historical inquiry through pedagogical friction. Micah Miner, Beach Park District 3.">
+  <title>When AI Does the Thinking | Preserving Historical Inquiry</title>
+  <style>
+    :root {
+      --ink: #171914;
+      --paper: #f4f0e6;
+      --paper-2: #e8e0d0;
+      --forest: #183c32;
+      --moss: #49735f;
+      --ember: #b84f32;
+      --gold: #d5ae58;
+      --blue: #315d7a;
+      --muted: #6b6b62;
+      --line: rgba(23, 25, 20, .18);
+      --shadow: 0 24px 70px rgba(0, 0, 0, .28);
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: "Segoe UI", Arial, sans-serif;
+      --mono: Consolas, "Courier New", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body { background: #0d1714; color: var(--ink); font-family: var(--sans); }
+    button, a, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible, textarea:focus-visible {
+      outline: 4px solid var(--gold);
+      outline-offset: 4px;
+    }
+    a { color: inherit; }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      isolation: isolate;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: clamp(16px, 2.1vh, 28px);
+      padding: clamp(30px, 4vw, 72px) clamp(34px, 6vw, 112px) clamp(28px, 4vw, 62px);
+      background:
+        radial-gradient(circle at 92% 8%, rgba(213, 174, 88, .22), transparent 28%),
+        linear-gradient(135deg, var(--paper), #f7f4ed 70%);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(4%);
+      transition: opacity .35s ease, transform .35s ease, visibility .35s;
+      overflow: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      z-index: 2;
+    }
+
+    .slide.dark {
+      color: #f6f0df;
+      background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        radial-gradient(circle at 85% 18%, rgba(184, 79, 50, .28), transparent 28%),
+        linear-gradient(145deg, #10251f, #111713 68%);
+      background-size: 42px 42px, 42px 42px, auto, auto;
+    }
+
+    .slide.blue {
+      color: #f8f4e9;
+      background:
+        radial-gradient(circle at 15% 90%, rgba(213, 174, 88, .18), transparent 30%),
+        linear-gradient(140deg, #183447, #10212c);
+    }
+
+    .topline, .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .kicker, .slide-number, .micro, .tag {
+      font-family: var(--mono);
+      font-size: clamp(.67rem, 1vw, .9rem);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .kicker { color: var(--ember); font-weight: 700; }
+    .dark .kicker, .blue .kicker { color: var(--gold); }
+    .slide-number { color: var(--muted); }
+    .dark .slide-number, .blue .slide-number { color: rgba(255,255,255,.58); }
+
+    .content {
+      align-self: center;
+      width: min(100%, 1500px);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 {
+      font-family: var(--serif);
+      font-weight: 500;
+      letter-spacing: -.035em;
+      line-height: .98;
+    }
+    h1 { font-size: clamp(3.6rem, 8.5vw, 9rem); max-width: 13ch; margin-bottom: .25em; }
+    h2 { font-size: clamp(2.8rem, 6vw, 6.4rem); max-width: 17ch; margin-bottom: .42em; }
+    h3 { font-size: clamp(1.15rem, 1.7vw, 1.8rem); line-height: 1.18; margin-bottom: .45em; }
+    p, li { font-size: clamp(1rem, 1.55vw, 1.62rem); line-height: 1.42; }
+    .lede { font-family: var(--serif); font-size: clamp(1.5rem, 2.7vw, 3rem); line-height: 1.22; max-width: 38ch; }
+    .big-claim { font-family: var(--serif); font-size: clamp(2.3rem, 5vw, 5.6rem); line-height: 1.05; max-width: 21ch; }
+    em { color: var(--ember); }
+    .dark em, .blue em { color: var(--gold); }
+    strong { font-weight: 750; }
+
+    .grid-2, .grid-3, .grid-4 {
+      display: grid;
+      gap: clamp(14px, 1.8vw, 28px);
+      align-items: stretch;
+    }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: clamp(18px, 2.3vw, 34px);
+      background: rgba(255,255,255,.48);
+      box-shadow: 0 12px 35px rgba(34, 28, 17, .08);
+    }
+    .dark .card, .blue .card {
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.18);
+      box-shadow: none;
+    }
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    .card .tag { color: var(--ember); display: block; margin-bottom: 12px; }
+    .dark .card .tag, .blue .card .tag { color: var(--gold); }
+
+    .quote {
+      border-left: 7px solid var(--ember);
+      padding-left: clamp(20px, 3vw, 44px);
+      font-family: var(--serif);
+      font-size: clamp(1.7rem, 3vw, 3.5rem);
+      line-height: 1.2;
+      max-width: 40ch;
+    }
+    .dark .quote, .blue .quote { border-left-color: var(--gold); }
+
+    .footer {
+      color: var(--muted);
+      font-size: clamp(.72rem, 1vw, .95rem);
+    }
+    .dark .footer, .blue .footer { color: rgba(255,255,255,.6); }
+    .footer a { text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+    .controls {
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 20;
+      opacity: .32;
+      transition: opacity .2s;
+    }
+    .controls:hover, .controls:focus-within { opacity: 1; }
+    .control-btn, .choice, .tab, .link-btn {
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(10,18,15,.84);
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, color .18s ease;
+    }
+    .control-btn:hover, .choice:hover, .tab:hover, .link-btn:hover { transform: translateY(-2px); }
+    .choice, .tab, .link-btn {
+      color: var(--ink);
+      background: rgba(255,255,255,.72);
+      border-color: var(--line);
+      font-weight: 700;
+    }
+    .dark .choice, .dark .tab, .dark .link-btn, .blue .choice, .blue .tab, .blue .link-btn {
+      color: #fff;
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.25);
+    }
+    .choice.selected, .tab.selected {
+      color: #fff;
+      background: var(--ember);
+      border-color: var(--ember);
+    }
+    .tool-launch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 18px;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--ember);
+      border-radius: 14px;
+      background: rgba(255,255,255,.62);
+    }
+    .dark .tool-launch, .blue .tool-launch {
+      border-color: rgba(255,255,255,.2);
+      border-left-color: var(--gold);
+      background: rgba(255,255,255,.07);
+    }
+    .tool-launch p { margin: 0; font-size: clamp(.86rem, 1.15vw, 1.12rem); }
+    .tool-launch .link-btn { flex: 0 0 auto; text-decoration: none; }
+    .tool-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .progress {
+      position: fixed;
+      inset: auto 0 0 0;
+      height: 5px;
+      background: rgba(255,255,255,.12);
+      z-index: 21;
+    }
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--gold);
+      transition: width .3s ease;
+    }
+
+    .resource-drawer, .notes-panel, .overview {
+      position: fixed;
+      z-index: 30;
+      background: #f8f5ed;
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .22s ease, transform .22s ease, visibility .22s;
+    }
+    .resource-drawer {
+      top: 0;
+      right: 0;
+      width: min(520px, 94vw);
+      height: 100%;
+      padding: 34px;
+      overflow-y: auto;
+      transform: translateX(100%);
+    }
+    .resource-drawer.open { visibility: visible; opacity: 1; transform: translateX(0); }
+    .resource-drawer h2 { font-size: 3rem; }
+    .resource-link {
+      display: block;
+      margin: 12px 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      text-decoration: none;
+      background: white;
+    }
+    .resource-link strong { display: block; margin-bottom: 4px; }
+    .resource-link span { color: var(--muted); font-size: .92rem; }
+
+    .notes-panel {
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      max-height: 42vh;
+      padding: 24px 30px;
+      border-radius: 16px;
+      overflow-y: auto;
+      transform: translateY(115%);
+    }
+    .notes-panel.open { visibility: visible; opacity: 1; transform: translateY(0); }
+    .notes-panel h3 { margin-bottom: 8px; }
+    .notes-panel p { font-size: 1.05rem; line-height: 1.5; }
+
+    .overview {
+      inset: 0;
+      padding: 32px;
+      overflow: auto;
+      transform: scale(.97);
+    }
+    .overview.open { visibility: visible; opacity: 1; transform: scale(1); }
+    .overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .overview button {
+      text-align: left;
+      min-height: 120px;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      cursor: pointer;
+    }
+    .overview button:hover { border-color: var(--ember); }
+    .overview button span { color: var(--ember); font-family: var(--mono); }
+    .overview button strong { display: block; margin-top: 10px; font-size: 1.08rem; }
+
+    .interaction {
+      border: 2px solid var(--line);
+      border-radius: 22px;
+      padding: clamp(20px, 2.4vw, 38px);
+      background: rgba(255,255,255,.54);
+    }
+    .dark .interaction, .blue .interaction {
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.055);
+    }
+    .choices { display: flex; gap: 12px; flex-wrap: wrap; }
+    .path-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .primer-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 9px 16px;
+      border: 2px solid var(--forest);
+      border-radius: 999px;
+      color: white;
+      background: var(--forest);
+      font-size: clamp(.8rem, 1vw, 1rem);
+      font-weight: 750;
+      text-decoration: none;
+      box-shadow: 0 8px 20px rgba(24,60,50,.18);
+      transition: transform .18s ease, background .18s ease;
+    }
+    .primer-link:hover { transform: translateY(-2px); background: var(--moss); }
+    .reveal { display: none; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .reveal.show { display: block; animation: rise .3s ease; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .dimension-stage { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(20px, 4vw, 70px); }
+    .dimension-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: center; }
+    .dimension-buttons button { width: 100%; text-align: left; border-radius: 12px; }
+    .dimension-buttons .infrastructure-condition {
+      grid-column: 1 / -1;
+      border: 2px solid var(--moss);
+      background: rgba(73,115,95,.12);
+    }
+    .dimension-buttons .infrastructure-condition::before {
+      content: "Institutional condition";
+      display: block;
+      margin-bottom: 5px;
+      color: var(--moss);
+      font-family: var(--mono);
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .dimension-buttons .infrastructure-condition.selected {
+      border-color: var(--moss);
+      background: var(--moss);
+    }
+    .dimension-buttons .infrastructure-condition.selected::before { color: rgba(255,255,255,.78); }
+    .dimension-detail { min-height: 390px; display: grid; align-content: center; }
+
+    .continuum {
+      position: relative;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2f755c, var(--gold), var(--ember));
+      margin: 34px 0 14px;
+    }
+    .continuum::before, .continuum::after {
+      position: absolute;
+      top: 34px;
+      font-family: var(--mono);
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .continuum::before { content: "builds capacity"; left: 0; }
+    .continuum::after { content: "restricts access"; right: 0; }
+
+    textarea {
+      width: 100%;
+      min-height: 125px;
+      padding: 16px;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.75);
+      color: var(--ink);
+      resize: vertical;
+    }
+
+    .pulse-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .pulse {
+      position: relative;
+      min-height: 170px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      color: white;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .pulse span { position: relative; z-index: 2; font-weight: 750; font-size: 1.3rem; }
+    .pulse.selected {
+      border-color: rgba(213,174,88,.85);
+      background: rgba(213,174,88,.22);
+      box-shadow: inset 0 0 0 2px rgba(213,174,88,.55);
+    }
+
+    .timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 32px; }
+    .timeline .step {
+      border: 0;
+      border-top: 5px solid var(--moss);
+      padding: 16px 8px 8px 0;
+      color: inherit;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .timeline .step:hover, .timeline .step.selected { transform: translateY(-4px); border-color: var(--ember); }
+    .timeline .step:last-child { border-color: var(--ember); }
+    .timeline p { font-size: clamp(.82rem, 1.2vw, 1.18rem); }
+    .explorer-detail {
+      margin-top: 22px;
+      padding: 18px 22px;
+      border-left: 6px solid var(--ember);
+      background: rgba(255,255,255,.55);
+      border-radius: 0 14px 14px 0;
+    }
+    .dark .explorer-detail, .blue .explorer-detail {
+      background: rgba(255,255,255,.07);
+      border-left-color: var(--gold);
+    }
+    .explorer-detail h3 { margin-bottom: 6px; }
+    .explorer-detail p { margin-bottom: 0; font-size: clamp(.9rem, 1.3vw, 1.3rem); }
+
+    .lens-card, .system-node, .practice-card, .route-card, .techno-question {
+      width: 100%;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .lens-card.selected, .system-node.selected, .practice-card.selected, .route-card.selected, .techno-question.selected {
+      border-color: var(--ember);
+      box-shadow: 0 0 0 3px rgba(184,79,50,.18), 0 12px 35px rgba(34,28,17,.08);
+    }
+    .dark .lens-card.selected, .dark .system-node.selected, .dark .practice-card.selected,
+    .blue .lens-card.selected, .blue .route-card.selected {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(213,174,88,.22);
+    }
+    .lens-card p, .system-node p, .practice-card p, .route-card p { font-size: clamp(.88rem, 1.18vw, 1.22rem); }
+
+    .builder-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 24px; align-items: start; }
+    .builder-row { margin-bottom: 14px; }
+    .builder-row .micro { display: block; margin-bottom: 7px; color: var(--ember); }
+    .pill-group { display: flex; flex-wrap: wrap; gap: 7px; }
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 11px;
+      color: var(--ink);
+      background: rgba(255,255,255,.72);
+      cursor: pointer;
+      font-size: clamp(.75rem, 1vw, .95rem);
+      font-weight: 700;
+    }
+    .pill.selected { background: var(--ember); border-color: var(--ember); color: white; }
+    .praxis-output { min-height: 260px; display: grid; align-content: center; }
+    .praxis-output p { font-family: var(--serif); font-size: clamp(1.3rem, 2.2vw, 2.5rem); line-height: 1.25; }
+    .copy-status { min-height: 1.2em; margin: 9px 0 0; color: var(--muted); font-size: .85rem; }
+
+    .route-detail { margin-top: 20px; }
+
+    .path-content { display: none; }
+    .path-content.show {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(310px, .95fr);
+      gap: clamp(22px, 4vw, 64px);
+      align-items: center;
+      animation: rise .3s ease;
+    }
+    .path-copy p { max-width: 48ch; }
+    .path-copy p:last-child { margin-bottom: 0; }
+    .path-visual {
+      position: relative;
+      min-height: 260px;
+      padding: clamp(18px, 2vw, 28px);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background:
+        linear-gradient(rgba(23,25,20,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,25,20,.035) 1px, transparent 1px),
+        rgba(255,255,255,.5);
+      background-size: 24px 24px;
+      overflow: hidden;
+    }
+    .visual-label {
+      display: block;
+      margin-bottom: 14px;
+      color: var(--ember);
+      font-family: var(--mono);
+      font-size: clamp(.68rem, .9vw, .82rem);
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .visual-node {
+      display: grid;
+      place-items: center;
+      min-height: 48px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.85);
+      font-size: clamp(.78rem, 1vw, 1rem);
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .currere-map {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px 58px;
+      position: relative;
+      padding: 6px 10px 4px;
+    }
+    .currere-map::before {
+      content: "";
+      position: absolute;
+      inset: 24px 28px;
+      border: 3px dashed var(--moss);
+      border-radius: 50%;
+      opacity: .6;
+    }
+    .currere-map .visual-node { position: relative; z-index: 1; }
+    .currere-map .visual-node:nth-child(2),
+    .currere-map .visual-node:nth-child(3) { border-color: rgba(184,79,50,.45); }
+    .currere-center {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      z-index: 2;
+      width: 108px;
+      min-height: 72px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      color: white;
+      background: var(--forest);
+      box-shadow: 0 0 0 9px rgba(73,115,95,.16);
+      font-family: var(--serif);
+      font-size: 1rem;
+    }
+
+    .language-map { display: grid; gap: 8px; }
+    .language-lens {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 8px 12px;
+      border-left: 7px solid var(--blue);
+      border-radius: 8px 14px 14px 8px;
+      background: rgba(255,255,255,.78);
+    }
+    .language-lens:nth-child(2) { margin-left: 18px; border-color: var(--ember); }
+    .language-lens:nth-child(3) { margin-left: 36px; border-color: var(--moss); }
+    .language-lens:nth-child(4) { margin-left: 54px; border-color: var(--gold); }
+    .language-lens strong { font-family: var(--mono); font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; }
+    .language-lens span { font-family: var(--serif); font-size: clamp(.88rem, 1.12vw, 1.08rem); }
+
+    .hidden-map { display: grid; gap: 14px; }
+    .hidden-layer {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.85);
+      box-shadow: 0 8px 20px rgba(34,28,17,.08);
+    }
+    .hidden-layer.visible { border: 2px solid var(--moss); }
+    .hidden-layer.underneath {
+      border: 2px dashed var(--ember);
+      background: rgba(184,79,50,.08);
+      transform: translateX(18px);
+    }
+    .hidden-layer .micro { display: block; margin-bottom: 8px; color: var(--ember); }
+    .hidden-layer p { margin: 0; font-size: clamp(.82rem, 1.06vw, 1.05rem); line-height: 1.35; }
+    .hidden-arrow { color: var(--ember); font-family: var(--mono); font-size: .78rem; font-weight: 700; text-align: center; text-transform: uppercase; }
+
+    .fugitive-map {
+      position: relative;
+      min-height: 198px;
+      margin-top: 2px;
+      border: 3px solid var(--ink);
+      border-right-style: dashed;
+      border-radius: 16px;
+    }
+    .fugitive-map::after {
+      content: "movement beyond enclosure →";
+      position: absolute;
+      right: -14px;
+      bottom: -27px;
+      color: var(--ember);
+      font-family: var(--mono);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .enclosure-label {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .fugitive-node {
+      position: absolute;
+      width: 116px;
+      min-height: 48px;
+      border-color: rgba(73,115,95,.55);
+    }
+    .fugitive-node:nth-of-type(1) { left: 12%; top: 31%; }
+    .fugitive-node:nth-of-type(2) { left: 45%; top: 18%; }
+    .fugitive-node:nth-of-type(3) { left: 38%; top: 61%; }
+    .fugitive-node:nth-of-type(4) {
+      right: -44px;
+      top: 44%;
+      border-color: var(--ember);
+      background: #fff7ed;
+      box-shadow: 0 0 0 7px rgba(184,79,50,.12);
+    }
+    .citation { color: var(--muted); font-size: clamp(.78rem, 1vw, 1rem); }
+    .dark .citation, .blue .citation { color: rgba(255,255,255,.6); }
+    .slide.compact { gap: clamp(10px, 1.3vh, 18px); padding-top: clamp(22px, 3vw, 48px); padding-bottom: clamp(22px, 3vw, 44px); }
+    .slide.compact h2 { font-size: clamp(2.4rem, 5vw, 5.2rem); margin-bottom: .28em; }
+    .slide.compact .lede { font-size: clamp(1.25rem, 2.2vw, 2.4rem); }
+    .slide.compact .big-claim { font-size: clamp(1.9rem, 4vw, 4.4rem); }
+    .slide.compact .card { padding: clamp(14px, 1.7vw, 25px); }
+    .slide.compact .timeline { margin-top: 18px; }
+    .slide.compact .timeline p { line-height: 1.28; margin-bottom: 0; }
+    .slide.compact.pathways-slide { gap: 8px; padding-top: 22px; padding-bottom: 22px; }
+    .slide.compact.pathways-slide h2 { font-size: clamp(2.25rem, 4.1vw, 4.4rem); margin-bottom: .16em; }
+    .pathways-slide .interaction { padding: clamp(15px, 1.65vw, 24px); }
+    .pathways-slide .path-copy p { font-size: clamp(.92rem, 1.28vw, 1.35rem); line-height: 1.35; }
+    .pathways-slide .path-visual { min-height: 245px; }
+    .slide.compact.contribution-slide { gap: 8px; padding-top: 22px; padding-bottom: 22px; }
+    .slide.compact.contribution-slide h2 { font-size: clamp(2.25rem, 4.2vw, 4.5rem); margin-bottom: .2em; }
+    .contribution-slide .grid-3 { gap: clamp(10px, 1.3vw, 20px); }
+    .contribution-slide .card { padding: clamp(12px, 1.35vw, 20px); }
+    .contribution-slide .card p { font-size: clamp(.88rem, 1.15vw, 1.18rem); line-height: 1.32; }
+    .techno-test {
+      display: grid;
+      grid-template-columns: minmax(230px, .62fr) minmax(0, 1.38fr);
+      gap: clamp(14px, 2vw, 28px);
+      align-items: center;
+      margin-top: 14px;
+      padding: clamp(13px, 1.45vw, 20px);
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.54);
+    }
+    .techno-intro h3 { margin-bottom: 5px; }
+    .techno-intro p { margin-bottom: 8px; font-size: clamp(.78rem, 1vw, 1rem); line-height: 1.35; }
+    .techno-intro a { color: var(--ember); font-weight: 750; text-underline-offset: 3px; }
+    .techno-explorer { min-width: 0; }
+    .techno-questions { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+    .techno-question {
+      min-height: 45px;
+      padding: 7px 6px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.75);
+      font-size: clamp(.64rem, .78vw, .78rem);
+      font-weight: 750;
+      line-height: 1.18;
+      text-align: center;
+    }
+    .techno-detail {
+      margin-top: 9px;
+      padding: 8px 11px;
+      border-left: 4px solid var(--ember);
+      background: rgba(255,255,255,.6);
+    }
+    .techno-detail h3 { margin-bottom: 2px; font-size: clamp(.88rem, 1.12vw, 1.08rem); }
+    .techno-detail p { margin-bottom: 0; font-size: clamp(.72rem, .92vw, .9rem); line-height: 1.3; }
+    .contribution-claim {
+      margin: 12px 0 0;
+      font-family: var(--serif);
+      font-size: clamp(1.3rem, 2vw, 2.15rem);
+      line-height: 1.12;
+      text-align: center;
+    }
+
+    .link-cloud { display: flex; gap: 13px; flex-wrap: wrap; }
+    .link-cloud a { text-decoration: none; }
+    .link-cloud .link-btn { display: inline-flex; align-items: center; gap: 8px; }
+
+    .title-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 26vw); gap: clamp(28px, 5vw, 82px); align-items: center; }
+    .title-layout h1 { font-size: clamp(3.4rem, 7.4vw, 8.2rem); }
+    .join-card {
+      display: block;
+      padding: clamp(13px, 1.5vw, 20px);
+      border: 1px solid rgba(255,255,255,.26);
+      border-radius: 20px;
+      background: rgba(255,255,255,.09);
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 18px 45px rgba(0,0,0,.2);
+      transition: transform .2s ease, background .2s ease;
+    }
+    .join-card:hover { transform: translateY(-5px); background: rgba(255,255,255,.14); }
+    .join-card img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; background: white; }
+    .join-card .micro { display: block; margin: 14px 0 5px; color: var(--gold); }
+    .join-card strong { display: block; font-family: var(--mono); font-size: clamp(1rem, 1.65vw, 1.55rem); letter-spacing: .03em; }
+
+    .speaker-notes { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 900px) {
+      .slide { padding: 28px 24px 48px; }
+      .grid-3, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dimension-stage, .grid-2 { grid-template-columns: 1fr; }
+      .dimension-buttons { grid-template-columns: repeat(3, 1fr); }
+      .dimension-detail { min-height: 250px; }
+      .timeline { grid-template-columns: 1fr; }
+      .timeline .step { border-top: 0; border-left: 5px solid var(--moss); padding: 4px 0 4px 14px; }
+      .builder-grid { grid-template-columns: 1fr; }
+      .title-layout { grid-template-columns: 1fr; }
+      .join-card { width: min(260px, 78vw); }
+      .tool-launch { align-items: flex-start; flex-direction: column; }
+      .path-visual { min-height: 235px; }
+      .techno-test { grid-template-columns: 1fr; }
+      .techno-questions { grid-template-columns: repeat(5, minmax(90px, 1fr)); overflow-x: auto; padding-bottom: 4px; }
+    }
+
+    @media (max-width: 620px) {
+      h1 { font-size: clamp(3rem, 16vw, 5rem); }
+      h2 { font-size: clamp(2.35rem, 12vw, 4rem); }
+      .grid-3, .grid-4, .pulse-row { grid-template-columns: 1fr; }
+      .dimension-buttons { grid-template-columns: 1fr; }
+      .controls .optional { display: none; }
+      .topline { align-items: flex-start; }
+      .path-content.show { grid-template-columns: 1fr; }
+      .language-lens { grid-template-columns: 1fr; gap: 3px; }
+      .language-lens:nth-child(n) { margin-left: 0; }
+      .fugitive-node { width: 100px; font-size: .7rem; }
+      .fugitive-node:nth-of-type(4) { right: -14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    }
+
+    @media print {
+      @page { size: landscape; margin: 0; }
+      html, body { overflow: visible; height: auto; background: white; }
+      .deck { width: auto; height: auto; }
+      .slide {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        break-after: page;
+        page-break-after: always;
+        overflow: hidden;
+      }
+      .controls, .progress, .resource-drawer, .notes-panel, .overview { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck" aria-live="polite">
+
+    <section class="slide dark active" data-title="When AI Does the Thinking">
+      <div class="topline"><span class="kicker">Pedagogy for the Present · High School / Secondary</span><span class="slide-number"></span></div>
+      <div class="content title-layout">
+        <div>
+          <p class="micro">On AI, history, and the difficulties worth keeping</p>
+          <h1>When AI Does the <em>Thinking</em></h1>
+          <p class="lede">Preserving historical inquiry through pedagogical friction.</p>
+          <p>Micah Miner · Beach Park District 3 · <a href="https://micahminer.com/" target="_blank" rel="noopener">micahminer.com</a></p>
+        </div>
+        <a class="join-card" href="https://micahminer.com/" target="_blank" rel="noopener" aria-label="Open the session companion at micahminer.com">
+          <span class="micro">Session companion</span>
+          <strong>micahminer.com</strong>
+          <span class="micro" style="margin-top:12px; color:rgba(255,255,255,.72); letter-spacing:.02em; text-transform:none; font-family:var(--serif); font-size:1rem;">High School / Secondary &middot; Pedagogy for the Present</span>
+        </a>
+      </div>
+      <div class="footer"><span>Use &larr; &rarr; or space to move &middot; R resources &middot; N notes &middot; O overview</span><span>This deck stores no participant data.</span></div>
+      <aside class="speaker-notes">Open with the learning problem, not the tool. The session is a working conversation for secondary history teachers: what does historical thinking require, where does generative AI quietly do that thinking for students, and how do we design tasks that keep the productive struggle while using AI where it genuinely helps. Invite participants to open the deck on their own device; note that every interactive element runs locally and collects nothing. The frameworks in this session — C.O.R.E. and H.E.A.R.T. — come from my own work in Theory and Research in Social Education and The Leader.</aside>
+    </section>
+
+    <section class="slide blue compact" data-title="The Hour as a Complicated Conversation">
+      <div class="topline"><span class="kicker">Orientation</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>The hour as a <em>complicated conversation</em></h2>
+        <div class="grid-4">
+          <article class="card"><span class="tag">Recognize</span><h3>The problem</h3><p>When polished output hides the thinking that never happened.</p></article>
+          <article class="card"><span class="tag">Understand</span><h3>Why it matters</h3><p>What historical thinking requires, and what frictionless AI bypasses.</p></article>
+          <article class="card"><span class="tag">Design</span><h3>The frameworks</h3><p>Friction, C.O.R.E., and H.E.A.R.T. as a principled middle path.</p></article>
+          <article class="card"><span class="tag">Act</span><h3>The classroom</h3><p>Concrete moves, equity, and a task you redesign today.</p></article>
+        </div>
+      </div>
+      <div class="footer"><span>Participation is part of the argument.</span><span>Press R anytime for sources and companions.</span></div>
+      <aside class="speaker-notes">Set the arc and the tone: this is dialogic, not a lecture. The interactivity is the point — a session arguing for productive struggle should not treat the audience as passive recipients. Name the four movements so people can track where we are.</aside>
+    </section>
+
+    <section class="slide compact" data-title="The 10-Second History Class">
+      <div class="topline"><span class="kicker">Movement I · Recognize</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>The <em>10-second</em> history class</h2>
+        <div class="interaction">
+          <h3>Generative AI can now produce any of these before the bell finishes ringing. Which unsettles you most?</h3>
+          <div class="choices" data-reveal-group="tensec">
+            <button class="choice" data-reveal="t-essay">A sourced essay on the causes of the Revolution</button>
+            <button class="choice" data-reveal="t-seminar">A simulated Socratic seminar</button>
+            <button class="choice" data-reveal="t-counter">Counterarguments to the Federalist Papers</button>
+          </div>
+          <div class="reveal" id="t-essay"><p><strong>What got skipped:</strong> the sourcing, contextualizing, and corroborating that turn five documents into a defensible claim. The essay is the <em>residue</em> of historical thinking &mdash; produced here without any of it.</p></div>
+          <div class="reveal" id="t-seminar"><p><strong>What got skipped:</strong> the social risk of stating a claim and being questioned. A simulated seminar performs the discourse without anyone becoming answerable for a position.</p></div>
+          <div class="reveal" id="t-counter"><p><strong>What got skipped:</strong> the labor of reading against the grain to build the counterargument yourself. Handed the rebuttal, the student never has to think with the text.</p></div>
+        </div>
+        <p class="big-claim" style="margin-top:16px;">The artifact arrives. The question is whether the <em>thinking</em> ever happened.</p>
+      </div>
+      <div class="footer"><span>Chat: what would tell you the thinking actually occurred?</span><span>Output is not evidence of learning.</span></div>
+      <aside class="speaker-notes">Take 45 seconds for a pick and a chat response. The point is not that students will cheat. It is that the finished artifact &mdash; the thing we grade &mdash; can be produced with none of the cognitive work it was designed to require. Press toward what we would need to see beyond the artifact: explanation, defense, transfer, ownership.</aside>
+    </section>
+
+    <section class="slide blue compact" data-title="Two Students, One Artifact">
+      <div class="topline"><span class="kicker">Same grade, different formation</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Two students hand in the <em>same</em> essay</h2>
+        <div class="grid-2">
+          <article class="card"><span class="tag">Student A &middot; enters the inquiry</span><p>Uses AI to surface more sources, generate a position to argue <em>against</em>, and get feedback &mdash; then does the sourcing, weighing, and arguing herself.</p></article>
+          <article class="card"><span class="tag">Student B &middot; exits the inquiry</span><p>Asks AI for the thesis and the evidence, edits the wording, and turns it in. The historical thinking happened somewhere else, to someone else.</p></article>
+        </div>
+        <div class="pulse-row" id="pulseRow">
+          <button class="pulse" data-vote="0"><span>Mostly Student A</span></button>
+          <button class="pulse" data-vote="1"><span>Mostly Student B</span></button>
+          <button class="pulse" data-vote="2"><span>Honestly &mdash; both</span></button>
+        </div>
+        <p class="quote" style="margin-top:26px;">Same artifact. Opposite learning. The difference is invisible on the page.</p>
+      </div>
+      <div class="footer"><span>Tap your honest read &mdash; nothing leaves your device.</span><span>The grade can't see the difference. Our design has to.</span></div>
+      <aside class="speaker-notes">The crux: AI use is not one behavior. The same tool, on the same task, can be the on-ramp to inquiry or the exit from it. If we can't distinguish them from the artifact, the artifact can no longer be the whole assessment. Take the pulse verbally or in chat &mdash; it is a per-device reflection, not a live tally.</aside>
+    </section>
+
+    <section class="slide dark" data-title="The Question Under the Panic">
+      <div class="topline"><span class="kicker">The foundational question</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2 class="sr-only">The question under the panic</h2>
+        <p class="quote">If AI can perform the cognitive labor of historical thinking, what happens to the learning that labor was supposed to produce?</p>
+        <div class="grid-3" style="margin-top:40px;">
+          <article class="card"><span class="tag">Ban it</span><p>Loses the tool students will use anyway &mdash; and the teachable moment with it.</p></article>
+          <article class="card"><span class="tag">Embrace it</span><p>Loses the struggle that builds the thinking, behind polished output.</p></article>
+          <article class="card" style="border-color:var(--gold); box-shadow:0 0 0 2px rgba(213,174,88,.3);"><span class="tag">Design for friction</span><p>Keep the difficulties that do the teaching; use AI where it genuinely amplifies.</p></article>
+        </div>
+        <p class="lede" style="margin-top:32px;">This is not first an <em>integrity</em> problem. It is a <em>learning</em> problem &mdash; and a design problem.</p>
+      </div>
+      <div class="footer"><span>Not ban. Not embrace. A principled middle path.</span><a href="https://www.socialstudies.org/standards/c3" target="_blank" rel="noopener">C3 Framework context</a></div>
+      <aside class="speaker-notes">Name the two reflexes &mdash; prohibition and uncritical adoption &mdash; and reject both. The middle path is a design stance, not a compromise: decide which difficulties are load-bearing for historical thinking and must not disappear, and where AI removes friction that was never teaching anything.</aside>
+    </section>
+
+    <section class="slide" data-title="The Field Is Reporting">
+      <div class="topline"><span class="kicker">Research-grounded landscape</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Adoption is outrunning <em>sense-making</em></h2>
+        <div class="grid-3">
+          <article class="card"><span class="tag">18% &rarr; 53%</span><h3>Teacher AI use accelerated</h3><p>National reports show rapid growth in a short policy window.</p><p class="citation">Diliberti et al., 2024; Doss et al., 2025</p></article>
+          <article class="card"><span class="tag">35%</span><h3>AI-using teachers bring it to students</h3><p>Practice is moving faster than guidance or training.</p><p class="citation">Kaufman et al., 2025</p></article>
+          <article class="card"><span class="tag">18%</span><h3>Principals reporting an AI policy</h3><p>Silence leaves teachers and students to navigate the defaults alone.</p><p class="citation">Kaufman et al., 2025</p></article>
+        </div>
+        <p class="lede" style="margin-top:30px;">The defaults are being set <em>for</em> us &mdash; in interfaces and pacing pressure &mdash; while the policy room stays empty.</p>
+      </div>
+      <div class="footer"><span>RAND reports &middot; TeachAI</span><span>Press R for the source routes.</span></div>
+      <aside class="speaker-notes">Keep the figures bounded: they come from different national reports and describe a direction, not a single longitudinal sample. The pattern that matters is adoption outpacing professional learning and policy &mdash; which makes classroom design the most responsive lever we have right now.</aside>
+    </section>
+
+    <section class="slide compact" data-title="Anatomy of Historical Thinking">
+      <div class="topline"><span class="kicker">Movement II · Understand</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>What historical thinking actually <em>requires</em></h2>
+        <div class="grid-3" id="histGrid">
+          <button class="card lens-card selected" data-hist="sourcing"><span class="tag">Sourcing</span><p>Who made this, when, and why &mdash; before you trust a word of it.</p></button>
+          <button class="card lens-card" data-hist="context"><span class="tag">Contextualization</span><p>Reconstruct a world that did not think like ours.</p></button>
+          <button class="card lens-card" data-hist="corroborate"><span class="tag">Corroboration</span><p>Build one account from sources that disagree.</p></button>
+          <button class="card lens-card" data-hist="closeread"><span class="tag">Close reading</span><p>Read against the grain, word by word.</p></button>
+          <button class="card lens-card" data-hist="interpret"><span class="tag">Interpretation</span><p>Commit to a contestable claim you can defend.</p></button>
+        </div>
+        <article class="explorer-detail" id="histDetail" aria-live="polite"></article>
+      </div>
+      <div class="footer"><span>Click a move &middot; ask what disappears when AI performs it.</span><span>Wineburg; SHEG; NCSS C3 Framework</span></div>
+      <aside class="speaker-notes">These are the disciplinary reading skills history teachers already teach (Wineburg's "unnatural acts"; SHEG's Reading Like a Historian; the C3 inquiry arc). The detail panel does double duty: it names the cognitive labor each move requires and exactly where generative AI does that labor for the student. Linger here &mdash; this is the analytical heart of the session.</aside>
+    </section>
+
+    <section class="slide dark compact" data-title="Why the Struggle Is the Point">
+      <div class="topline"><span class="kicker">Constructivist foundations</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Why the struggle <em>is</em> the point</h2>
+        <div class="grid-4" id="theoryGrid">
+          <button class="card lens-card selected" data-theory="dewey"><span class="tag">Dewey</span><p>Learning is experience; democracy needs reflective citizens.</p></button>
+          <button class="card lens-card" data-theory="vygotsky"><span class="tag">Vygotsky</span><p>Thinking develops socially, in the zone of proximal development.</p></button>
+          <button class="card lens-card" data-theory="piaget"><span class="tag">Piaget</span><p>Understanding grows through disequilibrium.</p></button>
+          <button class="card lens-card" data-theory="freire"><span class="tag">Freire</span><p>Education is dialogue, not banking.</p></button>
+        </div>
+        <article class="explorer-detail" id="theoryDetail" aria-live="polite"></article>
+      </div>
+      <div class="footer"><span>Productive struggle is not a design flaw.</span><span>Dewey · Vygotsky · Piaget · Freire</span></div>
+      <aside class="speaker-notes">This is the theoretical spine from my Theory and Research in Social Education article. Four traditions converge: authentic learning emerges from struggle, social interaction, and disequilibrium &mdash; not from receiving prepackaged answers. Each lens names a specific thing frictionless AI quietly removes. Keep it tight and let the detail panel carry the depth.</aside>
+    </section>
+
+    <section class="slide compact" data-title="The Medium Shapes Knowing">
+      <div class="topline"><span class="kicker">Media theory, lightly</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>The medium has always shaped <em>knowing</em></h2>
+        <div class="timeline" id="mediaTimeline">
+          <button class="step selected" data-media="orality"><h3>Orality</h3><p>Knowledge lives between people, in memory.</p></button>
+          <button class="step" data-media="print"><h3>Print</h3><p>The word becomes inspectable and sourceable.</p></button>
+          <button class="step" data-media="broadcast"><h3>Broadcast</h3><p>Presence returns; others own the channel.</p></button>
+          <button class="step" data-media="feeds"><h3>Algorithmic feeds</h3><p>Circulation is ranked and curated.</p></button>
+          <button class="step" data-media="generative"><h3>Generative AI</h3><p>The reasoning itself is performed.</p></button>
+        </div>
+        <article class="explorer-detail" id="mediaDetail" aria-live="polite"></article>
+      </div>
+      <div class="footer"><span>McLuhan: the medium reshapes thought.</span><span>McLuhan · Ong · Carr</span></div>
+      <aside class="speaker-notes">One theory beat, kept light and interactive. Earlier media changed how knowledge circulated; generative AI changes who does the reasoning. McLuhan's "the medium is the message" lands here: the tool does not hand students the past to interpret &mdash; it hands them the interpretation. Carr's "shallows" names what convenience costs. This reframes "just use it as a research tool."</aside>
+    </section>
+
+    <section class="slide blue compact" data-title="Productive Struggle, Named">
+      <div class="topline"><span class="kicker">Defining the term</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Friction is <em>productive disequilibrium</em></h2>
+        <div class="grid-2">
+          <article class="card"><span class="tag">Piaget</span><p>Understanding changes when new evidence won't fit old schemas &mdash; the discomfort that forces accommodation.</p></article>
+          <article class="card"><span class="tag">Bjork &amp; Bjork</span><p><em>Desirable difficulties:</em> conditions that feel harder in the moment produce more durable, transferable learning.</p></article>
+        </div>
+        <p class="quote" style="margin-top:30px;">Thinking is effortful &mdash; and that effort is the mechanism, not the obstacle.</p>
+      </div>
+      <div class="footer"><span>Piaget, 1970 · Bjork &amp; Bjork, 2011 · David et al., 2024</span><span>Friction = useful difficulty by design.</span></div>
+      <aside class="speaker-notes">Define the central term precisely so "friction" doesn't drift into "make it hard." Friction is productive disequilibrium: the effortful reconciling of conflicting evidence that builds durable understanding. Note David et al. (2024): mental effort is genuinely unpleasant &mdash; which is exactly why frictionless tools are so tempting and so risky.</aside>
+    </section>
+
+    <section class="slide compact" data-title="Three Frictions Worth Protecting">
+      <div class="topline"><span class="kicker">The framework</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Three difficulties worth <em>protecting</em></h2>
+        <div class="dimension-stage">
+          <div class="dimension-buttons" id="frictionButtons">
+            <button class="choice selected" data-friction="noetic">Noetic &middot; the head</button>
+            <button class="choice" data-friction="rhetorical">Rhetorical &middot; the room</button>
+            <button class="choice" data-friction="existential">Existential &middot; the past &amp; the self</button>
+            <button class="choice infrastructure-condition" data-friction="institutional">Institutional friction &middot; the system that lets teachers protect the other three</button>
+          </div>
+          <article class="card dimension-detail" id="frictionDetail" aria-live="polite"></article>
+        </div>
+      </div>
+      <div class="footer"><span>Three learner-facing frictions, one institutional condition.</span><span>Ask which is most neglected in your AI conversations.</span></div>
+      <aside class="speaker-notes">Noetic, rhetorical, and existential name the learner-facing struggles historical inquiry depends on. Infrastructural friction names the conditions &mdash; pacing, assessment, devices, policy &mdash; that decide whether a teacher can preserve the other three without acting alone. Most school AI talk addresses only the institutional layer (acceptable-use policy) and ignores the three that actually form historians.</aside>
+    </section>
+
+    <section class="slide compact" data-title="The Friction Test">
+      <div class="topline"><span class="kicker">The crucial guardrail</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Not all difficulty is <em>good</em></h2>
+        <p class="lede">The same task can build historical thinking for one student and block the door for another.</p>
+        <div class="continuum"></div>
+        <div class="grid-2" style="margin-top:36px;">
+          <article class="card"><span class="tag">Productive friction</span><p>Difficulty that builds the sourcing, weighing, or arguing the learner would not otherwise construct.</p></article>
+          <article class="card"><span class="tag">Exclusionary friction</span><p>Difficulty that blocks access, participation, or demonstration without building any historical thinking &mdash; decoding load, language barriers, confusing logistics.</p></article>
+        </div>
+        <p class="quote" style="margin-top:18px;">For whom does this difficulty build historical thinking &mdash; and for whom does it just block the door?</p>
+      </div>
+      <div class="footer"><span>The framework requires judgment, not a blanket rule.</span><span>Removing a barrier is not the same as removing the learning.</span></div>
+      <aside class="speaker-notes">This slide prevents a romantic defense of struggle. "Keep it hard" can reproduce ableism and linguistic exclusion. The productive/exclusionary distinction keeps the framework honest: protect the difficulty that is the historical thinking; remove the difficulty that merely stands in front of it.</aside>
+    </section>
+
+    <section class="slide dark compact" data-title="The Paradoxes of Frictionless AI">
+      <div class="topline"><span class="kicker">What the tool risks</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>The paradoxes of <em>frictionless</em> AI</h2>
+        <div class="grid-4" id="paradoxGrid">
+          <button class="card lens-card selected" data-paradox="misinfo"><span class="tag">Misinformation</span><p>Authoritative-sounding falsehoods, at scale.</p></button>
+          <button class="card lens-card" data-paradox="bias"><span class="tag">Algorithmic bias</span><p>Inherited slant and "technological redlining."</p></button>
+          <button class="card lens-card" data-paradox="agency"><span class="tag">Eroded agency</span><p>The banking model in a new interface.</p></button>
+          <button class="card lens-card" data-paradox="shallows"><span class="tag">The new shallows</span><p>Convenience over cognitive depth.</p></button>
+        </div>
+        <article class="explorer-detail" id="paradoxDetail" aria-live="polite"></article>
+      </div>
+      <div class="footer"><span>Each paradox lands hardest in a discipline built on evidence.</span><span>Vosoughi · Buolamwini · Freire · Carr</span></div>
+      <aside class="speaker-notes">From section III of my article. These are not generic AI worries &mdash; they strike directly at history's core. Misinformation undermines sourcing; bias decides whose past gets told and who gets the simplified version; eroded agency revives Freire's banking model; the shallows trade durable learning for fluent output. Use the detail panel to give the history-class example for whichever the room reacts to.</aside>
+    </section>
+
+    <section class="slide compact" data-title="C.O.R.E.">
+      <div class="topline"><span class="kicker">Movement III · Design · the frameworks</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2><em>C.O.R.E.</em> — a cognitive-civic anchor</h2>
+        <div class="grid-4" id="coreGrid">
+          <button class="card lens-card selected" data-core="critical"><span class="tag">C</span><h3>Critical Thinking</h3><p>Interrogate, don't accept.</p></button>
+          <button class="card lens-card" data-core="openness"><span class="tag">O</span><h3>Openness</h3><p>AI's answer is a starting point.</p></button>
+          <button class="card lens-card" data-core="respect"><span class="tag">R</span><h3>Respect</h3><p>Dignified, civil dialogue.</p></button>
+          <button class="card lens-card" data-core="engagement"><span class="tag">E</span><h3>Engagement</h3><p>Hands-on inquiry, not consumption.</p></button>
+        </div>
+        <article class="explorer-detail" id="coreDetail" aria-live="polite"></article>
+      </div>
+      <div class="footer"><span>Click a letter for the history-class move.</span><span>Miner, 2024 · 2025</span></div>
+      <aside class="speaker-notes">C.O.R.E. is my framework for the cognitive and civic side of AI integration. Present it as actionable, not abstract: each letter maps to a concrete history move. It pairs with H.E.A.R.T. on the next slide &mdash; C.O.R.E. anchors the thinking, H.E.A.R.T. anchors the ethics. Both grew from conversations with social studies educators across the country.</aside>
+    </section>
+
+    <section class="slide blue compact" data-title="H.E.A.R.T.">
+      <div class="topline"><span class="kicker">The frameworks</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2><em>H.E.A.R.T.</em> — the ethical dimension</h2>
+        <div class="grid-3" id="heartGrid">
+          <button class="card lens-card selected" data-heart="honesty"><span class="tag">H</span><h3>Honesty</h3><p>Verify against the record.</p></button>
+          <button class="card lens-card" data-heart="empathy"><span class="tag">E</span><h3>Empathy</h3><p>Perspective-taking, kept human.</p></button>
+          <button class="card lens-card" data-heart="accountability"><span class="tag">A</span><h3>Accountability</h3><p>Who is harmed or excluded?</p></button>
+          <button class="card lens-card" data-heart="responsibility"><span class="tag">R</span><h3>Responsibility</h3><p>Use tools and sources ethically.</p></button>
+          <button class="card lens-card" data-heart="thoughtfulness"><span class="tag">T</span><h3>Thoughtfulness</h3><p>Reflect on how we reasoned.</p></button>
+        </div>
+        <article class="explorer-detail" id="heartDetail" aria-live="polite"></article>
+      </div>
+      <div class="footer"><span>Click a letter for the history-class move.</span><span>The acronyms remind us how to treat others &mdash; and ourselves.</span></div>
+      <aside class="speaker-notes">H.E.A.R.T. adds the ethical and emotional parameters that keep AI integration human. In a discipline that handles painful and contested pasts, honesty, empathy, and accountability are not soft skills &mdash; they are disciplinary practice. Note that the acronyms are deliberate: they ask us to engage controversy from a stance of human dignity.</aside>
+    </section>
+
+    <section class="slide dark compact" data-title="Technoskepticism">
+      <div class="topline"><span class="kicker">A disciplined habit</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Technoskepticism: <em>trade-offs, not verdicts</em></h2>
+        <p class="lede">Not pro- or anti-tech &mdash; a habit of asking what a tool changes. "Technology inevitably involves trade-offs."</p>
+        <div class="grid-3" id="postmanGrid">
+          <button class="card lens-card selected" data-postman="tradeoff"><span class="tag">Trade-off</span><p>What is gained and lost?</p></button>
+          <button class="card lens-card" data-postman="distribution"><span class="tag">Distribution</span><p>Who benefits and who pays?</p></button>
+          <button class="card lens-card" data-postman="idea"><span class="tag">Embedded idea</span><p>What does it assume learning is?</p></button>
+          <button class="card lens-card" data-postman="ecology"><span class="tag">Ecology</span><p>What whole system shifts?</p></button>
+          <button class="card lens-card" data-postman="myth"><span class="tag">Myth</span><p>What starts to feel inevitable?</p></button>
+        </div>
+        <article class="explorer-detail" id="postmanDetail" aria-live="polite"></article>
+      </div>
+      <div class="footer"><span>Postman, 1998 · Krutka, Metzger &amp; Seitz, 2022</span><a href="https://web.cs.ucdavis.edu/~rogaway/classes/188/materials/postman.pdf" target="_blank" rel="noopener">Postman's five propositions ↗</a></div>
+      <aside class="speaker-notes">Technoskepticism is the disposition underneath both frameworks: question who benefits, what biases and hidden costs exist, and how adopting a tool reshapes cognition and relationships. Krutka, Metzger, and Seitz show how social studies standards already frame technology as trade-offs. Use one or two of Postman's questions live on AI in your own building.</aside>
+    </section>
+
+    <section class="slide compact" data-title="A Four-Question Design Test">
+      <div class="topline"><span class="kicker">The principled middle path</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>A design test for any <em>task</em></h2>
+        <div class="techno-test">
+          <div class="techno-intro">
+            <span class="tag">Use it on a real assignment</span>
+            <h3>Where to preserve, where to amplify</h3>
+            <p>Run a task you already assign through these questions. They turn "Is AI allowed?" into "What human work does this task require?"</p>
+          </div>
+          <div class="techno-explorer">
+            <div class="techno-questions" id="decisionQuestions">
+              <button class="techno-question selected" data-decision="purpose">What is it for?</button>
+              <button class="techno-question" data-decision="struggle">Where's the struggle?</button>
+              <button class="techno-question" data-decision="ownership">Can they own it?</button>
+              <button class="techno-question" data-decision="role">Amplify or replace?</button>
+              <button class="techno-question" data-decision="whom">For whom?</button>
+            </div>
+            <article class="techno-detail" id="decisionDetail" aria-live="polite"></article>
+          </div>
+        </div>
+        <p class="contribution-claim">If AI performs the answer to "what is it for," the task no longer does its job.</p>
+      </div>
+      <div class="footer"><span>Click each question &middot; apply it as we go.</span><span>From permission to purpose.</span></div>
+      <aside class="speaker-notes">The portable tool participants leave with. Model it once aloud on a familiar assignment. The decisive questions are ownership ("can the student explain, defend, and revise it without the tool?") and role ("does AI amplify the thinking or replace it?"). "For whom" loops the equity guardrail back in.</aside>
+    </section>
+
+    <section class="slide compact pathways-slide" data-title="One Task, Two Formations">
+      <div class="topline"><span class="kicker">Movement IV · Act · a worked example</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>One task. Two <em>formations</em>.</h2>
+        <div class="path-controls">
+          <div class="choices" id="pathTabs">
+            <button class="tab selected" data-path="task">The task</button>
+            <button class="tab" data-path="fluent">The 10-second route</button>
+            <button class="tab" data-path="friction">The friction-preserving route</button>
+          </div>
+          <a class="primer-link" href="https://sheg.stanford.edu/history-lessons" target="_blank" rel="noopener">Reading Like a Historian &rarr;</a>
+        </div>
+        <div class="interaction" style="margin-top:20px; min-height:300px;" aria-live="polite">
+          <article class="path-content show" id="task">
+            <div class="path-copy"><h3>The document-based question</h3><p>Five sources on the causes of the American Revolution. Build and defend an argument about which cause mattered most &mdash; sourcing, contextualizing, and corroborating across documents that don't agree.</p><p class="citation">The classic move history teachers assign &mdash; and the one AI handles fastest.</p></div>
+            <div class="path-visual" role="img" aria-label="Five documents converge on a single defended claim.">
+              <span class="visual-label">Documents &rarr; defended claim</span>
+              <div class="grid-3" style="gap:10px;">
+                <div class="visual-node">Doc A</div><div class="visual-node">Doc B</div><div class="visual-node">Doc C</div>
+                <div class="visual-node">Doc D</div><div class="visual-node">Doc E</div><div class="visual-node" style="border-color:var(--ember); background:#fff7ed;">your claim</div>
+              </div>
+            </div>
+          </article>
+          <article class="path-content" id="fluent">
+            <div class="path-copy"><h3>The 10-second route</h3><p>Paste the prompt, receive a sourced thesis with body paragraphs, polish the wording, submit. The artifact is strong. The sourcing, corroboration, and argument never happened &mdash; a correct answer with no one home.</p><p class="citation">Strong output, zero formation. Invisible at the grade level.</p></div>
+            <div class="path-visual" role="img" aria-label="A prompt produces a finished essay with the thinking absent.">
+              <span class="visual-label">What is produced / what is absent</span>
+              <div style="display:grid; gap:10px;">
+                <div class="visual-node">prompt &rarr; finished essay</div>
+                <div class="visual-node" style="border-color:var(--ember); background:rgba(184,79,50,.08);">absent: sourcing &middot; weighing &middot; the claim that's yours</div>
+              </div>
+            </div>
+          </article>
+          <article class="path-content" id="friction">
+            <div class="path-copy"><h3>The friction-preserving route</h3><p>Source three documents cold and stake an initial claim. <em>Then</em> ask AI for the strongest rival interpretation, test it against the documents, defend your thesis in seminar, and revise against a new source the tool never saw. Same tool &mdash; opposite formation.</p><p class="citation">AI enters after the thinking, as a sparring partner, not before it as a ghostwriter.</p></div>
+            <div class="path-visual" role="img" aria-label="The student sources and claims first, then uses AI as a sparring partner before defending and revising.">
+              <span class="visual-label">Think first &middot; AI as sparring partner</span>
+              <div style="display:grid; gap:10px;">
+                <div class="visual-node">1 &middot; source cold, stake a claim</div>
+                <div class="visual-node">2 &middot; AI rival reading &rarr; you contest it</div>
+                <div class="visual-node" style="border-color:var(--ember); background:#fff7ed;">3 &middot; defend in seminar, revise</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="footer"><span>The tool is identical. The sequence is everything.</span><span>Friction-first, not friction-free.</span></div>
+      <aside class="speaker-notes">Walk all three tabs. The key insight is sequence: put the irreducible thinking before the tool, then let AI sharpen rather than supply. The rival-interpretation move turns the abstract's worry &mdash; "AI generates counterarguments to the Federalist Papers" &mdash; into an asset: students argue against a strong position instead of receiving one.</aside>
+    </section>
+
+    <section class="slide dark compact" data-title="Where to Put the Friction Back">
+      <div class="topline"><span class="kicker">Redesign moves</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Where to put the <em>friction</em> back</h2>
+        <div class="grid-4" id="practiceGrid">
+          <button class="card practice-card selected" data-practice="before"><span class="tag">Before AI</span><h3>Source it cold</h3><p>Annotate and stake a claim before any tool.</p></button>
+          <button class="card practice-card" data-practice="with"><span class="tag">With AI</span><h3>Interrogate, don't accept</h3><p>Cross-examine the AI's reading against the document.</p></button>
+          <button class="card practice-card" data-practice="after"><span class="tag">After AI</span><h3>Defend &amp; revise</h3><p>Seminar, then revise against a new source.</p></button>
+          <button class="card practice-card" data-practice="room"><span class="tag">In the room</span><h3>Restore answerability</h3><p>"Show me the line." Make claims face questions.</p></button>
+        </div>
+        <article class="explorer-detail" id="practiceDetail" aria-live="polite"></article>
+      </div>
+      <div class="footer"><span>These name moves strong history teachers already make.</span><span>Friction can be ordinary, designed, and small.</span></div>
+      <aside class="speaker-notes">Invite participants to add their own move in chat. Frame these as interruptions of the default "generate the answer" logic that restore the student's interpretive labor. The throughline: think first, interrogate rather than accept, and make the claim answerable to a real audience.</aside>
+    </section>
+
+    <section class="slide compact" data-title="Moves From the Research">
+      <div class="topline"><span class="kicker">Classroom-ready &middot; from the article</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Moves from the <em>research</em></h2>
+        <div class="grid-4" id="movesGrid">
+          <button class="card lens-card selected" data-move="audit"><span class="tag">Bias audit</span><p>Compare AI's account to the archive.</p></button>
+          <button class="card lens-card" data-move="vsprimary"><span class="tag">AI vs. primary docs</span><p>Tidy summary vs. messy record.</p></button>
+          <button class="card lens-card" data-move="devil"><span class="tag">Devil's-advocate bot</span><p>AI argues; students rebut with evidence.</p></button>
+          <button class="card lens-card" data-move="sac"><span class="tag">Structured controversy</span><p>Argue both sides, then deliberate.</p></button>
+        </div>
+        <article class="explorer-detail" id="movesDetail" aria-live="polite"></article>
+        <div class="tool-launch">
+          <p><strong>Interactive Friction Lab:</strong> practice judging productive, exclusionary, and context-dependent friction.</p>
+          <a class="link-btn" href="https://minerclass.github.io/friction-game/" target="_blank" rel="noopener">Launch the Friction Lab ↗</a>
+        </div>
+      </div>
+      <div class="footer"><span>Each move pairs a friction with a C.O.R.E./H.E.A.R.T. anchor.</span><span>Miner, 2025; Krutka, 2024</span></div>
+      <aside class="speaker-notes">These are the concrete classroom applications from my article and blog. They are deliberately AI-positive and friction-preserving at once: students use AI, then are required to interrogate it against the historical record. Name the example and the framework anchor for each. Offer the Friction Lab as a hands-on follow-up.</aside>
+    </section>
+
+    <section class="slide blue compact" data-title="Where AI Genuinely Amplifies">
+      <div class="topline"><span class="kicker">Not a ban talk</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>And where AI genuinely <em>amplifies</em></h2>
+        <div class="grid-2">
+          <article class="card"><span class="tag">Access &amp; scaffolding</span><p>Translation, reading-level support, and accessibility so the historical thinking is <em>reachable</em> &mdash; not removed.</p></article>
+          <article class="card"><span class="tag">A sparring partner</span><p>Generate the strongest counter-thesis &mdash; even to the Federalist Papers &mdash; then make students rebut it with evidence.</p></article>
+          <article class="card"><span class="tag">More evidence, faster</span><p>Surface additional sources and perspectives, leaving more time for the weighing that matters.</p></article>
+          <article class="card"><span class="tag">Feedback on drafts</span><p>Low-stakes questioning and revision between conferences with the teacher.</p></article>
+        </div>
+        <p class="quote" style="margin-top:26px;">Amplify the weighing. Never outsource it.</p>
+      </div>
+      <div class="footer"><span>The middle path uses AI &mdash; deliberately.</span><span>Reachable, not removed.</span></div>
+      <aside class="speaker-notes">Spend real time here so the session is not heard as prohibition &mdash; this echoes the "best practices for AI integration" in my blog. The test for "amplify" is whether the student still does the irreducible work: AI may carry a multilingual learner over a decoding barrier so they can argue from evidence, but it must not do the arguing. The sparring-partner use makes counterargument a feature, not a threat.</aside>
+    </section>
+
+    <section class="slide compact" data-title="Friction Is Unevenly Distributed">
+      <div class="topline"><span class="kicker">Movement V · Complicate · equity</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Friction is <em>unevenly</em> distributed</h2>
+        <div class="grid-3">
+          <article class="card"><span class="tag">The tools arrived everywhere</span><p>The support to use them well &mdash; training, policy, AI literacy &mdash; did not.</p></article>
+          <article class="card"><span class="tag">Technological redlining</span><p>"Struggling" labels route some students to thinner content; default narratives skew Eurocentric &mdash; deciding whose past is told and who gets the simplified version.</p></article>
+          <article class="card"><span class="tag">The fix is targeted</span><p>Remove barriers unrelated to historical thinking; keep the struggle that <em>is</em> the historical thinking.</p></article>
+        </div>
+        <p class="quote" style="margin-top:30px;">Don't preserve exclusion in the name of rigor.</p>
+      </div>
+      <div class="footer"><span>Equity is a design question, not an afterthought.</span><span>Buolamwini, 2023; Lee, Moore &amp; Hancock, 2023</span></div>
+      <aside class="speaker-notes">Tie this back to the friction test and to the bias paradox. "Technological redlining" (Buolamwini) names how personalization can quietly track students into less rigorous content. The most equitable design often uses AI to clear an access barrier and raises the demand for sourcing, argument, and defense.</aside>
+    </section>
+
+    <section class="slide dark compact" data-title="Balanced History in a Polarized World">
+      <div class="topline"><span class="kicker">The conditions we teach in</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Balanced history in a <em>polarized</em> world</h2>
+        <div class="interaction">
+          <h3>Pick a pressure on the history classroom. What's a framework-grounded response?</h3>
+          <div class="choices" data-reveal-group="polar">
+            <button class="choice" data-reveal="p-legis">Legislated content</button>
+            <button class="choice" data-reveal="p-parent">Parent distrust</button>
+            <button class="choice" data-reveal="p-outrage">Algorithmic outrage</button>
+          </div>
+          <div class="reveal" id="p-legis"><p><strong>Response:</strong> teach students <em>how</em> to think, not what to think. Multiple sourced perspectives and a transparent method make academic rigor the through-line.</p></div>
+          <div class="reveal" id="p-parent"><p><strong>Response:</strong> lead with H.E.A.R.T. &mdash; honesty and respect for each student's core identity; debate both sides from evidence, in a classroom built on dignity.</p></div>
+          <div class="reveal" id="p-outrage"><p><strong>Response:</strong> slow the fast media. C.O.R.E. respect and structured discourse over reaction; name how feeds curate the conflict in the first place.</p></div>
+        </div>
+        <p class="big-claim" style="margin-top:16px;">Our job: teach students <em>how</em> to think, not what to think.</p>
+      </div>
+      <div class="footer"><span>State laws · parent concern · curated outrage</span><span>Kahne &amp; Rogers, 2024; Krutka, 2024; Miner</span></div>
+      <aside class="speaker-notes">From my "Teaching Balanced History in a Polarized World" blog. AI lands in classrooms already strained by polarization: legislated content, parent distrust, and social media that curates outrage. C.O.R.E. and H.E.A.R.T. are not only AI frameworks &mdash; they are protocols for civil discourse and balanced, rigorous history. Keep the stance front and center: how to think, not what to think.</aside>
+    </section>
+
+    <section class="slide compact" data-title="Build a Friction-Preserving Move">
+      <div class="topline"><span class="kicker">Audience design activity &middot; 8 minutes</span><span class="slide-number"></span></div>
+      <div class="content">
+        <h2>Redesign one <em>task</em></h2>
+        <div class="builder-grid">
+          <div class="card" id="praxisBuilder">
+            <div class="builder-row" data-builder-key="preserve"><span class="micro">I will preserve</span><div class="pill-group"><button class="pill selected" data-value="sourcing judgment">sourcing judgment</button><button class="pill" data-value="corroboration across sources">corroboration</button><button class="pill" data-value="an evidence-based claim">an evidence-based claim</button><button class="pill" data-value="civil argument in the room">civil argument</button></div></div>
+            <div class="builder-row" data-builder-key="capacity"><span class="micro">So students can</span><div class="pill-group"><button class="pill selected" data-value="weigh conflicting evidence">weigh conflicting evidence</button><button class="pill" data-value="build a defensible interpretation">build a defensible interpretation</button><button class="pill" data-value="defend a thesis under questions">defend a thesis under questions</button><button class="pill" data-value="reckon with the past">reckon with the past</button></div></div>
+            <div class="builder-row" data-builder-key="amplify"><span class="micro">And I will use AI to</span><div class="pill-group"><button class="pill selected" data-value="surface more sources">surface more sources</button><button class="pill" data-value="translate and scaffold access">translate and scaffold access</button><button class="pill" data-value="generate a rival interpretation to rebut">generate a rival reading to rebut</button><button class="pill" data-value="run a bias audit against the archive">run a bias audit</button></div></div>
+          </div>
+          <div class="card praxis-output">
+            <span class="tag">Your redesigned task</span>
+            <p id="praxisOutput"></p>
+            <button class="choice" id="copyPraxis">Copy for chat</button>
+            <p class="copy-status" id="copyStatus" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>Name the struggle you protect and the barrier you remove.</span><span>Nothing leaves your browser.</span></div>
+      <aside class="speaker-notes">Two minutes to build, two to share. Push participants to articulate both halves: the historical-thinking struggle being protected and the role AI is given. If the AI role would do the protected thinking, it's the wrong pairing &mdash; that's the activity's whole point. Keep it from collapsing into a generic "use AI responsibly" statement.</aside>
+    </section>
+
+    <section class="slide dark compact" data-title="Closing">
+      <div class="topline"><span class="kicker">Closing</span><span class="slide-number"></span></div>
+      <div class="content">
+        <p class="big-claim">The past is not settled, and neither is the classroom.</p>
+        <h2 style="max-width:21ch;">Keep students in consequential conversation with the <em>evidence, each other, and the people who came before</em>.</h2>
+        <div class="grid-3" style="margin-top:30px;">
+          <article class="card"><span class="tag">Practice</span><p>Which one task will you redesign first &mdash; and what struggle will you protect?</p></article>
+          <article class="card"><span class="tag">Equity</span><p>How do you keep friction productive without making it a barrier?</p></article>
+          <article class="card"><span class="tag">The discipline</span><p>If AI can produce the answer, what is history class now <em>for</em>?</p></article>
+        </div>
+        <div class="link-cloud" style="margin-top:28px;">
+          <a class="link-btn" href="https://micahminer.com/" target="_blank" rel="noopener">micahminer.com &rarr;</a>
+          <button class="link-btn" data-open-resources>All resources</button>
+        </div>
+      </div>
+      <div class="footer"><span>Micah Miner &middot; Beach Park District 3</span><span>Thank you.</span></div>
+      <aside class="speaker-notes">Close on conversation, not difficulty. Friction matters because historical understanding is built, argued, and owned &mdash; not delivered. Let the audience pick one of the three questions to carry out the door, and point them to the resources drawer (press R) for the C.O.R.E./H.E.A.R.T. articles, the lesson sources, and the companion sites.</aside>
+    </section>
+
+  </main>
+
+  <nav class="controls" aria-label="Presentation controls">
+    <button class="control-btn" id="prevBtn" aria-label="Previous slide">&larr;</button>
+    <button class="control-btn" id="nextBtn" aria-label="Next slide">&rarr;</button>
+    <button class="control-btn optional" id="overviewBtn" aria-label="Open slide overview">O</button>
+    <button class="control-btn optional" id="notesBtn" aria-label="Toggle speaker notes">N</button>
+    <button class="control-btn" id="resourcesBtn" aria-label="Open resources">R</button>
+  </nav>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <aside class="resource-drawer" id="resourceDrawer" aria-label="Presentation resources" aria-hidden="true">
+    <button class="choice" id="closeResources">Close resources</button>
+    <h2>Sources &amp; companions</h2>
+    <p>The frameworks, the disciplinary sources, and the interactive companions behind this session.</p>
+    <a class="resource-link" href="https://micahminer.com/" target="_blank" rel="noopener"><strong>Miner &mdash; C.O.R.E. &amp; H.E.A.R.T. (work &amp; publications)</strong><span>"Beyond Frictionless Learning" (Theory &amp; Research in Social Education) and "Using your C.O.R.E. and H.E.A.R.T." (The Leader, 2024)</span></a>
+    <a class="resource-link" href="https://sheg.stanford.edu/history-lessons" target="_blank" rel="noopener"><strong>Stanford History Education Group &mdash; Reading Like a Historian</strong><span>Sourcing, contextualization, corroboration, and close reading as classroom-ready lessons</span></a>
+    <a class="resource-link" href="https://cor.stanford.edu/" target="_blank" rel="noopener"><strong>Civic Online Reasoning (Stanford)</strong><span>Lateral reading and source evaluation for a generative-media world</span></a>
+    <a class="resource-link" href="https://www.socialstudies.org/standards/c3" target="_blank" rel="noopener"><strong>NCSS C3 Framework</strong><span>Inquiry arc and disciplinary practices for social studies</span></a>
+    <a class="resource-link" href="https://web.cs.ucdavis.edu/~rogaway/classes/188/materials/postman.pdf" target="_blank" rel="noopener"><strong>Postman &mdash; Five Things to Know About Technological Change</strong><span>The technoskeptical questions adapted in this session</span></a>
+    <a class="resource-link" href="https://doi.org/10.1080/00933104.2022.2042444" target="_blank" rel="noopener"><strong>Krutka, Metzger &amp; Seitz (2022), TRSE</strong><span>"Technology inevitably involves trade-offs": framing technology in social studies standards</span></a>
+    <a class="resource-link" href="https://www.rand.org/pubs/research_reports/RRA4180-1.html" target="_blank" rel="noopener"><strong>RAND: AI Use in Schools Is Quickly Increasing</strong><span>Primary report behind the adoption-and-guidance landscape</span></a>
+    <a class="resource-link" href="https://www.teachai.org/toolkit" target="_blank" rel="noopener"><strong>TeachAI Guidance for Schools Toolkit</strong><span>Policy, professional learning, and AI-literacy guidance</span></a>
+    <a class="resource-link" href="https://minerclass.github.io/genAI-ML-pedagogy-of-friction-site/" target="_blank" rel="noopener"><strong>Pedagogical Friction Companion</strong><span>The framework, productive struggle, and practice routes</span></a>
+    <a class="resource-link" href="https://minerclass.github.io/friction-game/" target="_blank" rel="noopener"><strong>The Friction Lab</strong><span>Practice judging productive, exclusionary, and context-dependent friction</span></a>
+  </aside>
+
+  <aside class="notes-panel" id="notesPanel" aria-live="polite" aria-hidden="true">
+    <h3>Speaker notes</h3>
+    <p id="notesText"></p>
+  </aside>
+
+  <section class="overview" id="overview" aria-label="Slide overview" aria-hidden="true">
+    <button class="choice" id="closeOverview">Close overview</button>
+    <h2 style="font-size:3rem; margin-top:20px;">Slide overview</h2>
+    <div class="overview-grid" id="overviewGrid"></div>
+  </section>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const progressBar = document.getElementById("progressBar");
+    const resourceDrawer = document.getElementById("resourceDrawer");
+    const notesPanel = document.getElementById("notesPanel");
+    const notesText = document.getElementById("notesText");
+    const overview = document.getElementById("overview");
+    const overviewGrid = document.getElementById("overviewGrid");
+    let current = Math.max(0, Math.min(slides.length - 1, Number(location.hash.slice(1)) - 1 || 0));
+
+    function showSlide(index, updateHash = true) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("active", i === current);
+        slide.setAttribute("aria-hidden", i === current ? "false" : "true");
+        slide.querySelector(".slide-number").textContent = `${String(i + 1).padStart(2, "0")} / ${slides.length}`;
+      });
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      const note = slides[current].querySelector(".speaker-notes");
+      notesText.textContent = note ? note.textContent.trim() : "No notes for this slide.";
+      document.title = `${slides[current].dataset.title} | When AI Does the Thinking`;
+      if (updateHash) history.replaceState(null, "", `#${current + 1}`);
+    }
+
+    function closePanels() {
+      resourceDrawer.classList.remove("open");
+      resourceDrawer.setAttribute("aria-hidden", "true");
+      notesPanel.classList.remove("open");
+      notesPanel.setAttribute("aria-hidden", "true");
+      overview.classList.remove("open");
+      overview.setAttribute("aria-hidden", "true");
+    }
+
+    function togglePanel(panel) {
+      const willOpen = !panel.classList.contains("open");
+      closePanels();
+      if (willOpen) {
+        panel.classList.add("open");
+        panel.setAttribute("aria-hidden", "false");
+      }
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => showSlide(current - 1));
+    document.getElementById("nextBtn").addEventListener("click", () => showSlide(current + 1));
+    document.getElementById("resourcesBtn").addEventListener("click", () => togglePanel(resourceDrawer));
+    document.querySelectorAll("[data-open-resources]").forEach(btn => btn.addEventListener("click", () => togglePanel(resourceDrawer)));
+    document.getElementById("notesBtn").addEventListener("click", () => togglePanel(notesPanel));
+    document.getElementById("overviewBtn").addEventListener("click", () => togglePanel(overview));
+    document.getElementById("closeResources").addEventListener("click", closePanels);
+    document.getElementById("closeOverview").addEventListener("click", closePanels);
+
+    slides.forEach((slide, i) => {
+      const button = document.createElement("button");
+      button.innerHTML = `<span>${String(i + 1).padStart(2, "0")}</span><strong>${slide.dataset.title}</strong>`;
+      button.addEventListener("click", () => { closePanels(); showSlide(i); });
+      overviewGrid.appendChild(button);
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.target.matches("textarea, input")) return;
+      if (event.key === "Escape") return closePanels();
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) { event.preventDefault(); showSlide(current + 1); }
+      if (["ArrowLeft", "PageUp"].includes(event.key)) { event.preventDefault(); showSlide(current - 1); }
+      if (event.key === "Home") showSlide(0);
+      if (event.key === "End") showSlide(slides.length - 1);
+      if (event.key.toLowerCase() === "r") togglePanel(resourceDrawer);
+      if (event.key.toLowerCase() === "n") togglePanel(notesPanel);
+      if (event.key.toLowerCase() === "o") togglePanel(overview);
+      if (event.key.toLowerCase() === "f") document.documentElement.requestFullscreen?.();
+    });
+
+    document.querySelectorAll("[data-reveal-group]").forEach(group => {
+      group.querySelectorAll("[data-reveal]").forEach(button => {
+        button.addEventListener("click", () => {
+          group.querySelectorAll(".choice").forEach(choice => choice.classList.remove("selected"));
+          button.classList.add("selected");
+          const container = group.parentElement;
+          container.querySelectorAll(".reveal").forEach(reveal => reveal.classList.remove("show"));
+          document.getElementById(button.dataset.reveal).classList.add("show");
+        });
+      });
+    });
+
+    const histMoves = {
+      sourcing: { title: "Sourcing", body: "<p><strong>The labor:</strong> Treating a document as an argument from a position, not a transparent window onto the past &mdash; reading author, purpose, and audience before trusting the content.</p><p><strong>Where AI does the thinking:</strong> It emits a confident reliability verdict, or a fluent (sometimes fabricated) provenance, so the student never interrogates the source.</p><p><strong>Preserve:</strong> Make students stake a sourcing judgment cold, before any tool, and defend it.</p>" },
+      context: { title: "Contextualization", body: "<p><strong>The labor:</strong> Situating an event in its own time and resisting presentism &mdash; rebuilding a worldview unlike your own.</p><p><strong>Where AI does the thinking:</strong> It supplies instant period “background” as settled fact, so the reconstruction is skipped and presentism hides under fluent summary.</p><p><strong>Preserve:</strong> Ask what the author could and could not have known; require period detail to come from the documents.</p>" },
+      corroborate: { title: "Corroboration", body: "<p><strong>The labor:</strong> Comparing across sources, weighing contradiction, and deciding what to trust from incomplete, conflicting evidence.</p><p><strong>Where AI does the thinking:</strong> It pre-reconciles the conflict into one smooth synthesis &mdash; erasing the disagreement that <em>is</em> the thinking.</p><p><strong>Preserve:</strong> Hand students the contradictions unresolved; grade the weighing, not the smoothness.</p>" },
+      closeread: { title: "Close reading", body: "<p><strong>The labor:</strong> Slow attention to claims, evidence, tone, and silence; inferring what the text will not say outright.</p><p><strong>Where AI does the thinking:</strong> A summary stands in for the reading, and the “against the grain” inference never happens.</p><p><strong>Preserve:</strong> Anchor every claim to a quoted line; reward what the summary missed.</p>" },
+      interpret: { title: "Evidence-based interpretation", body: "<p><strong>The labor:</strong> Constructing a contestable thesis about cause, change, or significance and being answerable for it.</p><p><strong>Where AI does the thinking:</strong> It produces a fluent, sourced thesis in seconds &mdash; a correct answer with no one home.</p><p><strong>Preserve:</strong> Require the claim to be argued and revised in the room, under questions the tool can't anticipate.</p>" }
+    };
+
+    const theory = {
+      dewey: { title: "Dewey · learning is experience", body: "<p>Democracy depends on citizens who can reflect, dialogue, and solve problems together; knowledge is built by doing, not received.</p><p><strong>Frictionless AI threatens:</strong> it flattens inquiry into a quick answer, skipping the experience that forms civic judgment.</p>" },
+      vygotsky: { title: "Vygotsky · learning is social", body: "<p>Higher thinking develops through guided struggle with others &mdash; the zone of proximal development, where learners stretch but don't flounder.</p><p><strong>Frictionless AI threatens:</strong> it moves the work from a shared, dialogic space to a private, automated one.</p>" },
+      piaget: { title: "Piaget · learning needs disequilibrium", body: "<p>Understanding grows when new evidence won't fit old schemas, forcing assimilation or accommodation.</p><p><strong>Frictionless AI threatens:</strong> a tidy summary offers the illusion of clarity and removes the disequilibrium that drives conceptual change.</p>" },
+      freire: { title: "Freire · learning is not banking", body: "<p>Education is dialogue and agency, not depositing facts into passive students.</p><p><strong>Frictionless AI threatens:</strong> one-click answers revive the banking model &mdash; students consume interpretations instead of co-creating them.</p>" }
+    };
+
+    const frictions = {
+      noetic: { title: "Noetic friction &middot; the head", body: "<p>The interpretive work of sourcing, weighing evidence, and reasoning to a defensible claim.</p><p><strong>Bypass:</strong> the conclusion arrives before the reasoning does.</p>" },
+      rhetorical: { title: "Rhetorical friction &middot; the room", body: "<p>Making a claim to others, meeting counter-evidence, and being answerable in discussion.</p><p><strong>Bypass:</strong> fluent prose performs a conviction the student never argued.</p>" },
+      existential: { title: "Existential friction &middot; the past &amp; the self", body: "<p>Reckoning with people unlike us, moral complexity, and your own stance toward history.</p><p><strong>Bypass:</strong> the student is present at the transaction but absent from the encounter.</p>" },
+      institutional: { title: "Institutional friction &middot; the system", body: "<p>Pacing guides, assessments, devices, and policy decide whether teachers can protect struggle without going it alone.</p><p><strong>Bypass:</strong> vendor defaults and pacing pressure quietly become the curriculum.</p>" }
+    };
+
+    const media = {
+      orality: { title: "Orality · knowledge between people", body: "<p>Memory, presence, and communal retelling hold what is known. The knower can't stand fully outside the living word.</p>" },
+      print: { title: "Print · the word becomes inspectable", body: "<p>Writing lets us analyze, compare, and source a claim &mdash; the very conditions historical thinking depends on. McLuhan: the medium reshapes how we think, not just what we read.</p>" },
+      broadcast: { title: "Broadcast · participatory presence returns", body: "<p>Electronic media restore immediacy and shared feeling, but the channels are owned and controlled by others.</p>" },
+      feeds: { title: "Algorithmic feeds · circulation is curated", body: "<p>Platforms rank, recommend, and personalize the symbolic field. Carr's “shallows”: scanning displaces deliberate reading.</p>" },
+      generative: { title: "Generative AI · the reasoning is performed", body: "<p>The system produces the sourced thesis and balanced synthesis before any thinking happens. The medium now performs the historian's visible work.</p>" }
+    };
+
+    const paradox = {
+      misinfo: { title: "Misinformation, amplified", body: "<p>Generative systems produce authoritative-sounding falsehoods at scale; online, falsehoods already spread up to six times faster than truth.</p><p><strong>In history class:</strong> a confident chatbot answer on a contested event, absorbed without sourcing.</p><p class='citation'>Vosoughi, Roy &amp; Aral, 2018; DiResta, 2024</p>" },
+      bias: { title: "Algorithmic bias &amp; redlining", body: "<p>Models inherit their training data's biases; “struggling” labels can route students to thinner content, and default narratives skew Eurocentric.</p><p><strong>In history class:</strong> whose past gets told &mdash; and who gets the simplified version.</p><p class='citation'>Buolamwini, 2023; Lee, Moore &amp; Hancock, 2023</p>" },
+      agency: { title: "Eroded agency", body: "<p>One-click answers turn students into consumers of interpretation &mdash; Freire's banking model in a new interface.</p><p><strong>In history class:</strong> the thesis is adopted, not formed, and no one can defend it.</p><p class='citation'>Freire, 1970; Vygotsky, 1978</p>" },
+      shallows: { title: "The new shallows", body: "<p>Convenience crowds out the desirable difficulties that produce durable, transferable learning.</p><p><strong>In history class:</strong> fluent output, shallow retention, no transfer to the next document.</p><p class='citation'>Carr, 2010/2025; Bjork &amp; Bjork, 2011</p>" }
+    };
+
+    const core = {
+      critical: { title: "C · Critical Thinking", body: "<p>Interrogate content and context; triangulate sources rather than accept AI output at face value.</p><p><strong>History move:</strong> compare an AI summary of an event to three primary sources and name what it omits.</p>" },
+      openness: { title: "O · Openness", body: "<p>Treat AI's answer as a starting point; layer in multiple historical and cultural perspectives.</p><p><strong>History move:</strong> use AI to surface competing narratives, then weigh them against evidence.</p>" },
+      respect: { title: "R · Respect", body: "<p>Protect the communal, dignified work of dialogue &mdash; including the voices algorithms marginalize.</p><p><strong>History move:</strong> structured, civil debate where every position must be evidenced.</p>" },
+      engagement: { title: "E · Engagement", body: "<p>Hands-on, problem-based inquiry over passive consumption.</p><p><strong>History move:</strong> students design and run an audit of AI-generated history against the archive.</p>" }
+    };
+
+    const heart = {
+      honesty: { title: "H · Honesty", body: "<p>Confront AI outputs transparently; acknowledge uncertainty and verify against the record.</p><p><strong>History move:</strong> check an AI account against archival documents and flag the gaps.</p>" },
+      empathy: { title: "E · Empathy", body: "<p>Keep genuine human interaction central; build historical perspective-taking.</p><p><strong>History move:</strong> reflect together on people whose worldview differs from ours.</p>" },
+      accountability: { title: "A · Accountability", body: "<p>Weigh who is harmed or excluded by a tool's choices.</p><p><strong>History move:</strong> an algorithm audit of how an event is narrated for different users.</p>" },
+      responsibility: { title: "R · Responsibility", body: "<p>Use technology and sources ethically; validate claims before sharing them.</p><p><strong>History move:</strong> students own &mdash; and can defend &mdash; every claim they make with AI's help.</p>" },
+      thoughtfulness: { title: "T · Thoughtfulness", body: "<p>Metacognition: how did we reach this, and what role did AI play in our reasoning?</p><p><strong>History move:</strong> a short process reflection attached to the final interpretation.</p>" }
+    };
+
+    const postman = {
+      tradeoff: { title: "Every technology is a trade-off", body: "<p>Ask which historical-thinking capacities AI extends &mdash; and which it may displace.</p>" },
+      distribution: { title: "Benefits and burdens are uneven", body: "<p>Who gains time, authority, or profit &mdash; and who absorbs the bias, exclusion, and loss?</p>" },
+      idea: { title: "Every tool carries an embedded idea", body: "<p>What does it assume history learning is: efficient completion, or formation and judgment?</p>" },
+      ecology: { title: "Change is ecological, not additive", body: "<p>How does AI reorganize assessment, discussion, sourcing, and teacher judgment all at once?</p>" },
+      myth: { title: "Technologies become mythic", body: "<p>When does AI start to feel natural and neutral &mdash; and which curricular choices quietly disappear?</p>" }
+    };
+
+    const decisions = {
+      purpose: { title: "What is the historical-thinking goal?", body: "<p>Name the specific move the task exists to build &mdash; sourcing, corroboration, argument. If AI performs that move, the purpose is gone, not assisted.</p>" },
+      struggle: { title: "Where is the productive struggle?", body: "<p>Locate the difficulty that does the teaching. Ask whether removing it removes the learning &mdash; or only removes a barrier unrelated to the goal.</p>" },
+      ownership: { title: "Can the student explain, defend, and revise it?", body: "<p>If they can't reconstruct the result without the tool, the tool did the thinking. Ownership is the test of learning.</p>" },
+      role: { title: "Does AI amplify thinking or replace it?", body: "<p>Amplifying means more sources, faster access, a sparring partner. Replacing means the interpretation itself. Same tool, opposite effect.</p>" },
+      whom: { title: "For whom is this difficulty productive?", body: "<p>Productive for one learner can be exclusionary for another. Protect the struggle that builds historical thinking; remove the barrier that just blocks the door.</p>" }
+    };
+
+    const practices = {
+      before: { title: "Before AI · source it cold", body: "<p>Students annotate the documents and stake an initial claim before any AI use.</p><p><strong>Protects:</strong> the first encounter with the evidence.</p>" },
+      with: { title: "With AI · interrogate, don't accept", body: "<p>Use AI as a source to cross-examine &mdash; compare its reading of a document to your own and find where it's wrong, presentist, or invented.</p><p><strong>Protects:</strong> judgment.</p>" },
+      after: { title: "After AI · defend &amp; revise", body: "<p>Oral defense or seminar, then revise the thesis against a new document the tool never saw.</p><p><strong>Protects:</strong> ownership and transfer.</p>" },
+      room: { title: "In the room · restore answerability", body: "<p>Socratic seminar and evidence challenges &mdash; “show me the line.”</p><p><strong>Protects:</strong> the social risk of making a claim.</p>" }
+    };
+
+    const moves = {
+      audit: { title: "Algorithmic bias audit", body: "<p>Groups query AI about an event involving marginalized communities, then cross-check against primary sources for omissions and slant.</p><p><strong>Example:</strong> the Tulsa Race Massacre; women's suffrage. <strong>Anchors:</strong> C.O.R.E. (Critical, Openness) + H.E.A.R.T. (Honesty, Accountability).</p>" },
+      vsprimary: { title: "AI vs. primary documents", body: "<p>Students read an AI summary of a landmark event, then immerse in the archive and name the gap between the tidy narrative and the messy record.</p><p><strong>Example:</strong> the Montgomery Bus Boycott. <strong>Enacts:</strong> Piaget's disequilibrium.</p>" },
+      devil: { title: "Devil's-advocate chatbot", body: "<p>AI takes a contested position; students build an evidence-grounded rebuttal &mdash; turning counterargument into a feature.</p><p><strong>Example:</strong> a structured rebuttal to a strong reading of the Federalist Papers.</p>" },
+      sac: { title: "Structured Academic Controversy", body: "<p>Students argue both sides of an issue from sources, then drop the debate frame to reach a considered, civil position.</p><p><strong>Example:</strong> “Close Up” deliberation &mdash; teach how to think, not what to think.</p>" }
+    };
+
+    function wireExplorer(containerId, detailId, data, attribute) {
+      const container = document.getElementById(containerId);
+      const detail = document.getElementById(detailId);
+      const render = key => {
+        const item = data[key];
+        detail.innerHTML = `<h3>${item.title}</h3>${item.body}`;
+      };
+      container.querySelectorAll(`[data-${attribute}]`).forEach(button => {
+        button.addEventListener("click", () => {
+          container.querySelectorAll("button").forEach(btn => btn.classList.remove("selected"));
+          button.classList.add("selected");
+          render(button.dataset[attribute]);
+        });
+      });
+      render(container.querySelector(`[data-${attribute}]`).dataset[attribute]);
+    }
+    wireExplorer("histGrid", "histDetail", histMoves, "hist");
+    wireExplorer("theoryGrid", "theoryDetail", theory, "theory");
+    wireExplorer("mediaTimeline", "mediaDetail", media, "media");
+    wireExplorer("frictionButtons", "frictionDetail", frictions, "friction");
+    wireExplorer("paradoxGrid", "paradoxDetail", paradox, "paradox");
+    wireExplorer("coreGrid", "coreDetail", core, "core");
+    wireExplorer("heartGrid", "heartDetail", heart, "heart");
+    wireExplorer("postmanGrid", "postmanDetail", postman, "postman");
+    wireExplorer("decisionQuestions", "decisionDetail", decisions, "decision");
+    wireExplorer("practiceGrid", "practiceDetail", practices, "practice");
+    wireExplorer("movesGrid", "movesDetail", moves, "move");
+
+    document.getElementById("pathTabs").querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", () => {
+        document.getElementById("pathTabs").querySelectorAll("button").forEach(btn => btn.classList.remove("selected"));
+        button.classList.add("selected");
+        document.querySelectorAll(".path-content").forEach(content => content.classList.remove("show"));
+        document.getElementById(button.dataset.path).classList.add("show");
+      });
+    });
+
+    document.querySelectorAll(".pulse").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".pulse").forEach(p => p.classList.remove("selected"));
+        button.classList.add("selected");
+      });
+    });
+
+    const praxisSelections = {};
+    const praxisOutput = document.getElementById("praxisOutput");
+    function renderPraxis() {
+      document.querySelectorAll("[data-builder-key]").forEach(row => {
+        const selected = row.querySelector(".pill.selected");
+        praxisSelections[row.dataset.builderKey] = selected.dataset.value;
+      });
+      praxisOutput.textContent = `In my classroom, I will preserve ${praxisSelections.preserve} so students can ${praxisSelections.capacity}, and use AI to ${praxisSelections.amplify} — not to do the thinking for them.`;
+    }
+    document.getElementById("praxisBuilder").querySelectorAll(".pill").forEach(button => {
+      button.addEventListener("click", () => {
+        const row = button.closest("[data-builder-key]");
+        row.querySelectorAll(".pill").forEach(pill => pill.classList.remove("selected"));
+        button.classList.add("selected");
+        renderPraxis();
+      });
+    });
+    document.getElementById("copyPraxis").addEventListener("click", async () => {
+      const status = document.getElementById("copyStatus");
+      try {
+        await navigator.clipboard.writeText(praxisOutput.textContent);
+        status.textContent = "Copied. Ready to paste into chat.";
+      } catch {
+        status.textContent = "Select the statement and copy it manually.";
+      }
+    });
+    renderPraxis();
+
+    window.addEventListener("hashchange", () => showSlide(Number(location.hash.slice(1)) - 1, false));
+    showSlide(current, false);
+  </script>
+</body>
+</html>
