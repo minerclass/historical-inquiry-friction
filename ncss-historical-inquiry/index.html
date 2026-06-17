@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>When AI Does the Thinking | Historical Inquiry Through Pedagogical Friction</title>
+  <style>
+    :root {
+      --bg: #111820;
+      --bg2: #18222d;
+      --panel: #202b36;
+      --panel2: #f6f1e7;
+      --ink: #f8f2e8;
+      --paper-ink: #17212b;
+      --muted: #aeb8bd;
+      --line: rgba(248, 242, 232, 0.18);
+      --line2: rgba(23, 33, 43, 0.18);
+      --teal: #68c6c3;
+      --gold: #d9a441;
+      --rose: #d86b63;
+      --green: #7fa37a;
+      --blue: #6b8fc6;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(104, 198, 195, 0.08), transparent 32%),
+        radial-gradient(circle at 95% 4%, rgba(217, 164, 65, 0.12), transparent 20%),
+        var(--bg);
+    }
+
+    .progress {
+      position: fixed;
+      z-index: 30;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 4%;
+      background: linear-gradient(90deg, var(--teal), var(--gold), var(--rose));
+      transition: width 0.25s ease;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: clamp(34px, 5vw, 70px);
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 24px;
+    }
+
+    .slide.light {
+      background: var(--panel2);
+      color: var(--paper-ink);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border: 1px solid var(--line);
+      pointer-events: none;
+    }
+
+    .slide.light::before { border-color: var(--line2); }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      align-content: center;
+      gap: 24px;
+      min-height: 0;
+    }
+
+    .kicker {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--teal);
+      font-size: clamp(0.72rem, 1vw, 0.9rem);
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .light .kicker { color: #174a7c; }
+
+    .kicker::before {
+      content: "";
+      width: 32px;
+      height: 3px;
+      background: var(--gold);
+      display: inline-block;
+    }
+
+    h1, h2 {
+      margin: 0;
+      line-height: 0.98;
+      letter-spacing: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      color: inherit;
+    }
+
+    h1 { font-size: clamp(3rem, 7.4vw, 6.9rem); max-width: 1160px; }
+    h2 { font-size: clamp(2.2rem, 5.5vw, 5.2rem); max-width: 1160px; }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1.08rem, 1.6vw, 1.55rem);
+      line-height: 1.34;
+      max-width: 1060px;
+    }
+
+    .light p { color: #526170; }
+
+    .lead {
+      color: inherit;
+      font-size: clamp(1.36rem, 2.2vw, 2.12rem);
+      line-height: 1.25;
+    }
+
+    .claim {
+      font-family: Georgia, "Times New Roman", serif;
+      color: inherit;
+      font-size: clamp(1.85rem, 3.8vw, 3.85rem);
+      line-height: 1.05;
+    }
+
+    .big {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3rem, 8vw, 7.4rem);
+      line-height: 0.95;
+      color: var(--gold);
+    }
+
+    .grid2, .grid3, .grid4 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card, .choice, .lab-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+      padding: clamp(18px, 2.5vw, 28px);
+      box-shadow: var(--shadow);
+    }
+
+    .light .card, .light .choice, .light .lab-card {
+      border-color: var(--line2);
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 18px 60px rgba(23, 33, 43, 0.12);
+    }
+
+    .card h3, .choice h3, .lab-card h3 {
+      margin: 0 0 12px;
+      font-size: clamp(1.24rem, 1.8vw, 1.72rem);
+      line-height: 1.12;
+      color: inherit;
+    }
+
+    .card p, .choice p, .lab-card p, li {
+      font-size: clamp(0.98rem, 1.28vw, 1.24rem);
+      line-height: 1.35;
+    }
+
+    .choice p, .interactive-card p, .prompt-card p { color: #cbd6d8; }
+    .light .choice p, .light .interactive-card p, .light .prompt-card p { color: #526170; }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.07);
+      color: inherit;
+      font-weight: 800;
+      font-size: clamp(0.86rem, 1.1vw, 1.05rem);
+    }
+
+    .light .badge {
+      border-color: var(--line2);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .takeaway {
+      border-left: 6px solid var(--gold);
+      padding: 18px 22px;
+      background: rgba(217, 164, 65, 0.09);
+      color: inherit;
+      font-weight: 800;
+      font-size: clamp(1.12rem, 1.7vw, 1.58rem);
+      line-height: 1.25;
+    }
+
+    .choice {
+      appearance: none;
+      cursor: pointer;
+      color: var(--ink);
+      font: inherit;
+      text-align: center;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      min-height: 170px;
+    }
+
+    .light .choice { color: var(--paper-ink); }
+
+    .choice:hover, .choice.active {
+      transform: translateY(-4px);
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.18);
+      box-shadow: 0 24px 80px rgba(217, 164, 65, 0.14);
+    }
+
+    .choice:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    .result-box {
+      min-height: 82px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      color: inherit;
+      background: rgba(104, 198, 195, 0.08);
+      font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+      line-height: 1.27;
+    }
+
+    .light .result-box { border-color: var(--line2); }
+
+    .interactive-card, .prompt-card {
+      appearance: none;
+      cursor: pointer;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .interactive-card:hover, .interactive-card.active,
+    .prompt-card:hover, .prompt-card.active {
+      transform: translateY(-3px);
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.13);
+    }
+
+    .interactive-card:focus-visible, .prompt-card:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    .audit-choices {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .audit-choices .choice {
+      min-height: 112px;
+      padding: 16px;
+    }
+
+    .audit-choices .choice h3 {
+      font-size: clamp(1.05rem, 1.35vw, 1.28rem);
+    }
+
+    .path {
+      display: grid;
+      grid-template-columns: 1fr 78px 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .path-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--rose);
+      font-size: clamp(2.4rem, 4vw, 4rem);
+      font-weight: 900;
+    }
+
+    .mini-steps {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-step {
+      border-left: 4px solid var(--teal);
+      padding: 10px 12px;
+      background: rgba(104, 198, 195, 0.06);
+      font-size: clamp(0.95rem, 1.2vw, 1.13rem);
+      color: inherit;
+    }
+
+    .mini-step.skip {
+      border-color: var(--rose);
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .light .mini-step.skip { color: #6d7781; }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: minmax(150px, 210px) 1fr;
+      gap: 18px;
+      align-items: start;
+      border-top: 1px solid var(--line);
+      padding: 14px 0;
+    }
+
+    .light .timeline-item { border-color: var(--line2); }
+
+    .timeline-item strong {
+      color: var(--gold);
+      font-size: clamp(0.95rem, 1.3vw, 1.2rem);
+    }
+
+    .timeline-item span {
+      color: inherit;
+      font-size: clamp(1rem, 1.38vw, 1.28rem);
+      line-height: 1.3;
+    }
+
+    .rail {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .rail button, .tab-button {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: inherit;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 14px;
+      min-height: 86px;
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+    }
+
+    .rail button.active, .tab-button.active {
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.12);
+    }
+
+    .rail button:focus-visible, .tab-button:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .rail .n {
+      display: block;
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .tab-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .tab-pane {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+      padding: clamp(20px, 3vw, 34px);
+      min-height: 310px;
+    }
+
+    .light .tab-pane, .light .tab-button {
+      border-color: var(--line2);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .tab-pane h3 {
+      margin: 0 0 14px;
+      font-size: clamp(1.6rem, 2.5vw, 2.45rem);
+      color: var(--gold);
+    }
+
+    .source-audit {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .artifact {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .light .artifact {
+      border-color: var(--line2);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .artifact .label {
+      color: var(--gold);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .checklist li {
+      padding: 12px 14px;
+      border-left: 4px solid var(--teal);
+      background: rgba(104, 198, 195, 0.07);
+      color: inherit;
+    }
+
+    .footer {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .light .footer { color: #526170; }
+
+    .controls {
+      position: fixed;
+      z-index: 40;
+      right: 20px;
+      bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17, 24, 32, 0.82);
+      box-shadow: var(--shadow);
+    }
+
+    .controls button {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .controls button:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .counter {
+      min-width: 76px;
+      text-align: center;
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .speaker-notes { display: none; }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .deck { min-height: 100svh; height: 100svh; }
+      .slide { padding: 30px; }
+      .slide::before { inset: 12px; }
+      .grid2, .grid3, .grid4, .path, .source-audit, .tabs, .rail { grid-template-columns: 1fr; }
+      .path-arrow { display: none; }
+      .timeline-item { grid-template-columns: 1fr; gap: 6px; }
+      .controls { right: 12px; bottom: 12px; }
+    }
+
+    @media print {
+      @page { size: landscape; margin: 0; }
+      html, body {
+        background: var(--bg) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        overflow: visible !important;
+        height: auto !important;
+      }
+      .deck { height: auto !important; }
+      .slide {
+        position: relative !important;
+        display: grid !important;
+        page-break-after: always;
+        break-after: page;
+        width: 100vw !important;
+        height: 100vh !important;
+      }
+      .controls, .speaker-notes, .progress { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <main class="deck" aria-live="polite">
+    <section class="slide active" data-title="Title">
+      <div class="kicker">High School / Secondary Level | Pedagogy for the Present</div>
+      <div class="content">
+        <h1>When AI Does the Thinking</h1>
+        <p class="lead">Preserving historical inquiry through pedagogical friction.</p>
+        <div class="badge-row">
+          <span class="badge">Micah Miner</span>
+          <span class="badge">Beach Park District 3</span>
+          <span class="badge">Social studies inquiry</span>
+        </div>
+      </div>
+      <div class="footer"><span>Interactive session deck candidate</span><span>1</span></div>
+      <aside class="speaker-notes">Open by naming the central design problem: AI can help social studies teachers, but it can also remove the struggle that makes historical thinking educative.</aside>
+    </section>
+
+    <section class="slide light" data-title="Ten Seconds">
+      <div class="kicker">The present problem</div>
+      <div class="content">
+        <div class="big">10 seconds</div>
+        <h2>That is enough time to generate a polished answer.</h2>
+        <div class="grid3">
+          <div class="card"><h3>American Revolution essay</h3><p>Causes, evidence, conclusion, and citations appear fully formed.</p></div>
+          <div class="card"><h3>Federalist counterargument</h3><p>A plausible critique arrives before the student has wrestled with the text.</p></div>
+          <div class="card"><h3>Civic action plan</h3><p>The artifact can look like engagement while the civic reasoning remains invisible.</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Speed changes the task.</span><span>2</span></div>
+      <aside class="speaker-notes">This opening comes directly from the session proposal and the social studies article's frictionless-learning paradox.</aside>
+    </section>
+
+    <section class="slide" data-title="Audience Poll">
+      <div class="kicker">Audience pulse check</div>
+      <div class="content">
+        <h2>When AI writes the answer, what is most at risk?</h2>
+        <div class="grid4" data-choice-group="risk">
+          <button class="choice active" type="button" data-result="Process is the first risk: the visible product may survive while sourcing, contextualization, corroboration, and revision disappear."><h3>Process</h3><p>The work behind the work becomes harder to see.</p></button>
+          <button class="choice" type="button" data-result="Evidence is at risk when sources become decoration rather than the ground of the argument."><h3>Evidence</h3><p>Fluent claims can outrun verification.</p></button>
+          <button class="choice" type="button" data-result="Judgment is at risk when students receive certainty before practicing uncertainty."><h3>Judgment</h3><p>The answer arrives before the dilemma.</p></button>
+          <button class="choice" type="button" data-result="Community is at risk when dialogue is replaced by private automated completion."><h3>Community</h3><p>The seminar can become a solo transaction.</p></button>
+        </div>
+        <div class="result-box" id="riskResult">Process is the first risk: the visible product may survive while sourcing, contextualization, corroboration, and revision disappear.</div>
+      </div>
+      <div class="footer"><span>Click a card during the session.</span><span>3</span></div>
+      <aside class="speaker-notes">Use this as a quick chat or show-of-hands moment. The interaction previews the four dimensions that will recur throughout the deck.</aside>
+    </section>
+
+    <section class="slide light" data-title="Session Map">
+      <div class="kicker">Session arc</div>
+      <div class="content">
+        <h2>A practical middle path</h2>
+        <div class="rail">
+          <button type="button" class="active" data-result="First, we name the classroom problem: the artifact can remain while the learning process disappears."><span class="n">01</span>Problem</button>
+          <button type="button" data-result="Second, we ask what historical thinking actually requires from students."><span class="n">02</span>Inquiry</button>
+          <button type="button" data-result="Third, we use constructivist and media-ecology lenses to explain why friction matters."><span class="n">03</span>Theory</button>
+          <button type="button" data-result="Fourth, we design AI roles that preserve sourcing, dialogue, evidence, and judgment."><span class="n">04</span>Design</button>
+          <button type="button" data-result="Finally, we leave with a redesign protocol educators can apply to one real task."><span class="n">05</span>Practice</button>
+        </div>
+        <div class="result-box" id="railResult">First, we name the classroom problem: the artifact can remain while the learning process disappears.</div>
+      </div>
+      <div class="footer"><span>Pedagogy for the Present</span><span>4</span></div>
+      <aside class="speaker-notes">This makes the session feel like a workshop, not just a lecture.</aside>
+    </section>
+
+    <section class="slide" data-title="Same Artifact">
+      <div class="kicker">Same artifact, different learning</div>
+      <div class="content">
+        <h2>Two students submit the same polished historical argument.</h2>
+        <div class="path" data-choice-group="path">
+          <button class="card interactive-card active" type="button" data-result="AI as entry preserves the inquiry sequence: students encounter sources, form an initial interpretation, then use AI as a challenge or mirror.">
+            <h3>AI as entry</h3>
+            <div class="mini-steps">
+              <div class="mini-step">Reads sources first</div>
+              <div class="mini-step">Drafts a provisional claim</div>
+              <div class="mini-step">Uses AI for rival interpretation</div>
+              <div class="mini-step">Defends changes with evidence</div>
+            </div>
+          </button>
+          <div class="path-arrow">!=</div>
+          <button class="card interactive-card" type="button" data-result="AI as exit bypasses inquiry: the artifact appears complete before students practice sourcing, interpretation, or accountable revision.">
+            <h3>AI as exit</h3>
+            <div class="mini-steps">
+              <div class="mini-step">Enters the prompt</div>
+              <div class="mini-step skip">Reads sources first</div>
+              <div class="mini-step skip">Drafts a provisional claim</div>
+              <div class="mini-step">Receives the artifact</div>
+            </div>
+          </button>
+        </div>
+        <div class="result-box" id="pathResult">AI as entry preserves the inquiry sequence: students encounter sources, form an initial interpretation, then use AI as a challenge or mirror.</div>
+      </div>
+      <div class="footer"><span>Assessment must recover the process.</span><span>5</span></div>
+      <aside class="speaker-notes">This draws from both candidate decks. It is the strongest recurring image: same output, different formation.</aside>
+    </section>
+
+    <section class="slide light" data-title="Historical Inquiry">
+      <div class="kicker">What historical thinking requires</div>
+      <div class="content">
+        <h2>Historical inquiry is not answer retrieval.</h2>
+        <div class="grid4">
+          <div class="card"><h3>Source</h3><p>Who made this, when, why, and for whom?</p></div>
+          <div class="card"><h3>Contextualize</h3><p>What conditions shaped what could be said?</p></div>
+          <div class="card"><h3>Corroborate</h3><p>Where do accounts converge, conflict, or remain silent?</p></div>
+          <div class="card"><h3>Argue</h3><p>What claim can the evidence support, and what remains uncertain?</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>The inquiry moves are the curriculum.</span><span>6</span></div>
+      <aside class="speaker-notes">Anchor the session in disciplinary thinking. The question is not whether AI can produce a historical answer, but whether students are still practicing historical thinking.</aside>
+    </section>
+
+    <section class="slide" data-title="Learning Theory">
+      <div class="kicker">Why struggle matters</div>
+      <div class="content">
+        <h2>Constructivism becomes urgent again.</h2>
+        <div class="grid4">
+          <div class="card"><h3>Dewey</h3><p>Learning grows from meaningful experience and reflective inquiry.</p></div>
+          <div class="card"><h3>Vygotsky</h3><p>Students stretch through social mediation, not isolated answer delivery.</p></div>
+          <div class="card"><h3>Piaget</h3><p>Disequilibrium helps students revise what they think they know.</p></div>
+          <div class="card"><h3>Freire</h3><p>Education should form agency, not passive reception.</p></div>
+        </div>
+        <div class="takeaway">Friction is not the enemy of learning. Some friction is the medium through which learning happens.</div>
+      </div>
+      <div class="footer"><span>Research base from the social studies AI manuscript.</span><span>7</span></div>
+      <aside class="speaker-notes">The Drive article foregrounds Dewey, Vygotsky, Piaget, Freire, McLuhan, Carr, Turkle, Krutka, Heath, and NCSS as the scholarly lineage.</aside>
+    </section>
+
+    <section class="slide light" data-title="Media Ecology">
+      <div class="kicker">Media ecology</div>
+      <div class="content">
+        <h2>The medium changes what students think learning is.</h2>
+        <div class="timeline">
+          <div class="timeline-item"><strong>Search</strong><span>Students choose among sources and practice selection.</span></div>
+          <div class="timeline-item"><strong>Feeds</strong><span>Platforms curate what becomes visible and plausible.</span></div>
+          <div class="timeline-item"><strong>Generative AI</strong><span>Systems generate and curate symbolic content at the same time.</span></div>
+        </div>
+        <div class="takeaway">When the source becomes synthetic, verification becomes a civic practice.</div>
+      </div>
+      <div class="footer"><span>From content question to media question.</span><span>8</span></div>
+      <aside class="speaker-notes">Keep the Ong/McLuhan framing light here. The point for teachers is that AI is not only a resource students consult; it reorganizes the conditions of inquiry.</aside>
+    </section>
+
+    <section class="slide" data-title="Frictionless Paradox">
+      <div class="kicker">The paradox</div>
+      <div class="content">
+        <h2>Frictionless learning can become frictionless non-learning.</h2>
+        <div class="grid2">
+          <div class="card"><h3>The promise</h3><p>Personalized help, fast feedback, reading support, new ideas, and access for students who need scaffolds.</p></div>
+          <div class="card"><h3>The risk</h3><p>Polished completion without source work, revision, dialogue, uncertainty, or ownership.</p></div>
+        </div>
+        <div class="takeaway">The design challenge is not AI or no AI. It is where AI enters the learning sequence.</div>
+      </div>
+      <div class="footer"><span>Sequence matters.</span><span>9</span></div>
+      <aside class="speaker-notes">Connect to the blog series idea: policy should protect the learning sequence, not only decide whether a tool is allowed.</aside>
+    </section>
+
+    <section class="slide light" data-title="Three Risks">
+      <div class="kicker">Social studies stakes</div>
+      <div class="content">
+        <h2>Three risks sit at the center of this session.</h2>
+        <div class="grid3">
+          <div class="card"><h3>Misinformation</h3><p>Fluent explanations can hide weak sourcing, fabricated detail, or distorted emphasis.</p></div>
+          <div class="card"><h3>Bias</h3><p>Models can flatten cultural complexity or reproduce dominant narratives.</p></div>
+          <div class="card"><h3>Agency</h3><p>Students may outsource uncertainty before learning how to judge it.</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Fast answers need slower judgment.</span><span>10</span></div>
+      <aside class="speaker-notes">These are the core risks named in the social studies AI article: misinformation, algorithmic bias, and eroded agency.</aside>
+    </section>
+
+    <section class="slide" data-title="Balanced History">
+      <div class="kicker">Balanced history in a polarized world</div>
+      <div class="content">
+        <h2>Social studies teachers are navigating more than a tool problem.</h2>
+        <div class="grid3">
+          <div class="card"><h3>Polarization</h3><p>Families, boards, and states contest what histories should be taught.</p></div>
+          <div class="card"><h3>Platform logic</h3><p>Digital environments reward speed, outrage, and certainty.</p></div>
+          <div class="card"><h3>AI acceleration</h3><p>Generative tools can scale plausible narratives without shared accountability.</p></div>
+        </div>
+        <div class="takeaway">The goal is to teach students how to think, not what to think.</div>
+      </div>
+      <div class="footer"><span>From your balanced-history writing.</span><span>11</span></div>
+      <aside class="speaker-notes">This slide brings in your SS School Service balanced-history draft and its point about civil discourse, diverse perspectives, and teaching students how to think.</aside>
+    </section>
+
+    <section class="slide light" data-title="CORE">
+      <div class="kicker">C.O.R.E.</div>
+      <div class="content">
+        <h2>A classroom disposition framework for inquiry</h2>
+        <div class="grid4">
+          <div class="card"><h3>Critical Thinking</h3><p>Analyze multiple angles and challenge assumptions.</p></div>
+          <div class="card"><h3>Openness</h3><p>Seek diverse perspectives and primary sources.</p></div>
+          <div class="card"><h3>Respect</h3><p>Engage opposing viewpoints without flattening human dignity.</p></div>
+          <div class="card"><h3>Engagement</h3><p>Enter controversy through inquiry, not performance.</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Values become design moves.</span><span>12</span></div>
+      <aside class="speaker-notes">Use this as a quick orientation, then move into design. C.O.R.E. is not decoration; it becomes a protocol for AI-mediated source work.</aside>
+    </section>
+
+    <section class="slide" data-title="HEART">
+      <div class="kicker">H.E.A.R.T.</div>
+      <div class="content">
+        <h2>A human-centered frame for AI use</h2>
+        <div class="grid5 grid4">
+          <div class="card"><h3>Honesty</h3><p>Verify claims and disclose tool use.</p></div>
+          <div class="card"><h3>Empathy</h3><p>Ask whose experience the output misses.</p></div>
+          <div class="card"><h3>Accountability</h3><p>Stand behind the interpretation.</p></div>
+          <div class="card"><h3>Responsibility</h3><p>Use sources and technology ethically.</p></div>
+        </div>
+        <div class="takeaway">Thoughtfulness: pause long enough to ask what this tool is doing to the learning.</div>
+      </div>
+      <div class="footer"><span>Human-centered AI in social studies.</span><span>13</span></div>
+      <aside class="speaker-notes">The H.E.A.R.T. PDF and balanced-history draft both emphasize honesty, empathy, accountability, responsibility, and thoughtfulness as a humane AI posture.</aside>
+    </section>
+
+    <section class="slide light" data-title="Productive Or Exclusionary">
+      <div class="kicker">A necessary distinction</div>
+      <div class="content">
+        <h2>Not all friction deserves protection.</h2>
+        <div class="grid2">
+          <div class="card"><h3>Productive friction</h3><p>Confusion that leads to schema change, source conflict, revision, accountable dialogue, and transfer.</p></div>
+          <div class="card"><h3>Exclusionary friction</h3><p>Barriers that block access without building historical understanding, such as inaccessible formats or needless language load.</p></div>
+        </div>
+        <div class="takeaway">AI may reduce barriers. It should not erase the thinking the task was designed to develop.</div>
+      </div>
+      <div class="footer"><span>Access and rigor belong together.</span><span>14</span></div>
+      <aside class="speaker-notes">This distinction is essential for equity. It prevents the framework from sounding like nostalgia for harder schooling.</aside>
+    </section>
+
+    <section class="slide" data-title="Friction Dimensions">
+      <div class="kicker">Click through the framework</div>
+      <div class="content">
+        <h2>Which friction should stay in the lesson?</h2>
+        <div class="tabs" data-tabs="friction">
+          <div class="tab-list">
+            <button type="button" class="tab-button active" data-tab="noetic">Noetic</button>
+            <button type="button" class="tab-button" data-tab="rhetorical">Rhetorical</button>
+            <button type="button" class="tab-button" data-tab="existential">Existential</button>
+            <button type="button" class="tab-button" data-tab="infrastructure">Infrastructure</button>
+          </div>
+          <div class="tab-pane" id="frictionPane">
+            <h3>Noetic friction</h3>
+            <p>Students must wrestle internally with evidence, concepts, and uncertainty before receiving synthesis.</p>
+            <div class="takeaway">Protected move: source annotation before AI summary comparison.</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>Interactive explanation</span><span>15</span></div>
+      <aside class="speaker-notes">This adapts your four-dimension friction framework into a teacher-facing diagnostic tool.</aside>
+    </section>
+
+    <section class="slide light" data-title="AI Role Chooser">
+      <div class="kicker">AI role chooser</div>
+      <div class="content">
+        <h2>Use AI around inquiry, not instead of inquiry.</h2>
+        <div class="grid4" data-choice-group="role">
+          <button class="choice active" type="button" data-result="Access role: AI reduces exclusionary friction through vocabulary support, language scaffolds, and reading bridges."><h3>Access</h3><p>Lower the barrier to the source.</p></button>
+          <button class="choice" type="button" data-result="Challenge role: AI becomes a rival interpretation students must test against evidence."><h3>Challenge</h3><p>Make the answer contestable.</p></button>
+          <button class="choice" type="button" data-result="Feedback role: AI asks what is missing, unclear, unsupported, or overclaimed."><h3>Feedback</h3><p>Improve reasoning after a draft exists.</p></button>
+          <button class="choice" type="button" data-result="Reflection role: AI output becomes a mirror students compare with their own judgment."><h3>Reflection</h3><p>Name what changed and why.</p></button>
+        </div>
+        <div class="result-box" id="roleResult">Access role: AI reduces exclusionary friction through vocabulary support, language scaffolds, and reading bridges.</div>
+      </div>
+      <div class="footer"><span>Role before tool.</span><span>16</span></div>
+      <aside class="speaker-notes">This builds from the practical strategies spreadsheet and the balanced-history blog: generate perspectives, scaffold source analysis, and structure dialogue without surrendering judgment.</aside>
+    </section>
+
+    <section class="slide" data-title="American Revolution Lab">
+      <div class="kicker">Mini-lab</div>
+      <div class="content">
+        <h2>American Revolution: from output task to inquiry sequence</h2>
+        <div class="timeline">
+          <div class="timeline-item"><strong>Step 1: Friction first</strong><span>Students annotate primary sources and name what is confusing, contested, or missing.</span></div>
+          <div class="timeline-item"><strong>Step 2: AI as contrast</strong><span>AI generates a clean explanation of the causes. Students treat it as a source to audit.</span></div>
+          <div class="timeline-item"><strong>Step 3: Human judgment</strong><span>Students revise their claim, identify what AI flattened, and defend the evidence.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>Stamp Act / causes of Revolution example.</span><span>17</span></div>
+      <aside class="speaker-notes">This uses the lesson-design ideas from the AECT manuscript feedback and strategy spreadsheet: friction logs, algorithm audits, and primary-source comparison.</aside>
+    </section>
+
+    <section class="slide light" data-title="Algorithm Audit">
+      <div class="kicker">Algorithm audit</div>
+      <div class="content">
+        <h2>Turn the AI output into a contested text.</h2>
+        <div class="source-audit">
+          <div class="artifact">
+            <div class="label">AI summary</div>
+            <p>The American Revolution happened because colonists wanted freedom from British taxes and control.</p>
+            <ul class="checklist">
+              <li>What feels clear but too smooth?</li>
+              <li>Which actors disappear?</li>
+              <li>What evidence would verify this?</li>
+            </ul>
+          </div>
+          <div class="artifact">
+            <div class="label">Primary sources</div>
+            <p>Petitions, tax acts, pamphlets, speeches, and loyalist responses complicate the story.</p>
+            <ul class="checklist">
+              <li>What language is difficult?</li>
+              <li>Where do sources disagree?</li>
+              <li>What claim can survive conflict?</li>
+            </ul>
+          </div>
+        </div>
+        <div class="audit-choices" data-choice-group="audit">
+          <button class="choice active" type="button" data-result="Omission audit: ask whose motives, costs, voices, or conflicts disappear when the explanation gets too clean."><h3>Omission</h3><p>Who or what disappeared?</p></button>
+          <button class="choice" type="button" data-result="Evidence audit: require students to name which source could verify, complicate, or refute the AI claim."><h3>Evidence</h3><p>What would prove it?</p></button>
+          <button class="choice" type="button" data-result="Overconfidence audit: have students identify where the output sounds more certain than the historical record permits."><h3>Overconfidence</h3><p>Where is it too smooth?</p></button>
+        </div>
+        <div class="result-box" id="auditResult">Omission audit: ask whose motives, costs, voices, or conflicts disappear when the explanation gets too clean.</div>
+      </div>
+      <div class="footer"><span>Audit for omissions, bias, and overconfidence.</span><span>18</span></div>
+      <aside class="speaker-notes">Do not present the AI paragraph as factual text; present it as a demo artifact. The teacher would use a district-approved tool or teacher-generated output.</aside>
+    </section>
+
+    <section class="slide" data-title="Federalist Challenge">
+      <div class="kicker">AI devil's advocate</div>
+      <div class="content">
+        <h2>A counterargument should create more thinking, not less.</h2>
+        <div class="grid2">
+          <div class="card"><h3>Weak use</h3><p>Generate a counterargument to Federalist No. 10 and paste the strongest sentence into the essay.</p></div>
+          <div class="card"><h3>Stronger use</h3><p>Generate a counterargument, locate its assumptions, test it against the text, and decide whether the challenge holds.</p></div>
+        </div>
+        <div class="takeaway">The friction is verification, interpretation, and defense.</div>
+      </div>
+      <div class="footer"><span>AI Devil's Advocate pattern</span><span>19</span></div>
+      <aside class="speaker-notes">This draws directly from the strategy spreadsheet's AI Devil's Advocate idea and the session prompt's Federalist Papers example.</aside>
+    </section>
+
+    <section class="slide light" data-title="Friction Log">
+      <div class="kicker">Make struggle visible</div>
+      <div class="content">
+        <h2>Ask students to document the moment before the answer.</h2>
+        <div class="grid3" data-choice-group="log">
+          <button class="lab-card prompt-card active" type="button" data-result="Confusion prompt: this protects the moment when students notice uncertainty instead of rushing past it."><h3>I was confused by...</h3><p>Students name the source difficulty, not just the answer.</p></button>
+          <button class="lab-card prompt-card" type="button" data-result="Testing prompt: this turns AI output into something students must verify, challenge, or revise."><h3>I tested this by...</h3><p>Students show how they verified or challenged an AI claim.</p></button>
+          <button class="lab-card prompt-card" type="button" data-result="Revision prompt: this makes changed thinking visible as evidence of learning."><h3>My thinking changed when...</h3><p>Students mark revision as evidence of learning.</p></button>
+        </div>
+        <div class="result-box" id="logResult">Confusion prompt: this protects the moment when students notice uncertainty instead of rushing past it.</div>
+      </div>
+      <div class="footer"><span>Friction logs support assessment.</span><span>20</span></div>
+      <aside class="speaker-notes">This turns productive struggle into evidence without turning the classroom into surveillance.</aside>
+    </section>
+
+    <section class="slide" data-title="Evidence Of Learning">
+      <div class="kicker">Assessment redesign</div>
+      <div class="content">
+        <h2>Look for traces of inquiry, not only completion.</h2>
+        <div class="grid4">
+          <div class="card"><h3>Annotated sources</h3><p>Questions, tensions, and uncertainty are visible.</p></div>
+          <div class="card"><h3>Claim log</h3><p>The argument changes over time.</p></div>
+          <div class="card"><h3>Verification note</h3><p>Students explain what AI got right, wrong, or flattened.</p></div>
+          <div class="card"><h3>Defense</h3><p>Students answer a live follow-up question.</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Recover process without chasing detection.</span><span>21</span></div>
+      <aside class="speaker-notes">This connects to the blog series point about the illusion of completion and the need for process-visible learning.</aside>
+    </section>
+
+    <section class="slide light" data-title="Design Sprint">
+      <div class="kicker">Participant redesign sprint</div>
+      <div class="content">
+        <h2>Redesign one task so AI cannot skip the thinking.</h2>
+        <div class="grid4">
+          <div class="card"><h3>1. Task</h3><p>Name a DBQ, seminar, current event analysis, essay, or civic project.</p></div>
+          <div class="card"><h3>2. AI role</h3><p>Access, challenge, feedback, or reflection?</p></div>
+          <div class="card"><h3>3. Protected friction</h3><p>What must students still source, compare, explain, revise, or defend?</p></div>
+          <div class="card"><h3>4. Evidence</h3><p>What will show the inquiry happened?</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>8 minute activity</span><span>22</span></div>
+      <aside class="speaker-notes">Have participants post four short responses in chat or a shared document. Then invite one or two quick share-outs.</aside>
+    </section>
+
+    <section class="slide" data-title="Policy">
+      <div class="kicker">From classroom to system</div>
+      <div class="content">
+        <h2>Policy should protect the learning sequence.</h2>
+        <div class="grid4">
+          <div class="card"><h3>Before AI</h3><p>Name the human first move: read, draft, attempt, question, or source.</p></div>
+          <div class="card"><h3>During AI</h3><p>Define allowed roles: contrast, feedback, accessibility, or extension.</p></div>
+          <div class="card"><h3>After AI</h3><p>Require reflection, verification, disclosure, and revision.</p></div>
+          <div class="card"><h3>Always</h3><p>Protect privacy, equity, and teacher-visible process.</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Governance is instructional design at scale.</span><span>23</span></div>
+      <aside class="speaker-notes">This borrows from the K-12 leadership blog series: do not write AI policy only around permission; write it around sequence and decision rights.</aside>
+    </section>
+
+    <section class="slide light" data-title="Run Of Show">
+      <div class="kicker">Suggested 50-minute arc</div>
+      <div class="content">
+        <h2>A more interactive session plan</h2>
+        <div class="timeline">
+          <div class="timeline-item"><strong>0-7 min</strong><span>Ten-second problem, audience poll, same-artifact contrast.</span></div>
+          <div class="timeline-item"><strong>7-18 min</strong><span>Historical inquiry, learning theory, media ecology, and social studies stakes.</span></div>
+          <div class="timeline-item"><strong>18-30 min</strong><span>C.O.R.E., H.E.A.R.T., productive friction, and AI role chooser.</span></div>
+          <div class="timeline-item"><strong>30-42 min</strong><span>American Revolution algorithm audit and participant redesign sprint.</span></div>
+          <div class="timeline-item"><strong>42-50 min</strong><span>Share-out, policy implications, and closing discussion.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>Presentation plus practice.</span><span>24</span></div>
+      <aside class="speaker-notes">This pacing gets the deck into the user's desired 23-26 slide range while leaving room for interaction.</aside>
+    </section>
+
+    <section class="slide" data-title="Source Base">
+      <div class="kicker">Source base reviewed</div>
+      <div class="content">
+        <h2>This revision draws from your social studies writing and research files.</h2>
+        <div class="grid3">
+          <div class="card"><h3>Frictionless learning article</h3><p>Constructivism, media theory, C.O.R.E./H.E.A.R.T., misinformation, bias, and agency.</p></div>
+          <div class="card"><h3>Balanced history blog draft</h3><p>Polarization, civil discourse, multiple perspectives, and teaching students how to think.</p></div>
+          <div class="card"><h3>Strategy spreadsheet</h3><p>Algorithm audits, AI Devil's Advocate, friction logs, primary-document comparison, and civic debates.</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Internal source slide for presenter orientation.</span><span>25</span></div>
+      <aside class="speaker-notes">This slide can be hidden for a live audience if desired. It is included to make the deck's source basis transparent for presenter planning without exposing private Drive links.</aside>
+    </section>
+
+    <section class="slide light" data-title="Closing">
+      <div class="kicker">Closing claim</div>
+      <div class="content">
+        <h2>The goal is not slower work for its own sake.</h2>
+        <p class="lead">The goal is students who can investigate, deliberate, judge evidence, and participate responsibly in public life.</p>
+        <p class="claim" style="color:#174a7c;">AI should strengthen historical inquiry, not quietly remove it.</p>
+      </div>
+      <div class="footer"><span>Discussion</span><span>26</span></div>
+      <aside class="speaker-notes">End with the middle path: preserve human thinking, reduce exclusionary barriers, and design AI use around the learning sequence.</aside>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Slide controls">
+    <button type="button" id="prev" aria-label="Previous slide">&lt;</button>
+    <span class="counter" id="counter">1 / 26</span>
+    <button type="button" id="next" aria-label="Next slide">&gt;</button>
+  </nav>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    const progressBar = document.getElementById("progressBar");
+    let current = 0;
+
+    const frictionContent = {
+      noetic: {
+        title: "Noetic friction",
+        body: "Students wrestle internally with evidence, concepts, and uncertainty before receiving synthesis.",
+        move: "Protected move: source annotation before AI summary comparison."
+      },
+      rhetorical: {
+        title: "Rhetorical friction",
+        body: "Students test claims with other people who can challenge, misunderstand, resist, and extend them.",
+        move: "Protected move: Socratic seminar or peer challenge before final writing."
+      },
+      existential: {
+        title: "Existential friction",
+        body: "Students are personally accountable for the interpretation they choose to stand behind.",
+        move: "Protected move: oral defense, reflection memo, or live follow-up question."
+      },
+      infrastructure: {
+        title: "Infrastructural conditions",
+        body: "Policies, time, grading, access rules, and assessment norms determine whether productive friction can survive.",
+        move: "Protected move: sequence-based AI guidance and privacy-aware approved tools."
+      }
+    };
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.title = `${slides[current].dataset.title} | When AI Does the Thinking`;
+    }
+
+    function wireChoiceGroups() {
+      document.querySelectorAll("[data-choice-group]").forEach((group) => {
+        const resultId = `${group.dataset.choiceGroup}Result`;
+        const resultBox = document.getElementById(resultId);
+        const options = group.querySelectorAll(".choice, .interactive-card, .prompt-card");
+        options.forEach((choice) => {
+          choice.addEventListener("click", () => {
+            options.forEach((item) => item.classList.remove("active"));
+            choice.classList.add("active");
+            if (resultBox) resultBox.textContent = choice.dataset.result;
+          });
+        });
+      });
+    }
+
+    function wireRail() {
+      const rail = document.querySelector(".rail");
+      const result = document.getElementById("railResult");
+      if (!rail || !result) return;
+      rail.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          rail.querySelectorAll("button").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          result.textContent = button.dataset.result;
+        });
+      });
+    }
+
+    function wireTabs() {
+      const pane = document.getElementById("frictionPane");
+      document.querySelectorAll(".tab-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".tab-button").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          const item = frictionContent[button.dataset.tab];
+          pane.innerHTML = `<h3>${item.title}</h3><p>${item.body}</p><div class="takeaway">${item.move}</div>`;
+        });
+      });
+    }
+
+    document.getElementById("prev").addEventListener("click", () => showSlide(current - 1));
+    document.getElementById("next").addEventListener("click", () => showSlide(current + 1));
+
+    document.addEventListener("keydown", (event) => {
+      const onControl = event.target.closest("button, a, input, textarea, select");
+      if (["ArrowRight", "PageDown"].includes(event.key) || (event.key === " " && !onControl)) {
+        event.preventDefault();
+        showSlide(current + 1);
+      }
+      if (["ArrowLeft", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        showSlide(current - 1);
+      }
+      if (event.key === "Home") showSlide(0);
+      if (event.key === "End") showSlide(slides.length - 1);
+    });
+
+    wireChoiceGroups();
+    wireRail();
+    wireTabs();
+    showSlide(0);
+  </script>
+</body>
+</html>
