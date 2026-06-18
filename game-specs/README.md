@@ -7,12 +7,10 @@ the Source, Friction Lab, Keeper of the Word). Each `.md` is a standalone brief 
 
 | Spec | Game | Teaches | Status |
 | --- | --- | --- | --- |
-| [devils-advocate.md](devils-advocate.md) | The Devil's Advocate | Rhetorical friction; building counterarguments against fluent AI claims | **Build first (in progress)** |
+| [devils-advocate.md](devils-advocate.md) | The Devil's Advocate | Rhetorical friction; building counterarguments against fluent AI claims | **Built — live at `/devils-advocate/`** |
 | [out-of-time.md](out-of-time.md) | Out of Time | Contextualization; resisting presentism | Handoff-ready |
 | [common-ground.md](common-ground.md) | Common Ground: The Polarized Classroom | C.O.R.E. & H.E.A.R.T.; balanced history in a polarized world (teacher-facing) | Handoff-ready |
-
-A fourth concept — **Informed Action** (civics / C3 "taking informed action") — is available on
-request and not yet spec'd.
+| [informed-action.md](informed-action.md) | Informed Action | Civics; C3 "taking informed action"; the frictionless-plan trap | Handoff-ready |
 
 ## Shared build conventions (apply to all three)
 
