@@ -55,39 +55,37 @@ Each **moment**:
 3. Feedback names the principle in play and the trade-off.
 4. Brief verdict; advance. 4–5 moments total.
 
-## Sample content (schema + examples — author to 4–5)
+## Sample content (the five moments as built)
 
-Response object: `{ label, line, civil, rigor, trust, tags:[...], best }`.
+Response object: `{ txt, civil, rigor, trust, tags:[...], best }`. **Design rule:** each moment
+tests the teacher's *craft* in a charged situation — it never asks the player to take a political
+side, and never stages an atrocity or a settled moral wrong as a "debatable" question. Keep
+contested topics **generic** ("a contested issue," "a painful injustice in the curriculum") so any
+teacher sees themselves and no scenario reads as partisan. The skills are universal: evidence,
+multiple perspectives, transparency, honesty + empathy, and dignified discourse.
 
-### Moment 1 — The loaded question
-*A student asks, "Wasn't slavery actually good for the economy, so wasn't it kind of justified?"
-The room goes quiet and looks at you.*
-- *(best — Critical Thinking + Honesty + Respect)* "Let's separate two questions: a factual one —
-  what was slavery's economic role? — and a moral one. We'll source both, and we'll be honest that
-  an economic argument never settles a moral one." → Civil +8, Rigor +14, Trust +10. Tags: C, H, R.
-- *(anti-pattern — shutdown)* "We don't talk about that here. Next." → Civil +2, Rigor −12, Trust −10.
-- *(anti-pattern — false balance)* "Well, there are two sides to everything." → Civil +4, Rigor −10, Trust −6.
-- *(ok — Openness but evasive)* "Interesting — what made you ask?" → Civil +6, Rigor +2, Trust +5.
+1. **Opinion stated as fact** — a student asserts a sweeping opinion about a contested issue as if
+   settled. *Best (Critical Thinking + Openness + Engagement):* "Let's treat that as a claim we can
+   test — strongest evidence for and against; what would change your mind?" *Anti-patterns:*
+   "everyone's entitled to their opinion, move on" (rigor↓); the teacher settling it by picking a
+   side (trust↓). *Ok:* "say more about where that comes from."
+2. **The family concern** — a family worries a unit is "pushing a viewpoint." *Best (Accountability
+   + Honesty + Respect):* share goals, sources, multiple perspectives; welcome them to review the
+   materials. *Ok:* prepare with admin and meet together. *Anti-patterns:* quietly water it down
+   (rigor↓); "my curriculum isn't up for discussion" (trust↓).
+3. **Teaching a painful chapter** — a painful injustice unit; engage it honestly without sanitizing
+   *or* turning it into a blame session. *Best (Honesty + Empathy):* ground it in primary sources
+   and the experiences of those who lived it; honest about what happened and why it still matters.
+   *Ok:* a reflective writing step. *Anti-patterns:* soften to the safest summary (rigor↓); frame it
+   as present-day groups blaming/owing one another (trust↓).
+4. **The viral claim** — a student brings a dramatic viral historical claim. *Best:* lateral-read it
+   together (Critical Thinking + Engagement). *Ok:* empathize, then test it. *Anti-patterns:*
+   "that's nonsense, ignore it"; "who's to say." (After Krutka, "slow the fast media.")
+5. **The heated exchange** — two students talk over each other on a charged topic. *Best (Respect +
+   Engagement):* set a discourse protocol (steelman the other side, speak from evidence, "I"
+   statements). *Anti-patterns:* shut it down; pick the side you agree with; let it run unstructured.
 
-### Moment 2 — The parent email
-*A parent emails the principal that your lesson on Reconstruction is "political indoctrination."*
-- *(best — Accountability + Transparency)* "Share the sourced lesson plan and learning goals;
-  invite the parent to see how multiple perspectives and primary documents are used." → Trust +10,
-  Rigor +8, Civil +6. Tags: A (H.E.A.R.T.).
-- *(anti-pattern — capitulate)* "Quietly drop Reconstruction to avoid trouble." → Civil +4 (short
-  term), Rigor −16, Trust −8.
-- *(anti-pattern — defensive)* "Tell the parent they're wrong and it's not their business." → Civil −12.
-- *(ok)* "Escalate to admin without engaging the substance." → mixed.
-
-### Moment 3 — The legislated limit
-*A new state rule restricts how you can frame a required topic.*
-- *(best — Responsibility + Thoughtfulness)* "Meet the legal requirement while protecting inquiry:
-  teach the standards with sourced, multi-perspective documents and let students reason." → Rigor
-  +12, Trust +8, Civil +6.
-- *(anti-patterns)* overt defiance that endangers the class; or over-compliance that flattens inquiry.
-
-### Moments 4–5 — author (e.g., a viral social-media claim a student brings in [Krutka "slow the
-fast media"]; a heated peer-to-peer exchange that needs a discourse protocol).
+To extend, add moments in the same spirit — a teaching dilemma, not a position to defend.
 
 ## Debrief content
 
