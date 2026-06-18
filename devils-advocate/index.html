@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Devil's Advocate — a social studies game: rebut a fluent AI's one-sided historical claims with sourcing, context, corroboration, and evidence. Part of Micah Miner's learning games.">
+  <title>The Devil's Advocate | Historical Inquiry Game</title>
+  <style>
+    :root {
+      --ink:#171914; --paper:#f4f0e6; --forest:#183c32; --moss:#49735f;
+      --ember:#b84f32; --gold:#d5ae58; --blue:#315d7a; --muted:#6b6b62;
+      --line:rgba(255,255,255,.16); --serif:Georgia,"Times New Roman",serif;
+      --sans:"Segoe UI",Arial,sans-serif; --mono:Consolas,"Courier New",monospace;
+    }
+    * { box-sizing:border-box; }
+    html,body { margin:0; height:100%; }
+    body {
+      font-family:var(--sans); color:#f6f0df; min-height:100vh;
+      background:
+        radial-gradient(circle at 88% 6%, rgba(184,79,50,.22), transparent 30%),
+        linear-gradient(150deg, #12271f, #10160f 70%);
+      display:grid; place-items:center; padding:clamp(14px,3vw,40px);
+    }
+    button,a { font:inherit; color:inherit; }
+    button:focus-visible,a:focus-visible { outline:3px solid var(--gold); outline-offset:3px; }
+    .wrap { width:min(100%,960px); }
+    .screen { display:none; animation:rise .35s ease; }
+    .screen.active { display:block; }
+    @keyframes rise { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+    .kicker { font-family:var(--mono); text-transform:uppercase; letter-spacing:.12em; font-size:.78rem; color:var(--gold); font-weight:700; }
+    h1 { font-family:var(--serif); font-weight:600; letter-spacing:-.03em; line-height:1; font-size:clamp(2.8rem,7vw,5rem); margin:.18em 0 .25em; }
+    h2 { font-family:var(--serif); font-weight:600; font-size:clamp(1.5rem,3.2vw,2.4rem); margin:0 0 .4em; letter-spacing:-.02em; }
+    p { line-height:1.5; color:#e8e2d2; }
+    .lede { font-family:var(--serif); font-size:clamp(1.15rem,2vw,1.5rem); color:#f6f0df; max-width:46ch; }
+    em { color:var(--gold); font-style:italic; }
+    .panel { border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.05); padding:clamp(18px,2.4vw,30px); }
+    .mentor { display:flex; gap:14px; align-items:flex-start; margin:22px 0; padding:16px 18px; border:1px solid var(--line); border-left:5px solid var(--gold); border-radius:14px; background:rgba(213,174,88,.08); }
+    .mentor .who { font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--gold); display:block; margin-bottom:5px; }
+    .mentor p { margin:0; font-family:var(--serif); font-size:clamp(1rem,1.5vw,1.18rem); }
+    .btn { display:inline-flex; align-items:center; gap:10px; margin-top:6px; padding:14px 26px; border:1px solid var(--gold); border-radius:999px; background:var(--gold); color:#241c08; font-weight:750; cursor:pointer; transition:transform .15s ease, background .15s ease; }
+    .btn:hover { transform:translateY(-2px); }
+    .btn.ghost { background:transparent; color:#f6f0df; border-color:var(--line); }
+    .credit { color:var(--muted); font-size:.8rem; margin-top:22px; }
+
+    /* HUD */
+    .hud { display:grid; grid-template-columns:1fr 1fr auto; gap:14px; margin-bottom:16px; align-items:end; }
+    .meter .top { display:flex; justify-content:space-between; font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:#cfc8b4; margin-bottom:6px; }
+    .bar { height:10px; border-radius:999px; background:rgba(255,255,255,.12); overflow:hidden; }
+    .bar > span { display:block; height:100%; width:50%; border-radius:999px; transition:width .5s cubic-bezier(.2,.7,.2,1); }
+    .bar.reb > span { background:linear-gradient(90deg,var(--moss),var(--gold)); }
+    .bar.evid > span { background:linear-gradient(90deg,var(--blue),#7fb0c8); }
+    .chip { text-align:center; padding:8px 14px; border-radius:12px; border:1px solid var(--line); background:rgba(255,255,255,.05); }
+    .chip .lbl { font-family:var(--mono); font-size:.62rem; text-transform:uppercase; letter-spacing:.08em; color:#cfc8b4; display:block; }
+    .chip .val { font-weight:800; font-size:1.02rem; }
+    .chip.owned .val { color:var(--gold); } .chip.slipping .val { color:#e0a23c; } .chip.outsourced .val { color:var(--ember); }
+    .roundline { display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:10px; }
+
+    .advocate { display:flex; gap:14px; align-items:flex-start; padding:18px 20px; border:1px solid var(--line); border-left:5px solid var(--ember); border-radius:14px; background:rgba(184,79,50,.10); margin-bottom:8px; }
+    .advocate .ava { font-size:1.7rem; line-height:1; }
+    .advocate .who { font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:#f0b8a6; display:block; margin-bottom:5px; }
+    .advocate p { margin:0; font-family:var(--serif); font-size:clamp(1.1rem,1.7vw,1.4rem); color:#fff; }
+    .prompt { font-family:var(--mono); font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:#cfc8b4; margin:16px 2px 10px; }
+
+    .cards { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .card { text-align:left; cursor:pointer; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.05); padding:15px 16px; transition:transform .14s ease, border-color .14s ease, background .14s ease; }
+    .card:hover:not(:disabled) { transform:translateY(-3px); border-color:var(--gold); background:rgba(213,174,88,.12); }
+    .card:disabled { opacity:.5; cursor:default; }
+    .card .move { font-family:var(--mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); display:flex; gap:8px; align-items:center; margin-bottom:7px; }
+    .card .move .k { width:18px; height:18px; border-radius:5px; display:grid; place-items:center; background:rgba(213,174,88,.2); font-size:.62rem; }
+    .card .txt { font-size:.98rem; line-height:1.35; color:#ece6d6; }
+
+    .feedback { margin-top:16px; border:1px solid var(--line); border-radius:14px; padding:16px 18px; background:rgba(255,255,255,.05); }
+    .feedback .delta { font-family:var(--mono); font-size:.74rem; letter-spacing:.05em; color:var(--gold); margin-bottom:8px; }
+    .feedback .react { font-family:var(--serif); font-style:italic; color:#f0b8a6; margin:6px 0 0; }
+    .feedback .verdict { margin-top:12px; padding-top:12px; border-top:1px solid var(--line); color:#f6f0df; }
+    .row { display:flex; justify-content:flex-end; margin-top:16px; }
+
+    /* Debrief */
+    .standing { font-family:var(--serif); font-size:clamp(1.6rem,3vw,2.3rem); color:var(--gold); margin:6px 0 4px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:.92rem; }
+    th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
+    th { font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:#cfc8b4; }
+    .frameworks { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+    .tag { font-family:var(--mono); font-size:.72rem; padding:7px 12px; border:1px solid var(--line); border-radius:999px; color:var(--gold); }
+    .meta { font-family:var(--serif); font-size:clamp(1.15rem,1.9vw,1.45rem); border-left:5px solid var(--gold); padding:12px 18px; background:rgba(213,174,88,.08); border-radius:0 12px 12px 0; margin:16px 0; }
+    .home { display:inline-block; margin-top:18px; color:var(--gold); font-family:var(--mono); font-size:.8rem; text-decoration:none; }
+    @media (max-width:640px){ .cards{grid-template-columns:1fr;} .hud{grid-template-columns:1fr 1fr;} .chip{grid-column:1/-1;} }
+    @media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important;} }
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TITLE -->
+  <section class="screen active" id="title">
+    <p class="kicker">A historical-inquiry game · Pedagogical friction</p>
+    <h1>The Devil's <em>Advocate</em></h1>
+    <p class="lede">An AI that argues like it's always right. Your job isn't to win &mdash; it's to make it <em>earn every claim</em>.</p>
+    <div class="mentor">
+      <div>
+        <span class="who">Your mentor</span>
+        <p>&ldquo;Generative AI is fluent by default and right only by accident. Don't be persuaded by polish. Source it, place it in its time, check it against another voice &mdash; and know when an honest point deserves a nod.&rdquo;</p>
+      </div>
+    </div>
+    <p>You'll face <strong>three contested questions</strong> from a confident AI. Each round, choose the move that best answers it. Watch your <em>Rebuttal Strength</em>, <em>Evidence Integrity</em>, and whether the thinking stays <em>yours</em>.</p>
+    <p style="margin-top:18px;"><button class="btn" id="startBtn">Step up to the podium &rarr;</button></p>
+    <p class="credit">Built on Micah Miner's pedagogical-friction work (rhetorical friction; C.O.R.E.) and the historical-thinking moves (sourcing, contextualization, corroboration, evidence-based interpretation). Treats AI output as a source to interrogate, not an oracle.</p>
+  </section>
+
+  <!-- PLAY -->
+  <section class="screen" id="play">
+    <div class="roundline"><span id="roundLabel">Case 1 of 3</span><span id="caseTitle"></span></div>
+    <div class="hud">
+      <div class="meter">
+        <div class="top"><span>Rebuttal Strength</span><span id="rebNum">40</span></div>
+        <div class="bar reb"><span id="rebBar" style="width:40%"></span></div>
+      </div>
+      <div class="meter">
+        <div class="top"><span>Evidence Integrity</span><span id="evidNum">50</span></div>
+        <div class="bar evid"><span id="evidBar" style="width:50%"></span></div>
+      </div>
+      <div class="chip owned" id="ansChip"><span class="lbl">Answerability</span><span class="val" id="ansVal">Owned</span></div>
+    </div>
+
+    <div class="advocate">
+      <span class="ava" aria-hidden="true">&#129302;</span>
+      <div><span class="who">The Advocate</span><p id="advText" aria-live="polite"></p></div>
+    </div>
+
+    <p class="prompt" id="promptLine">Choose your rebuttal &mdash; press 1&ndash;4 or click.</p>
+    <div class="cards" id="cards"></div>
+
+    <div class="feedback" id="feedback" style="display:none" aria-live="polite">
+      <div class="delta" id="fbDelta"></div>
+      <div class="txt" id="fbText"></div>
+      <p class="react" id="fbReact"></p>
+      <div class="verdict" id="fbVerdict" style="display:none"></div>
+    </div>
+    <div class="row"><button class="btn" id="continueBtn" style="display:none">Continue &rarr;</button></div>
+  </section>
+
+  <!-- DEBRIEF -->
+  <section class="screen" id="debrief">
+    <p class="kicker">Debrief</p>
+    <h2>How you held the line</h2>
+    <div class="hud" style="grid-template-columns:1fr 1fr auto;">
+      <div class="meter"><div class="top"><span>Rebuttal</span><span id="dReb">0</span></div><div class="bar reb"><span id="dRebBar"></span></div></div>
+      <div class="meter"><div class="top"><span>Evidence</span><span id="dEvid">0</span></div><div class="bar evid"><span id="dEvidBar"></span></div></div>
+      <div class="chip" id="dAnsChip"><span class="lbl">Answerability</span><span class="val" id="dAns"></span></div>
+    </div>
+    <p class="standing" id="standing"></p>
+    <p id="standingSub" style="color:#e8e2d2;"></p>
+
+    <h2 style="margin-top:22px; font-size:1.4rem;">The moves you reached for</h2>
+    <table><thead><tr><th>Move</th><th>Times used</th><th>What it is</th></tr></thead><tbody id="moveTable"></tbody></table>
+
+    <div class="meta">The Advocate was never trying to be right &mdash; only to <em>sound</em> right. That's what generative AI does by default. Historical thinking is what makes fluency earn its claims.</div>
+    <div class="frameworks">
+      <span class="tag">Critical Thinking (C.O.R.E.)</span><span class="tag">Openness (C.O.R.E.)</span>
+      <span class="tag">Rhetorical friction</span><span class="tag">Sourcing</span><span class="tag">Corroboration</span><span class="tag">Contextualization</span>
+    </div>
+    <p style="margin-top:20px;"><button class="btn" id="replayBtn">Play again &rarr;</button></p>
+    <a class="home" href="../">&larr; Back to the deck</a>
+  </section>
+
+</div>
+
+<script>
+  var MOVES = {
+    source:      { name:"Source it",      key:"S", what:"Ask who made a claim, why, and whose voice is missing." },
+    context:     { name:"Contextualize",  key:"C", what:"Judge by what people at the time could know and faced." },
+    corroborate: { name:"Corroborate",    key:"O", what:"Check the claim against another source — agree or contradict?" },
+    counter:     { name:"Counter-evidence", key:"E", what:"Deploy a specific period fact that complicates the claim." },
+    concede:     { name:"Concede",        key:"=", what:"Grant a point — wise when it's fair, costly when it isn't." }
+  };
+
+  var CASES = [
+    {
+      title:"Causes of the American Revolution",
+      verdict:"Round 1: “the colonists” were many voices, and the cry was representation — not just the cost of a tax.",
+      exchanges:[
+        {
+          adv:"The Revolution was simple: it was about taxes. The colonists didn't want to pay, so they revolted. Everything else is window dressing.",
+          cards:[
+            { move:"source", txt:"“Whose grievances are we reading — merchants, enslaved people, Loyalists? ‘The colonists’ weren't one voice.”", reb:16, evid:12, ans:4, best:true },
+            { move:"counter", txt:"“It was no taxation *without representation* — consent, not cost. See the Stamp Act Congress.”", reb:14, evid:14, ans:2 },
+            { move:"context", txt:"“After 1763 Britain reorganized imperial control; the taxes were one piece of that.”", reb:8, evid:6, ans:0 },
+            { move:"concede", txt:"“Fair enough — it was mostly about taxes.”", reb:-10, evid:-2, ans:-14 }
+          ]
+        },
+        {
+          adv:"Fine, representation. But ordinary farmers didn't care about political theory — only elites did.",
+          cards:[
+            { move:"corroborate", txt:"“Town-meeting records and committees of correspondence show broad participation, not just elites.”", reb:16, evid:13, ans:4, best:true },
+            { move:"source", txt:"“Whose papers survive shapes that impression — absence of evidence isn't evidence of absence.”", reb:12, evid:10, ans:2 },
+            { move:"counter", txt:"“Non-importation agreements and crowd actions pulled in artisans and farmers.”", reb:9, evid:8, ans:0 },
+            { move:"concede", txt:"“True — it was really just the elites.”", reb:-9, evid:-2, ans:-12 }
+          ]
+        }
+      ]
+    },
+    {
+      title:"The Federalist Papers",
+      verdict:"Round 2: the Federalist is advocacy, not neutral truth — and No. 10 really does check majorities. Knowing when to concede is part of the craft.",
+      exchanges:[
+        {
+          adv:"The Federalist Papers prove the Founders wanted a powerful central government the people opposed — elites overriding the public.",
+          cards:[
+            { move:"source", txt:"“The Federalist is advocacy — Hamilton, Madison, Jay arguing one side. Read the Anti-Federalists too.”", reb:17, evid:13, ans:4, best:true },
+            { move:"corroborate", txt:"“Ratification was contested and close in key states — not a settled ‘the people opposed it.’”", reb:13, evid:12, ans:2 },
+            { move:"context", txt:"“They wrote against the Articles' failures — debt, Shays' Rebellion, no power over commerce.”", reb:9, evid:7, ans:0 },
+            { move:"concede", txt:"“Right — it was elites versus the people.”", reb:-10, evid:-2, ans:-14 }
+          ]
+        },
+        {
+          adv:"But Federalist No. 10 *does* distrust pure majority rule — Madison really did fear factions and the unchecked public.",
+          fair:true,
+          cards:[
+            { move:"concede", txt:"“Yes — that's an accurate reading of No. 10; it checks majorities by design. Granted.”", reb:10, evid:9, ans:10, best:true },
+            { move:"counter", txt:"“No — Madison trusted majorities completely.”", reb:-8, evid:-6, ans:-6 },
+            { move:"source", txt:"“That's just Madison's personal view, though.”", reb:4, evid:0, ans:-2 },
+            { move:"context", txt:"“He's balancing majority rule against minority rights — both at once.”", reb:8, evid:7, ans:2 }
+          ]
+        }
+      ]
+    },
+    {
+      title:"Causes of the Civil War",
+      verdict:"Round 3: the 1861 documents name slavery plainly. “States' rights” and soldiers' motives are later reframings of why the war began.",
+      exchanges:[
+        {
+          adv:"The Civil War was about states' rights, not slavery.",
+          cards:[
+            { move:"counter", txt:"“The secession declarations name slavery explicitly — Mississippi's, South Carolina's. States' rights to do what?”", reb:18, evid:15, ans:4, best:true },
+            { move:"source", txt:"“‘States' rights' is largely post-war ‘Lost Cause' framing, not the 1861 documents.”", reb:15, evid:12, ans:3 },
+            { move:"corroborate", txt:"“The Cornerstone Speech, the party platforms, the declarations all converge on slavery.”", reb:11, evid:10, ans:0 },
+            { move:"concede", txt:"“Sure — states' rights.”", reb:-12, evid:-3, ans:-16 }
+          ]
+        },
+        {
+          adv:"But most Confederate soldiers didn't own slaves, so it wasn't about slavery for them.",
+          cards:[
+            { move:"context", txt:"“Individual motives vary, but the political cause of secession is set by the states' own stated reasons.”", reb:16, evid:12, ans:4, best:true },
+            { move:"corroborate", txt:"“Many non-owners still defended — and aspired to — a slave society; the documents are explicit.”", reb:13, evid:11, ans:2 },
+            { move:"source", txt:"“That statistic gets recycled out of context to launder the cause.”", reb:9, evid:8, ans:0 },
+            { move:"concede", txt:"“Right — not about slavery for them.”", reb:-10, evid:-2, ans:-12 }
+          ]
+        }
+      ]
+    }
+  ];
+
+  var state = {};
+  function reset(){ state = { ci:0, ei:0, reb:40, evid:50, ans:72, picked:false, moveCounts:{} }; }
+
+  var $ = function(id){ return document.getElementById(id); };
+  function clamp(v){ return Math.max(0, Math.min(100, v)); }
+  function ansState(a){ return a>=66 ? "Owned" : a>=40 ? "Slipping" : "Outsourced"; }
+
+  function show(screenId){
+    ["title","play","debrief"].forEach(function(s){ $(s).classList.toggle("active", s===screenId); });
+    window.scrollTo(0,0);
+  }
+
+  function updateHud(){
+    $("rebNum").textContent = Math.round(state.reb);
+    $("evidNum").textContent = Math.round(state.evid);
+    $("rebBar").style.width = clamp(state.reb)+"%";
+    $("evidBar").style.width = clamp(state.evid)+"%";
+    var st = ansState(state.ans);
+    $("ansVal").textContent = st;
+    $("ansChip").className = "chip " + st.toLowerCase();
+  }
+
+  function renderExchange(){
+    var c = CASES[state.ci];
+    var ex = c.exchanges[state.ei];
+    $("roundLabel").textContent = "Case " + (state.ci+1) + " of " + CASES.length + "  ·  Exchange " + (state.ei+1) + "/2";
+    $("caseTitle").textContent = c.title;
+    $("advText").textContent = ex.adv;
+    $("promptLine").textContent = "Choose your rebuttal — press 1–4 or click.";
+    $("feedback").style.display = "none";
+    $("fbVerdict").style.display = "none";
+    $("continueBtn").style.display = "none";
+    state.picked = false;
+    var wrap = $("cards"); wrap.innerHTML = "";
+    ex.cards.forEach(function(card, i){
+      var m = MOVES[card.move];
+      var b = document.createElement("button");
+      b.className = "card";
+      b.innerHTML = '<span class="move"><span class="k">'+m.key+'</span>'+m.name+'</span><span class="txt">'+card.txt+'</span>';
+      b.addEventListener("click", function(){ pick(i); });
+      wrap.appendChild(b);
+    });
+    updateHud();
+  }
+
+  function pick(i){
+    if(state.picked) return;
+    state.picked = true;
+    var ex = CASES[state.ci].exchanges[state.ei];
+    var card = ex.cards[i];
+    state.reb = clamp(state.reb + card.reb);
+    state.evid = clamp(state.evid + card.evid);
+    state.ans = clamp(state.ans + card.ans);
+    state.moveCounts[card.move] = (state.moveCounts[card.move]||0) + 1;
+    // disable cards, highlight chosen
+    var btns = $("cards").querySelectorAll(".card");
+    btns.forEach(function(b,bi){ b.disabled = true; if(bi===i){ b.style.borderColor="var(--gold)"; b.style.background="rgba(213,174,88,.15)"; } });
+    updateHud();
+    // feedback
+    var sign = function(n){ return (n>=0?"+":"") + n; };
+    $("fbDelta").textContent = "Rebuttal " + sign(card.reb) + "  ·  Evidence " + sign(card.evid) + "  ·  Answerability " + sign(card.ans);
+    $("fbText").textContent = MOVES[card.move].name + " — " + MOVES[card.move].what;
+    var react;
+    if(card.best){ react = ex.fair ? "The Advocate blinks. “…A fair concession. Noted.”" : "The Advocate hesitates. “…Granted, in part.”"; }
+    else if(card.reb < 0){ react = "The Advocate seizes the opening. “Exactly my point.”"; }
+    else { react = "The Advocate brushes it aside. “A quibble.”"; }
+    $("fbReact").textContent = react;
+    $("feedback").style.display = "block";
+    // last exchange of case -> show verdict
+    if(state.ei === CASES[state.ci].exchanges.length - 1){
+      $("fbVerdict").textContent = CASES[state.ci].verdict;
+      $("fbVerdict").style.display = "block";
+    }
+    $("continueBtn").style.display = "inline-flex";
+    $("continueBtn").focus();
+  }
+
+  function next(){
+    var c = CASES[state.ci];
+    if(state.ei < c.exchanges.length - 1){
+      state.ei++;
+      renderExchange();
+    } else if(state.ci < CASES.length - 1){
+      state.ci++; state.ei = 0;
+      renderExchange();
+    } else {
+      debrief();
+    }
+  }
+
+  function debrief(){
+    show("debrief");
+    var score = Math.round((state.reb + state.evid)/2);
+    var st = ansState(state.ans);
+    $("dReb").textContent = Math.round(state.reb);
+    $("dEvid").textContent = Math.round(state.evid);
+    $("dRebBar").style.width = clamp(state.reb)+"%";
+    $("dEvidBar").style.width = clamp(state.evid)+"%";
+    $("dAns").textContent = st;
+    $("dAnsChip").className = "chip " + st.toLowerCase();
+    var band, sub;
+    if(score >= 80 && st === "Owned"){ band = "Formidable interlocutor"; sub = "You made the AI earn every inch — sourcing, context, and corroboration over fluency."; }
+    else if(score >= 55 && st !== "Outsourced"){ band = "Solid, with slips"; sub = "You caught the slant, but let some fluency slide. Push every confident claim to show its evidence."; }
+    else { band = "Out-argued"; sub = "The Advocate's confidence did your thinking. That's the trap with generative AI — run it back and make it prove each claim."; }
+    $("standing").textContent = band + "  ·  " + score + "/100";
+    $("standingSub").textContent = sub;
+    // move table
+    var tb = $("moveTable"); tb.innerHTML = "";
+    Object.keys(MOVES).forEach(function(k){
+      var n = state.moveCounts[k] || 0;
+      if(n === 0 && k === "concede") { /* still show concede row for contrast */ }
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>"+MOVES[k].name+"</td><td>"+n+"</td><td style='color:#cfc8b4'>"+MOVES[k].what+"</td>";
+      tb.appendChild(tr);
+    });
+  }
+
+  function start(){ reset(); show("play"); renderExchange(); }
+
+  $("startBtn").addEventListener("click", start);
+  $("replayBtn").addEventListener("click", start);
+  $("continueBtn").addEventListener("click", next);
+
+  document.addEventListener("keydown", function(e){
+    if($("play").classList.contains("active")){
+      if(!state.picked && e.key >= "1" && e.key <= "4"){ pick(parseInt(e.key,10)-1); }
+      else if(state.picked && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); next(); }
+    } else if((e.key === "Enter") && $("title").classList.contains("active")){ start(); }
+  });
+
+  reset();
+</script>
+</body>
+</html>
