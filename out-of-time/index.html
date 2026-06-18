@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Out of Time | Historical Contextualization Game</title>
+  <style>
+    :root {
+      --ink: #0a1118;
+      --ink-2: #121e2b;
+      --paper: #f4ead7;
+      --paper-2: #fffdf9;
+      --line: rgba(244, 234, 215, 0.16);
+      --line-dark: rgba(10, 17, 24, 0.16);
+      --gold: #d7a13d;
+      --rose: #d4685d;
+      --rose-light: rgba(212, 104, 93, 0.12);
+      --teal: #64c6bd;
+      --teal-dark: #22756f;
+      --teal-light: rgba(100, 198, 189, 0.12);
+      --muted: #92a2a6;
+      --radius: 12px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      --transition-speed: 0.2s;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 10% 15%, rgba(100, 198, 189, 0.12), transparent 30%),
+        radial-gradient(circle at 85% 5%, rgba(215, 161, 61, 0.12), transparent 26%),
+        linear-gradient(135deg, #070c11, #101923 60%, #0d151d);
+      color: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    button, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    a {
+      color: var(--gold);
+      text-decoration: none;
+      transition: color var(--transition-speed);
+    }
+    a:hover {
+      color: var(--paper);
+      text-decoration: underline;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px clamp(16px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(7, 12, 17, 0.82);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(215, 161, 61, 0.5);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      background: rgba(244, 234, 215, 0.05);
+      box-shadow: inset 0 0 0 6px rgba(215, 161, 61, 0.04);
+      flex: 0 0 auto;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.3rem, 2.5vw, 1.85rem);
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .hud {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hud-meter {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 130px;
+    }
+
+    .hud-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .hud-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hud-bar span {
+      display: block;
+      height: 100%;
+      transition: width 0.35s cubic-bezier(0.1, 0.8, 0.2, 1), background-color 0.3s;
+    }
+
+    .hud-fidelity span {
+      background: var(--teal);
+    }
+
+    .hud-drift span {
+      background: var(--gold);
+    }
+
+    .hud-drift.warning span {
+      background: var(--rose);
+      box-shadow: 0 0 8px var(--rose);
+    }
+
+    .hud-traps-count {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--paper);
+      background: rgba(244, 234, 215, 0.06);
+      border: 1px solid var(--line);
+      padding: 6px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .hud-traps-count b {
+      color: var(--gold);
+    }
+
+    /* Screens Layout */
+    .screen {
+      padding: clamp(16px, 3vw, 34px);
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Screen: Title */
+    .screen-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(80vh - 86px);
+      text-align: center;
+      max-width: 720px;
+      padding: 40px 20px;
+    }
+
+    .screen-title h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      margin: 0 0 16px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--paper-2), var(--gold) 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .screen-title p.subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: var(--muted);
+      margin: 0 0 32px;
+      font-family: Georgia, serif;
+      font-style: italic;
+    }
+
+    .framing-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.04);
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 34px);
+      margin-bottom: 36px;
+      text-align: left;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--gold);
+    }
+
+    .framing-card p {
+      margin: 0 0 16px;
+      font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+      line-height: 1.6;
+    }
+    .framing-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .framing-card strong {
+      color: var(--gold);
+    }
+
+    .btn-action {
+      background: var(--gold);
+      color: var(--ink);
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 14px 36px;
+      border: 1px solid var(--gold);
+      box-shadow: 0 10px 24px rgba(215, 161, 61, 0.25);
+    }
+
+    .btn-action:hover {
+      background: var(--paper-2);
+      border-color: var(--paper-2);
+    }
+
+    /* Screen: Play */
+    .game-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.95fr) minmax(420px, 1.2fr) minmax(320px, 1fr);
+      gap: 20px;
+      height: calc(100vh - 150px);
+      min-height: 550px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(244, 234, 215, 0.04);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      transition: border-color var(--transition-speed);
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(7, 12, 17, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+    }
+
+    .panel-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Left Panel (Scenario Card) */
+    .scenario-card {
+      background: linear-gradient(180deg, var(--paper-2), rgba(244, 234, 215, 0.9));
+      color: var(--ink);
+      border-radius: var(--radius);
+      padding: 22px;
+      border: 1px solid rgba(215, 161, 61, 0.35);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .scenario-meta {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(10, 17, 24, 0.08);
+      border: 1px solid var(--line-dark);
+      padding: 4px 10px;
+      border-radius: 999px;
+      color: var(--ink-2);
+    }
+
+    .chip.highlight {
+      background: rgba(215, 161, 61, 0.16);
+      border-color: rgba(215, 161, 61, 0.3);
+      color: var(--ink);
+    }
+
+    .scenario-card h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(1.4rem, 2vw, 1.8rem);
+      margin: 0 0 12px;
+      line-height: 1.25;
+    }
+
+    .scenario-card p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* Mentor Box */
+    .mentor-box {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.02);
+      border-radius: var(--radius);
+      margin-top: auto;
+    }
+
+    .mentor-header {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .mentor-header:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .mentor-header h4 {
+      margin: 0;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold);
+    }
+
+    .mentor-toggle-icon {
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+
+    .mentor-content {
+      padding: 0 16px 16px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--muted);
+      display: none;
+    }
+
+    .mentor-content.open {
+      display: block;
+    }
+
+    /* Middle Panel (Context Tiles) */
+    .instructions-pick {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 0 0 4px;
+    }
+
+    .tiles-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .tile-btn {
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.92rem;
+      line-height: 1.4;
+      display: flex;
+      align-items: start;
+      gap: 12px;
+      position: relative;
+    }
+
+    .tile-btn::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--muted);
+      border-radius: 4px;
+      display: inline-block;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: background 0.1s, border-color 0.1s;
+    }
+
+    .tile-btn.selected {
+      border-color: var(--gold);
+      background: rgba(215, 161, 61, 0.07);
+    }
+
+    .tile-btn.selected::before {
+      border-color: var(--gold);
+      background: var(--gold);
+    }
+
+    .tile-btn:hover:not(:disabled) {
+      border-color: rgba(215, 161, 61, 0.5);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .tile-btn:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: -2px;
+    }
+
+    .confirm-area {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .selection-counter {
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .selection-counter.complete {
+      color: var(--teal);
+    }
+
+    .btn-confirm {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--paper);
+      padding: 12px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .btn-confirm.ready {
+      background: var(--teal-dark);
+      border-color: var(--teal-dark);
+      color: #fff;
+      box-shadow: 0 6px 15px rgba(34, 117, 111, 0.3);
+    }
+
+    .btn-confirm.ready:hover {
+      background: var(--teal);
+      border-color: var(--teal);
+    }
+
+    /* Right Panel (Judgments & Traps Log) */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      color: var(--muted);
+      padding: 20px;
+    }
+
+    .empty-state-icon {
+      font-size: 2.2rem;
+      color: rgba(244, 234, 215, 0.15);
+      margin-bottom: 12px;
+    }
+
+    .traps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .trap-card {
+      border: 1px solid var(--rose);
+      background: var(--rose-light);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .trap-card-title {
+      font-weight: bold;
+      color: var(--rose);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .trap-card p {
+      margin: 0 0 6px;
+      color: var(--paper);
+    }
+
+    .trap-card-explain {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.85rem;
+      display: block;
+      padding-top: 4px;
+      border-top: 1px dashed rgba(212, 104, 93, 0.25);
+    }
+
+    .ok-badge {
+      border: 1px solid var(--teal);
+      background: var(--teal-light);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      color: var(--paper);
+    }
+
+    .ok-badge b {
+      color: var(--teal);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .judgment-section {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .judgment-section h4 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+    }
+
+    .judgment-btn {
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .judgment-btn:hover:not(:disabled) {
+      border-color: var(--gold);
+      background: rgba(215, 161, 61, 0.05);
+    }
+
+    .judgment-btn.selected {
+      border-color: var(--gold);
+      background: rgba(215, 161, 61, 0.1);
+    }
+
+    .judgment-btn.correct {
+      border-color: var(--teal);
+      background: rgba(100, 198, 189, 0.06);
+    }
+
+    .judgment-btn.incorrect {
+      border-color: var(--rose);
+      background: rgba(212, 104, 93, 0.06);
+    }
+
+    .judgment-feedback {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .judgment-feedback.correct {
+      border-color: var(--teal);
+      background: var(--teal-light);
+    }
+
+    .judgment-feedback.incorrect {
+      border-color: var(--rose);
+      background: var(--rose-light);
+    }
+
+    .judgment-feedback strong {
+      display: block;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .judgment-feedback.correct strong {
+      color: var(--teal);
+    }
+
+    .judgment-feedback.incorrect strong {
+      color: var(--rose);
+    }
+
+    .btn-next {
+      background: var(--gold);
+      color: var(--ink);
+      padding: 12px;
+      font-weight: 800;
+      text-align: center;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-next:hover {
+      background: var(--paper-2);
+    }
+
+    /* Screen: Debrief */
+    .debrief-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      padding-bottom: 60px;
+    }
+
+    .debrief-intro {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .debrief-intro h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin: 0 0 10px;
+      color: var(--paper-2);
+    }
+
+    .debrief-intro p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .debrief-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.03);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h3 {
+      margin: 0 0 16px;
+      font-family: Georgia, serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+    }
+
+    .stat-dial-container {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin-bottom: 16px;
+      display: grid;
+      place-items: center;
+    }
+
+    .circular-progress {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(var(--teal) 0%, rgba(255, 255, 255, 0.06) 0%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 16px rgba(7, 12, 17, 0.88);
+      position: relative;
+    }
+
+    .circular-progress::after {
+      content: "";
+      position: absolute;
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      background: rgba(7, 12, 17, 0.7);
+      z-index: 1;
+    }
+
+    .dial-val {
+      font-family: Georgia, serif;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--paper-2);
+      z-index: 2;
+      position: relative;
+    }
+
+    .dial-val span {
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+
+    .stat-card p.stat-desc {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .drift-bar-container {
+      width: 100%;
+      max-width: 280px;
+      margin: 20px 0;
+    }
+
+    .drift-scale-labels {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .warning-marker {
+      color: var(--rose) !important;
+    }
+
+    .debrief-traps-list {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      text-align: left;
+      margin: 10px 0;
+    }
+
+    .debrief-trap-item {
+      font-size: 0.85rem;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .debrief-trap-item.avoided {
+      border-color: rgba(100, 198, 189, 0.3);
+      color: var(--teal);
+    }
+
+    .debrief-trap-item.triggered {
+      border-color: rgba(212, 104, 93, 0.3);
+      color: var(--rose);
+      background: var(--rose-light);
+    }
+
+    .trap-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    /* Essay Cards */
+    .essay-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .essay-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.02);
+      border-radius: var(--radius);
+      padding: 26px;
+    }
+
+    .essay-card.highlight {
+      border-left: 5px solid var(--teal);
+    }
+
+    .essay-card.warning-left {
+      border-left: 5px solid var(--rose);
+    }
+
+    .essay-card h3 {
+      margin: 0 0 16px;
+      font-family: Georgia, serif;
+      font-size: 1.35rem;
+      color: var(--paper-2);
+    }
+
+    .essay-card p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+    .essay-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .essay-card strong {
+      color: var(--paper);
+    }
+
+    /* Framework Grid */
+    .framework-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.03);
+      border-radius: var(--radius);
+      padding: 26px;
+    }
+
+    .framework-card h3 {
+      margin: 0 0 20px;
+      font-family: Georgia, serif;
+      font-size: 1.45rem;
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .framework-subgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .fw-item {
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: var(--radius);
+    }
+
+    .fw-item h4 {
+      margin: 0 0 8px;
+      font-family: Georgia, serif;
+      font-size: 1.1rem;
+      color: var(--paper-2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fw-item p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .fw-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: rgba(215, 161, 61, 0.15);
+      color: var(--gold);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .replay-area {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    /* Help & Modals */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .game-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 0;
+      }
+      .panel {
+        max-height: 600px;
+      }
+      .essay-grid, .framework-subgrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Screen Reader announcements -->
+    <div id="announcer" class="sr-only" aria-live="polite"></div>
+
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">T</div>
+        <div class="brand-text">
+          <h1>Out of Time</h1>
+          <p>A Judgment Game in Historical Thinking</p>
+        </div>
+      </div>
+      <!-- HUD meters (hidden in title screen) -->
+      <div class="hud" id="hudMeters" style="display: none;">
+        <div class="hud-meter">
+          <div class="hud-label">
+            <span>Contextual Fidelity</span>
+            <span id="labelFidelity">50%</span>
+          </div>
+          <div class="hud-bar hud-fidelity" aria-hidden="true">
+            <span id="barFidelity" style="width: 50%;"></span>
+          </div>
+        </div>
+        <div class="hud-meter">
+          <div class="hud-label">
+            <span>Presentist Drift</span>
+            <span id="labelDrift">0%</span>
+          </div>
+          <div class="hud-bar hud-drift" id="barDriftContainer" aria-hidden="true">
+            <span id="barDrift" style="width: 0%;"></span>
+          </div>
+        </div>
+        <div class="hud-traps-count">
+          Traps Avoided: <b id="hudTrapsVal">0 / 12</b>
+        </div>
+      </div>
+    </header>
+
+    <main id="mainContent" role="main">
+      <!-- SCREEN: TITLE -->
+      <div class="screen screen-title" id="screenTitle">
+        <h2>Evaluate the Past. Resist Hindsight.</h2>
+        <p class="subtitle">A game of period worldview reconstruction for secondary students</p>
+        
+        <div class="framing-card">
+          <p>You are a <strong>time-bound historian</strong>. You may judge the decisions of historical actors &mdash; but only with what the people there could actually have known and faced.</p>
+          <p><strong>Hindsight is a trap.</strong> Evaluating the past using the knowledge, values, and outcomes of the present is called <em>presentism</em>. It turns complex history into simple, modern moralizing.</p>
+          <p>In this investigation, you will explore 4 critical historical dilemmas. In each scene, you must:</p>
+          <p>
+            1. <strong>Assemble the context:</strong> Filter period-accurate knowledge from anachronisms (true details only known later) and value traps.<br>
+            2. <strong>Appraise the choice:</strong> Pick the appraisal that matches the pressures and limitations of the period, refusing the comfort of hindsight.
+          </p>
+        </div>
+
+        <button class="btn-action" id="btnStartGame">Begin Investigation</button>
+      </div>
+
+      <!-- SCREEN: PLAY -->
+      <div class="screen" id="screenPlay" style="display: none;">
+        <div class="game-grid">
+          
+          <!-- Column 1: The Scenario Setup -->
+          <section class="panel" aria-labelledby="colScenarioTitle">
+            <div class="panel-header">
+              <h3 id="colScenarioTitle">Historical Actor</h3>
+              <span id="sceneTracker" style="font-size: 0.8rem; font-weight: bold; color: var(--gold);">Scene 1 of 4</span>
+            </div>
+            <div class="panel-body">
+              <div class="scenario-card" id="scenarioCard">
+                <div class="scenario-meta">
+                  <span class="chip highlight" id="scenarioDate">1774</span>
+                  <span class="chip" id="scenarioLocation">Boston</span>
+                </div>
+                <h2 id="scenarioActor">New England Merchant</h2>
+                <p id="scenarioDecision">Do you sign the non-importation agreement that will cost your livelihood?</p>
+              </div>
+
+              <!-- Mentor Box -->
+              <div class="mentor-box">
+                <div class="mentor-header" id="mentorHeader" role="button" aria-expanded="false" tabindex="0">
+                  <h4>
+                    <span style="font-size: 1.1rem;">📓</span>
+                    <span>Mentor's Notebook</span>
+                  </h4>
+                  <span class="mentor-toggle-icon" id="mentorToggleIcon">▼</span>
+                </div>
+                <div class="mentor-content" id="mentorContent">
+                  Hint Content
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Column 2: Context Board (Tile Picker) -->
+          <section class="panel" aria-labelledby="colContextTitle">
+            <div class="panel-header">
+              <h3 id="colContextTitle">Reconstruct Context</h3>
+            </div>
+            <div class="panel-body">
+              <p class="instructions-pick" id="pickDesc">Select exactly <strong>3 knowledge tiles</strong> that were available to this actor at the time. Watch out for future facts or modern judgments.</p>
+              <div class="tiles-grid" id="tilesGrid" role="group" aria-describedby="pickDesc">
+                <!-- Tiles injected dynamically -->
+              </div>
+              <div class="confirm-area">
+                <span class="selection-counter" id="selectCountLabel">0 of 3 Selected</span>
+                <button class="btn-confirm" id="btnConfirmContext" disabled>Lock in Context</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Column 3: Appraisal (Locked / Unlocked) -->
+          <section class="panel" aria-labelledby="colAppraisalTitle">
+            <div class="panel-header">
+              <h3 id="colAppraisalTitle">Historical Appraisal</h3>
+            </div>
+            <div class="panel-body" id="appraisalPanelBody">
+              <!-- Empty state before confirm -->
+              <div class="empty-state" id="appraisalEmptyState">
+                <div class="empty-state-icon">⚖️</div>
+                <p>Filter the context tiles and click <strong>Lock in Context</strong> to unlock the appraisal options.</p>
+              </div>
+
+              <!-- Content revealed after confirm -->
+              <div id="appraisalContent" style="display: none; flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                <div class="traps-list" id="trapsLog">
+                  <!-- Trap notifications / Success badges injected here -->
+                </div>
+
+                <div class="judgment-section" id="judgmentArea">
+                  <h4 id="judgmentPrompt">Choose the most defensible historical appraisal:</h4>
+                  <div class="tiles-grid" id="judgmentsGrid">
+                    <!-- Judgments injected here -->
+                  </div>
+                </div>
+
+                <div class="judgment-feedback" id="judgmentFeedback" style="display: none;">
+                  <!-- Feedback text -->
+                </div>
+
+                <button class="btn-next" id="btnNextScene" style="display: none;">Continue to Next Scene</button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- SCREEN: DEBRIEF -->
+      <div class="screen" id="screenDebrief" style="display: none;">
+        <div class="debrief-layout">
+          
+          <div class="debrief-intro">
+            <h2>Investigation Concluded</h2>
+            <p>You have finished evaluating the historical decisions. Let's analyze your reasoning profile.</p>
+          </div>
+
+          <!-- Dials and statistics -->
+          <div class="debrief-stats-grid">
+            <div class="stat-card">
+              <h3>Contextual Fidelity</h3>
+              <div class="stat-dial-container">
+                <div class="circular-progress" id="fidelityDial">
+                  <span class="dial-val" id="fidelityVal">50<span>%</span></span>
+                </div>
+              </div>
+              <p class="stat-desc">Your ability to reconstruct the period worldview and base appraisals solely on facts available to actors at the time. Higher indicates robust historical inquiry.</p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Presentist Drift</h3>
+              <div class="stat-dial-container">
+                <div class="circular-progress" id="driftDial" style="background: conic-gradient(var(--gold) 0%, rgba(255,255,255,0.06) 0%);">
+                  <span class="dial-val" id="driftVal">0<span>%</span></span>
+                </div>
+              </div>
+              <div class="drift-bar-container">
+                <div class="hud-bar hud-drift" id="debriefDriftBar" style="height: 10px;">
+                  <span id="debriefDriftFill" style="width: 0%;"></span>
+                </div>
+                <div class="drift-scale-labels">
+                  <span>HISTORICAL</span>
+                  <span class="warning-marker">WARNING THRESHOLD (50%)</span>
+                  <span>PRESENTIST</span>
+                </div>
+              </div>
+              <p class="stat-desc">How often you relied on modern hindsight, future knowledge, or moralistic judgment rather than analyzing constraints. Lower is better.</p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Hindsight Traps Avoided</h3>
+              <span class="dial-val" style="font-size: 3.5rem; margin-top: 10px;" id="trapsAvoidedVal">12 / 12</span>
+              <p class="stat-desc" style="margin-bottom: 15px;">You successfully avoided the seductive pull of anachronisms and hindsight judgments across all scenes.</p>
+              
+              <div class="debrief-traps-list" id="debriefTrapsChecklist">
+                <!-- List of traps -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Essay: What Contextualization Is and Is Not -->
+          <div class="essay-grid">
+            <div class="essay-card highlight">
+              <h3>What Contextualization IS</h3>
+              <p>Contextualization is the core move of historical thinking. It requires you to <strong>rebuild a foreign worldview</strong>, mapping out what people believed, feared, knew, and lacked. It demands that you treat past actions as rational responses to immediate, complex pressures.</p>
+              <p>When you contextualize, you respect the limits of time. You recognize that the actors had to make decisions in the dark, without the benefit of knowing how the story ends.</p>
+            </div>
+            
+            <div class="essay-card warning-left">
+              <h3>What Contextualization is NOT</h3>
+              <p>Contextualization is <strong>not moral relativism</strong>, nor is it <strong>exoneration</strong>. Empathizing with the constraints of historical actors does not mean endorsing their decisions or excusing atrocities.</p>
+              <p>Historians do both: they <strong>explain</strong> an action using context, and they <strong>evaluate</strong> the ethical weight and consequences of that action. The danger is merging the two: skipping the explanation to leap directly to immediate hindsight condemnation.</p>
+            </div>
+          </div>
+
+          <!-- Framework Grid -->
+          <div class="framework-card">
+            <h3>Connected Frameworks</h3>
+            <div class="framework-subgrid">
+              <div class="fw-item">
+                <h4><span class="fw-tag">C.O.R.E.</span> Openness</h4>
+                <p>Resist the flat, clean summaries generated by AI that resolve historical conflicts. Openness means entering the historical space as a realm of genuine contestation, multiple competing perspectives, and unresolved tension.</p>
+              </div>
+              <div class="fw-item">
+                <h4><span class="fw-tag">H.E.A.R.T.</span> Empathy</h4>
+                <p>Engage in historical perspective-taking. Empathy means respecting the cognitive and emotional realities of people who lived in contexts radically different from our own, understanding them on their own terms before passing judgment.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="replay-area">
+            <button class="btn-action" id="btnReplay">Investigate Again</button>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // --- GAME DATA MODEL ---
+    const scenesData = [
+      {
+        id: "scene_a",
+        actor: "New England Merchant",
+        date: "1774",
+        place: "Boston",
+        decision: "Do you sign the non-importation agreement that will cost your livelihood?",
+        mentorHint: "Think about the immediate threat of the Boston Port Act and local Patriot groups, vs the complete lack of guarantee about a future rebellion or a successful American independence.",
+        tiles: [
+          { id: "a_p1", text: "Parliament has closed Boston's port (Coercive Acts).", type: "period", note: "The Boston Port Act closed the harbor, cutting off trade and sparking an economic emergency." },
+          { id: "a_p2", text: "Committees of correspondence are pressuring merchants to comply.", type: "period", note: "Patriot committees published names of non-signers, leading to severe social boycotts and public intimidation." },
+          { id: "a_p3", text: "Signing risks your business; refusing risks your standing in the community.", type: "period", note: "Merchants faced a double-bind: immediate financial ruin from signing vs potential violence (tarring and feathering) if they refused." },
+          { id: "a_a1", text: "The colonies will win independence in 1783.", type: "anachronism", note: "Nobody in 1774 knew that war would break out, or that the colonies would succeed in forming a new nation." },
+          { id: "a_a2", text: "This boycott will be studied as a model of nonviolent resistance.", type: "anachronism", note: "The concept of 'nonviolent resistance' as a political framework did not exist; protests were coercive and often destructive." },
+          { id: "a_v1", text: "Anyone who hesitated was a coward.", type: "value", note: "This is a presentist moral verdict. Merchants had families to feed and no guarantee that the protest would succeed or protect them." }
+        ],
+        judgments: [
+          {
+            id: "a_j1",
+            text: "Understand the merchant's hesitation as a rational calculation between ruin and community safety, balancing intense local social pressure against economic survival.",
+            type: "correct",
+            feedback: "Correct! This appraisal grounds the choice in actual 1774 pressures and uncertainty, avoiding the hindsight bias that paints compliance as an easy moral choice."
+          },
+          {
+            id: "a_j2",
+            text: "Condemn the merchant for hesitating to support the boycott, arguing that any true patriot should have put independence above personal wealth.",
+            type: "presentist",
+            feedback: "Trap! This assumes the merchant knew independence was the goal (anachronism) and applies a moralistic filter that ignores the threat of starvation and ruin."
+          },
+          {
+            id: "a_j3",
+            text: "Dismiss the patriot cause as mere lawless coercion, defending the merchant's refusal as the only logical response to mob rule.",
+            type: "exoneration",
+            feedback: "Trap! This overlooks the legitimate period grievances (Coercive Acts) and the merchant's actual need to maintain community standing, oversimplifying the conflict."
+          }
+        ]
+      },
+      {
+        id: "scene_b",
+        actor: "Constitutional Convention Delegate",
+        date: "1787",
+        place: "Philadelphia",
+        decision: "Do you vote to accept the compromises protecting slavery to secure a unified national constitution?",
+        mentorHint: "Focus on the fragile coalition at the convention: delegates from Georgia and South Carolina threatened to leave immediately if slavery was restricted, and there was no backup system if the states failed to unite.",
+        tiles: [
+          { id: "b_p1", text: "Southern delegates declare their states will refuse to join the union without protections for slavery.", type: "period", note: "Delegates from the deep South made it clear they would walk out, fracturing the nation before it could form." },
+          { id: "b_p2", text: "The three-fifths formula and the 20-year ban on ending the slave trade are being bargained.", type: "period", note: "These specific, painful clauses were negotiated to keep Southern states at the bargaining table." },
+          { id: "b_p3", text: "Abolitionist sentiments are growing, but lack the political power to dismantle slavery nationally.", type: "period", note: "Anti-slavery organizations and sentiments existed, but lacked the votes or constitutional leverage to force abolition." },
+          { id: "b_a1", text: "We know this delay helped cause the Civil War 74 years later.", type: "anachronism", note: "Delegates in 1787 could not foresee the Civil War or its timeline; they hoped slavery might gradually fade out on its own." },
+          { id: "b_v1", text: "They were simply evil and that's all there is to say.", type: "value", note: "This collapses historical analysis into a single moral condemnation, failing to analyze the structural binds and political bargains they navigated." },
+          { id: "b_a2", text: "The slave trade compromise will be hailed as the first step toward universal human rights.", type: "anachronism", note: "Nobody in 1787 viewed the compromise as a human rights victory; it was a pragmatic, morally compromised deal to build a state." }
+        ],
+        judgments: [
+          {
+            id: "b_j1",
+            text: "Acknowledge the tragic bind: delegates faced a choice between a fragile union that compromised human liberty, or no union at all, which would leave states divided and vulnerable.",
+            type: "correct",
+            feedback: "Correct! This holds both the moral gravity and the actual period political constraints without collapsing into hindsight condemnation or historical excuse-making. It highlights that understanding why they compromised is different from endorsing the compromise."
+          },
+          {
+            id: "b_j2",
+            text: "Judge the Northern delegates as irredeemably corrupt for not insisting on immediate abolition, regardless of whether the union collapsed.",
+            type: "presentist",
+            feedback: "Trap! This uses hindsight to declare the union's collapse preferable, ignoring that in 1787, delegates believed a failed union would lead to European recolonization or war."
+          },
+          {
+            id: "b_j3",
+            text: "Excuse the compromises entirely, arguing that since slavery was normal back then, delegates did nothing morally questionable.",
+            type: "exoneration",
+            feedback: "Trap! Anti-slavery sentiment was active and vocal in 1787, and many delegates wrote about the profound moral shame of the compromise. Historical empathy is not moral relativism."
+          }
+        ]
+      },
+      {
+        id: "scene_c",
+        actor: "Civil Rights Organizer",
+        date: "1961",
+        place: "Anniston, Alabama",
+        decision: "After the first Freedom Ride bus is firebombed by a white mob, do you send another bus of riders into Birmingham?",
+        mentorHint: "Weigh the extreme physical danger to the young riders against the strategic fear that halting now would confirm that segregationist violence could successfully veto civil rights campaigns.",
+        tiles: [
+          { id: "c_p1", text: "Local police in Alabama have colluded with the Ku Klux Klan and refuse to protect the riders.", type: "period", note: "Organizers had received warnings that police would stand down and allow mobs to attack." },
+          { id: "c_p2", text: "Halting now would signal to segregationists that violence wins and vetoes civil rights protest.", type: "period", note: "A core strategy of the rides was to show that intimidation could not stop the movement." },
+          { id: "c_p3", text: "Federal authorities are urging a 'cooling-off period' to avoid international embarrassment.", type: "period", note: "The Kennedy administration wanted the rides stopped as they disrupted Cold War diplomacy." },
+          { id: "c_a1", text: "The Interstate Commerce Commission will ban segregation in interstate travel in November 1961.", type: "anachronism", note: "In May 1961, organizers had no way of knowing if the ICC would ever act, or how long it would take." },
+          { id: "c_a2", text: "This campaign will make John Lewis a legendary civil rights hero and U.S. Congressman.", type: "anachronism", note: "In 1961, Lewis was a young student volunteer who had just been severely beaten; his survival was uncertain." },
+          { id: "c_v1", text: "Anyone who suggested a 'cooling-off period' was a traitor to the cause of racial equality.", type: "value", note: "This is a presentist moral verdict. Many veteran organizers debated pauses because they were responsible for the lives of young volunteers." }
+        ],
+        judgments: [
+          {
+            id: "c_j1",
+            text: "Appraise the organizer's decision as a calculated escalation: risking the lives of volunteers to expose southern lawlessness and force a reluctant federal government to intervene.",
+            type: "correct",
+            feedback: "Correct! This captures the active, terrifying tradeoffs and the strategic rationale of the campaign without treating the outcome as pre-ordained."
+          },
+          {
+            id: "c_j2",
+            text: "Condemn organizers for putting young students in harm's way, arguing they should have waited for the federal government's legal process to work.",
+            type: "presentist",
+            feedback: "Trap! This ignores the context that the federal government was refusing to enforce existing Supreme Court rulings until forced by direct-action pressure."
+          },
+          {
+            id: "c_j3",
+            text: "Claim that the riders knew they were safe because history was on their side and federal protection was guaranteed.",
+            type: "exoneration",
+            feedback: "Trap! Federal protection was repeatedly denied, and riders wrote wills before boarding, fully expecting they might be murdered."
+          }
+        ]
+      },
+      {
+        id: "scene_d",
+        actor: "Japanese-American Citizen",
+        date: "1943",
+        place: "Manzanar Internment Camp",
+        decision: "Do you answer 'Yes-Yes' to the government's loyalty questionnaire (Questions 27 and 28)?",
+        mentorHint: "Weigh the coercive nature of the questions: answering 'Yes-Yes' allowed release from camp but made young men draft-eligible to fight for a country that locked them up; answering 'No-No' was a protest but led to segregation in a high-security prison.",
+        tiles: [
+          { id: "d_p1", text: "Answering 'No-No' is a protest against your illegal imprisonment, but will send you to Tule Lake high-security camp.", type: "period", note: "Refusing to swear allegiance was a way to protest the violation of civil rights, but carried severe penalties." },
+          { id: "d_p2", text: "Answering 'Yes-Yes' lets you leave camp, but makes you eligible for the draft to fight for a country that locked you up.", type: "period", note: "Compliance offered a path to freedom but required serving a government that incarcerated your family." },
+          { id: "d_p3", text: "The camp community is deeply divided; some see compliance as survival, others as betrayal of their rights.", type: "period", note: "Tension was high, and families argued bitterly over the questionnaire, sometimes leading to violence." },
+          { id: "d_a1", text: "The U.S. government will formally apologize and pay reparations in 1988.", type: "anachronism", note: "In 1943, internees had no guarantee they would ever be released, let alone apologized to or compensated." },
+          { id: "d_a2", text: "The all-Japanese-American 442nd Regimental Combat Team will become the most decorated unit in U.S. military history.", type: "anachronism", note: "The unit was just being formed in 1943; its legendary battle record and the military's change in attitude were in the future." },
+          { id: "d_v1", text: "Those who answered 'Yes-Yes' were cowards who didn't care about their rights.", type: "value", note: "This is a presentist moral verdict. Internees answering 'Yes-Yes' were often desperately trying to protect their elderly parents or find a future." }
+        ],
+        judgments: [
+          {
+            id: "d_j1",
+            text: "Appreciate that both compliance ('Yes-Yes') and protest ('No-No') were logical and agonizing responses to state coercion, representing different ways to preserve family and dignity.",
+            type: "correct",
+            feedback: "Correct! This respects the extreme constraints of the situation and rejects easy judgments of either compliance or protest. It understands that both responses sought survival under unjust conditions."
+          },
+          {
+            id: "d_j2",
+            text: "Judge the 'No-No' refusers as disloyal rebels who justified the government's fears and suspicion.",
+            type: "presentist",
+            feedback: "Trap! This adopts the nativist, wartime paranoia of the 1940s, ignoring that their refusal was a protest against the illegal suspension of their constitutional rights."
+          },
+          {
+            id: "d_j3",
+            text: "Claim the questionnaire was a fair and reasonable way for the U.S. government to ensure national security during wartime.",
+            type: "exoneration",
+            feedback: "Trap! This excuses the violation of civil rights, ignoring that the questionnaire was administered under duress to citizens who had been interned without trial."
+          }
+        ]
+      }
+    ];
+
+    // --- GAME STATE VARIABLES ---
+    let activeScenes = [];
+    let currentSceneIdx = 0;
+    let selectedTileIds = [];
+    
+    // Scores
+    let contextualFidelity = 50;
+    let presentistDrift = 0;
+    let trapsTriggered = []; // list of triggered trap ids
+    let avoidedTrapsCount = 12; // starts at 12 (3 traps * 4 scenes), decrements as traps are hit
+
+    // --- DOM ELEMENTS ---
+    const screenTitle = document.getElementById("screenTitle");
+    const screenPlay = document.getElementById("screenPlay");
+    const screenDebrief = document.getElementById("screenDebrief");
+    const hudMeters = document.getElementById("hudMeters");
+    
+    // HUD elements
+    const labelFidelity = document.getElementById("labelFidelity");
+    const barFidelity = document.getElementById("barFidelity");
+    const labelDrift = document.getElementById("labelDrift");
+    const barDrift = document.getElementById("barDrift");
+    const barDriftContainer = document.getElementById("barDriftContainer");
+    const hudTrapsVal = document.getElementById("hudTrapsVal");
+
+    // Play Screen Elements
+    const sceneTracker = document.getElementById("sceneTracker");
+    const scenarioDate = document.getElementById("scenarioDate");
+    const scenarioLocation = document.getElementById("scenarioLocation");
+    const scenarioActor = document.getElementById("scenarioActor");
+    const scenarioDecision = document.getElementById("scenarioDecision");
+    
+    const mentorHeader = document.getElementById("mentorHeader");
+    const mentorToggleIcon = document.getElementById("mentorToggleIcon");
+    const mentorContent = document.getElementById("mentorContent");
+
+    const tilesGrid = document.getElementById("tilesGrid");
+    const selectCountLabel = document.getElementById("selectCountLabel");
+    const btnConfirmContext = document.getElementById("btnConfirmContext");
+
+    const appraisalEmptyState = document.getElementById("appraisalEmptyState");
+    const appraisalContent = document.getElementById("appraisalContent");
+    const trapsLog = document.getElementById("trapsLog");
+    const judgmentsGrid = document.getElementById("judgmentsGrid");
+    const judgmentFeedback = document.getElementById("judgmentFeedback");
+    const btnNextScene = document.getElementById("btnNextScene");
+    
+    // Debrief Elements
+    const fidelityVal = document.getElementById("fidelityVal");
+    const fidelityDial = document.getElementById("fidelityDial");
+    const driftVal = document.getElementById("driftVal");
+    const driftDial = document.getElementById("driftDial");
+    const debriefDriftFill = document.getElementById("debriefDriftFill");
+    const trapsAvoidedVal = document.getElementById("trapsAvoidedVal");
+    const debriefTrapsChecklist = document.getElementById("debriefTrapsChecklist");
+
+    const announcer = document.getElementById("announcer");
+
+    // --- UTILITIES ---
+    function shuffleArray(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function announce(msg) {
+      announcer.textContent = msg;
+    }
+
+    function clamp(val, min, max) {
+      return Math.min(Math.max(val, min), max);
+    }
+
+    function updateMeters() {
+      // Clamp values
+      contextualFidelity = clamp(contextualFidelity, 0, 100);
+      presentistDrift = clamp(presentistDrift, 0, 100);
+
+      // Update HUD
+      labelFidelity.textContent = `${contextualFidelity}%`;
+      barFidelity.style.width = `${contextualFidelity}%`;
+
+      labelDrift.textContent = `${presentistDrift}%`;
+      barDrift.style.width = `${presentistDrift}%`;
+
+      if (presentistDrift >= 50) {
+        barDriftContainer.classList.add("warning");
+      } else {
+        barDriftContainer.classList.remove("warning");
+      }
+
+      hudTrapsVal.innerHTML = `<b>${avoidedTrapsCount}</b> / 12`;
+    }
+
+    // --- EVENT LISTENERS ---
+    document.getElementById("btnStartGame").addEventListener("click", initGame);
+    document.getElementById("btnReplay").addEventListener("click", initGame);
+
+    mentorHeader.addEventListener("click", toggleMentor);
+    mentorHeader.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        toggleMentor();
+      }
+    });
+
+    btnConfirmContext.addEventListener("click", lockInContext);
+    btnNextScene.addEventListener("click", advanceGame);
+
+    // --- GAME FLOW LOGIC ---
+
+    function initGame() {
+      // Reset variables
+      contextualFidelity = 50;
+      presentistDrift = 0;
+      trapsTriggered = [];
+      avoidedTrapsCount = 12;
+      currentSceneIdx = 0;
+
+      // Reshuffle scenes order (High Replayability)
+      activeScenes = shuffleArray(scenesData);
+      
+      // Shuffle tiles for each scene
+      activeScenes.forEach(scene => {
+        scene.tiles = shuffleArray(scene.tiles);
+      });
+
+      // UI Swaps
+      screenTitle.style.display = "none";
+      screenDebrief.style.display = "none";
+      screenPlay.style.display = "block";
+      hudMeters.style.display = "flex";
+
+      updateMeters();
+      loadScene(currentSceneIdx);
+      
+      announce("Game started. Reconstructing context for the first scene.");
+    }
+
+    function loadScene(idx) {
+      const scene = activeScenes[idx];
+      selectedTileIds = [];
+
+      // Update tracker
+      sceneTracker.textContent = `Scene ${idx + 1} of 4`;
+      scenarioDate.textContent = scene.date;
+      scenarioLocation.textContent = scene.place;
+      scenarioActor.textContent = scene.actor;
+      scenarioDecision.textContent = scene.decision;
+
+      // Mentor Journal (default closed)
+      mentorContent.textContent = scene.mentorHint;
+      mentorContent.classList.remove("open");
+      mentorHeader.setAttribute("aria-expanded", "false");
+      mentorToggleIcon.textContent = "▼";
+
+      // Context board loading
+      tilesGrid.innerHTML = "";
+      scene.tiles.forEach(tile => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tile-btn";
+        btn.id = tile.id;
+        btn.textContent = tile.text;
+        btn.setAttribute("aria-pressed", "false");
+        btn.addEventListener("click", () => toggleTileSelection(tile.id));
+        tilesGrid.appendChild(btn);
+      });
+
+      // Update UI counters
+      updateSelectCount();
+
+      // Reset Appraisal Column
+      appraisalEmptyState.style.display = "flex";
+      appraisalContent.style.display = "none";
+      trapsLog.innerHTML = "";
+      judgmentsGrid.innerHTML = "";
+      judgmentFeedback.style.display = "none";
+      btnNextScene.style.display = "none";
+    }
+
+    function toggleMentor() {
+      const isOpen = mentorContent.classList.toggle("open");
+      mentorHeader.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      mentorToggleIcon.textContent = isOpen ? "▲" : "▼";
+    }
+
+    function toggleTileSelection(tileId) {
+      const idx = selectedTileIds.indexOf(tileId);
+      const btn = document.getElementById(tileId);
+
+      if (idx > -1) {
+        selectedTileIds.splice(idx, 1);
+        btn.classList.remove("selected");
+        btn.setAttribute("aria-pressed", "false");
+      } else {
+        if (selectedTileIds.length >= 3) {
+          announce("Selection cap reached. You can only select up to 3 tiles.");
+          return;
+        }
+        selectedTileIds.push(tileId);
+        btn.classList.add("selected");
+        btn.setAttribute("aria-pressed", "true");
+      }
+
+      updateSelectCount();
+    }
+
+    function updateSelectCount() {
+      const count = selectedTileIds.length;
+      selectCountLabel.textContent = `${count} of 3 Selected`;
+      
+      if (count === 3) {
+        selectCountLabel.classList.add("complete");
+        btnConfirmContext.disabled = false;
+        btnConfirmContext.classList.add("ready");
+      } else {
+        selectCountLabel.classList.remove("complete");
+        btnConfirmContext.disabled = true;
+        btnConfirmContext.classList.remove("ready");
+      }
+    }
+
+    function lockInContext() {
+      const scene = activeScenes[currentSceneIdx];
+      
+      // Disable further tile picking
+      const tileButtons = tilesGrid.querySelectorAll(".tile-btn");
+      tileButtons.forEach(btn => btn.disabled = true);
+      btnConfirmContext.disabled = true;
+
+      // Switch column 3 panels
+      appraisalEmptyState.style.display = "none";
+      appraisalContent.style.display = "flex";
+
+      let trapsTriggeredInThisScene = 0;
+      let correctPeriodTilesPicked = 0;
+
+      // Evaluate selections
+      selectedTileIds.forEach(id => {
+        const tile = scene.tiles.find(t => t.id === id);
+        const tileElement = document.getElementById(id);
+
+        if (tile.type === "period") {
+          correctPeriodTilesPicked++;
+          contextualFidelity += 15;
+          
+          tileElement.style.borderColor = "var(--teal)";
+          tileElement.style.background = "rgba(100, 198, 189, 0.08)";
+        } else {
+          trapsTriggeredInThisScene++;
+          trapsTriggered.push(tile);
+          avoidedTrapsCount--;
+          contextualFidelity -= 5;
+          presentistDrift += 25;
+
+          tileElement.style.borderColor = "var(--rose)";
+          tileElement.style.background = "rgba(212, 104, 93, 0.08)";
+
+          // Log the hindsight trap in Column 3
+          const trapCard = document.createElement("div");
+          trapCard.className = "trap-card";
+          trapCard.innerHTML = `
+            <div class="trap-card-title">⚠️ ${tile.type === "anachronism" ? "Anachronism Trap" : "Value Judgment Trap"}</div>
+            <p>"${tile.text}"</p>
+            <span class="trap-card-explain"><b>Trap Warning:</b> ${tile.note}</span>
+          `;
+          trapsLog.appendChild(trapCard);
+        }
+      });
+
+      // If no traps triggered, show success badge
+      if (trapsTriggeredInThisScene === 0) {
+        const successBadge = document.createElement("div");
+        successBadge.className = "ok-badge";
+        successBadge.innerHTML = `
+          <b>🎯 Context Assembled Correctly</b>
+          You successfully filtered out hindsight traps. Contextual Fidelity increased.
+        `;
+        trapsLog.appendChild(successBadge);
+        announce("Locked in context. Excellent work, you avoided all hindsight traps in this scene.");
+      } else {
+        announce(`Locked in context. Triggered ${trapsTriggeredInThisScene} hindsight traps.`);
+      }
+
+      updateMeters();
+
+      // Render judgment appraisal choices
+      judgmentsGrid.innerHTML = "";
+      scene.judgments.forEach(jud => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "judgment-btn";
+        btn.textContent = jud.text;
+        btn.addEventListener("click", () => handleJudgmentChoice(jud, btn));
+        judgmentsGrid.appendChild(btn);
+      });
+      
+      // Auto scroll column 3 into view on mobile
+      appraisalContent.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function handleJudgmentChoice(selectedJud, selectedBtn) {
+      const scene = activeScenes[currentSceneIdx];
+      const buttons = judgmentsGrid.querySelectorAll(".judgment-btn");
+
+      // Disable other choices
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.remove("selected");
+      });
+
+      selectedBtn.classList.add("selected");
+
+      // Show feedback card
+      judgmentFeedback.style.display = "block";
+      judgmentFeedback.className = "judgment-feedback"; // reset classes
+
+      if (selectedJud.type === "correct") {
+        contextualFidelity += 10;
+        selectedBtn.classList.add("correct");
+        judgmentFeedback.classList.add("correct");
+        judgmentFeedback.innerHTML = `
+          <strong>🎯 Historical Appraisal Grounded</strong>
+          ${selectedJud.feedback}
+        `;
+        announce("Approved appraisal: Grounded in period context. Contextual Fidelity increased.");
+      } else {
+        selectedBtn.classList.add("incorrect");
+        judgmentFeedback.classList.add("incorrect");
+        
+        if (selectedJud.type === "presentist") {
+          presentistDrift += 25;
+          contextualFidelity -= 10;
+          judgmentFeedback.innerHTML = `
+            <strong>⚠️ Presentist Drift Trap</strong>
+            ${selectedJud.feedback}
+          `;
+          announce("Approved appraisal: Presentist trap selected. Presentist Drift increased.");
+        } else {
+          presentistDrift += 15;
+          contextualFidelity -= 5;
+          judgmentFeedback.innerHTML = `
+            <strong>⚠️ Exoneration / Relativism Trap</strong>
+            ${selectedJud.feedback}
+          `;
+          announce("Approved appraisal: Exoneration/Relativism trap selected. Presentist Drift increased.");
+        }
+      }
+
+      updateMeters();
+      btnNextScene.style.display = "block";
+      
+      // Scroll next button into view
+      btnNextScene.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function advanceGame() {
+      currentSceneIdx++;
+      if (currentSceneIdx < 4) {
+        loadScene(currentSceneIdx);
+      } else {
+        showDebrief();
+      }
+    }
+
+    function showDebrief() {
+      screenPlay.style.display = "none";
+      hudMeters.style.display = "none";
+      screenDebrief.style.display = "block";
+
+      // Animate circular progress dials
+      // Formula: conic-gradient(color percentage%, transparent percentage%)
+      fidelityVal.innerHTML = `${contextualFidelity}<span>%</span>`;
+      fidelityDial.style.background = `conic-gradient(var(--teal) ${contextualFidelity}%, rgba(255, 255, 255, 0.06) ${contextualFidelity}%)`;
+
+      driftVal.innerHTML = `${presentistDrift}<span>%</span>`;
+      const driftColor = presentistDrift >= 50 ? "var(--rose)" : "var(--gold)";
+      driftDial.style.background = `conic-gradient(${driftColor} ${presentistDrift}%, rgba(255, 255, 255, 0.06) ${presentistDrift}%)`;
+      debriefDriftFill.style.width = `${presentistDrift}%`;
+      if (presentistDrift >= 50) {
+        debriefDriftFill.style.background = "var(--rose)";
+      } else {
+        debriefDriftFill.style.background = "var(--gold)";
+      }
+
+      trapsAvoidedVal.textContent = `${avoidedTrapsCount} / 12`;
+
+      // Build checklist of traps
+      debriefTrapsChecklist.innerHTML = "";
+      
+      // We want to list the 12 traps that are in the game and show which ones the player triggered
+      // Since scenes were randomized, let's gather all trap tiles from our active scenes in order
+      let trapIndex = 1;
+      activeScenes.forEach(scene => {
+        const trapTiles = scene.tiles.filter(t => t.type === "anachronism" || t.type === "value");
+        trapTiles.forEach(tile => {
+          const item = document.createElement("div");
+          const wasTriggered = trapsTriggered.some(t => t.id === tile.id);
+
+          if (wasTriggered) {
+            item.className = "debrief-trap-item triggered";
+            item.innerHTML = `
+              <span class="trap-icon">❌</span>
+              <div>
+                <strong>Triggered:</strong> ${tile.text}
+              </div>
+            `;
+          } else {
+            item.className = "debrief-trap-item avoided";
+            item.innerHTML = `
+              <span class="trap-icon">✅</span>
+              <div>
+                <strong>Avoided:</strong> ${tile.text}
+              </div>
+            `;
+          }
+          debriefTrapsChecklist.appendChild(item);
+        });
+      });
+
+      announce("Investigation complete. Opening your historical reasoning debrief dashboard.");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

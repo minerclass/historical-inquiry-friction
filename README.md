@@ -13,6 +13,7 @@ This repository hosts interactive presentation versions for the session **When A
 | Full interactive deck | `index.html` | `https://minerclass.github.io/historical-inquiry-friction/` |
 | NCSS historical inquiry version | `ncss-historical-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/ncss-historical-inquiry/` |
 | Keepers of Inquiry game | `keepers-of-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/keepers-of-inquiry/` |
+| Out of Time game | `out-of-time/index.html` | `https://minerclass.github.io/historical-inquiry-friction/out-of-time/` |
 
 ## Source base
 
