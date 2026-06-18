@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Common Ground: The Polarized Classroom — a teacher-facing decision game. Navigate charged social studies moments with C.O.R.E. and H.E.A.R.T. Part of Micah Miner's learning games.">
+  <title>Common Ground: The Polarized Classroom | Teaching Game</title>
+  <style>
+    :root {
+      --ink:#171914; --paper:#f4f0e6; --forest:#183c32; --moss:#49735f;
+      --ember:#b84f32; --gold:#d5ae58; --blue:#315d7a; --muted:#6b6b62;
+      --line:rgba(255,255,255,.16); --serif:Georgia,"Times New Roman",serif;
+      --sans:"Segoe UI",Arial,sans-serif; --mono:Consolas,"Courier New",monospace;
+    }
+    * { box-sizing:border-box; }
+    html,body { margin:0; height:100%; }
+    body {
+      font-family:var(--sans); color:#f6f0df; min-height:100vh;
+      background:
+        radial-gradient(circle at 88% 6%, rgba(49,93,122,.30), transparent 32%),
+        linear-gradient(150deg, #16302a, #10160f 70%);
+      display:grid; place-items:center; padding:clamp(14px,3vw,40px);
+    }
+    button,a { font:inherit; color:inherit; }
+    button:focus-visible,a:focus-visible { outline:3px solid var(--gold); outline-offset:3px; }
+    .wrap { width:min(100%,980px); }
+    .screen { display:none; animation:rise .35s ease; }
+    .screen.active { display:block; }
+    @keyframes rise { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+    .kicker { font-family:var(--mono); text-transform:uppercase; letter-spacing:.12em; font-size:.78rem; color:var(--gold); font-weight:700; }
+    h1 { font-family:var(--serif); font-weight:600; letter-spacing:-.03em; line-height:1; font-size:clamp(2.6rem,6.4vw,4.8rem); margin:.18em 0 .25em; }
+    h2 { font-family:var(--serif); font-weight:600; font-size:clamp(1.4rem,3vw,2.2rem); margin:0 0 .4em; letter-spacing:-.02em; }
+    p { line-height:1.5; color:#e8e2d2; }
+    .lede { font-family:var(--serif); font-size:clamp(1.15rem,2vw,1.5rem); color:#f6f0df; max-width:48ch; }
+    em { color:var(--gold); font-style:italic; }
+    .mentor { display:flex; gap:14px; align-items:flex-start; margin:22px 0; padding:16px 18px; border:1px solid var(--line); border-left:5px solid var(--gold); border-radius:14px; background:rgba(213,174,88,.08); }
+    .mentor .who { font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--gold); display:block; margin-bottom:5px; }
+    .mentor p { margin:0; font-family:var(--serif); font-size:clamp(1rem,1.5vw,1.18rem); }
+    .btn { display:inline-flex; align-items:center; gap:10px; margin-top:6px; padding:14px 26px; border:1px solid var(--gold); border-radius:999px; background:var(--gold); color:#241c08; font-weight:750; cursor:pointer; transition:transform .15s ease; }
+    .btn:hover { transform:translateY(-2px); }
+    .credit { color:var(--muted); font-size:.8rem; margin-top:22px; }
+
+    .hud { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:14px; margin-bottom:16px; align-items:end; }
+    .meter .top { display:flex; justify-content:space-between; font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:#cfc8b4; margin-bottom:6px; }
+    .bar { height:10px; border-radius:999px; background:rgba(255,255,255,.12); overflow:hidden; }
+    .bar > span { display:block; height:100%; width:55%; border-radius:999px; transition:width .5s cubic-bezier(.2,.7,.2,1); }
+    .bar.civil > span { background:linear-gradient(90deg,var(--blue),#7fb0c8); }
+    .bar.rigor > span { background:linear-gradient(90deg,var(--moss),var(--gold)); }
+    .bar.trust > span { background:linear-gradient(90deg,#9a6cae,var(--gold)); }
+    .chip { text-align:center; padding:8px 14px; border-radius:12px; border:1px solid var(--line); background:rgba(255,255,255,.05); }
+    .chip .lbl { font-family:var(--mono); font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; color:#cfc8b4; display:block; }
+    .chip .val { font-weight:800; font-size:1.0rem; }
+    .chip.thriving .val{color:var(--gold);} .chip.steady .val{color:#7fb0c8;} .chip.strained .val{color:#e0a23c;} .chip.fraying .val{color:var(--ember);}
+    .roundline { display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:10px; }
+
+    .situation { display:flex; gap:14px; align-items:flex-start; padding:18px 20px; border:1px solid var(--line); border-left:5px solid var(--blue); border-radius:14px; background:rgba(49,93,122,.14); margin-bottom:8px; }
+    .situation .ava { font-size:1.6rem; line-height:1; }
+    .situation .who { font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:#a9cbe0; display:block; margin-bottom:5px; }
+    .situation p { margin:0; font-family:var(--serif); font-size:clamp(1.08rem,1.6vw,1.35rem); color:#fff; }
+    .prompt { font-family:var(--mono); font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:#cfc8b4; margin:16px 2px 10px; }
+
+    .cards { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .card { text-align:left; cursor:pointer; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.05); padding:15px 16px; transition:transform .14s ease, border-color .14s ease, background .14s ease; }
+    .card:hover:not(:disabled) { transform:translateY(-3px); border-color:var(--gold); background:rgba(213,174,88,.12); }
+    .card:disabled { opacity:.5; cursor:default; }
+    .card .num { font-family:var(--mono); font-size:.66rem; color:var(--gold); display:inline-grid; place-items:center; width:18px; height:18px; border-radius:5px; background:rgba(213,174,88,.2); margin-bottom:8px; }
+    .card .txt { font-size:.98rem; line-height:1.36; color:#ece6d6; }
+
+    .feedback { margin-top:16px; border:1px solid var(--line); border-radius:14px; padding:16px 18px; background:rgba(255,255,255,.05); }
+    .feedback .delta { font-family:var(--mono); font-size:.72rem; letter-spacing:.04em; color:var(--gold); margin-bottom:8px; }
+    .feedback .principle { font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; display:inline-block; padding:4px 10px; border-radius:999px; border:1px solid var(--line); margin-bottom:10px; }
+    .feedback .principle.good { color:var(--gold); border-color:rgba(213,174,88,.5); background:rgba(213,174,88,.1); }
+    .feedback .principle.anti { color:#f0b8a6; border-color:rgba(184,79,50,.5); background:rgba(184,79,50,.12); }
+    .row { display:flex; justify-content:flex-end; margin-top:16px; }
+
+    .standing { font-family:var(--serif); font-size:clamp(1.5rem,2.8vw,2.2rem); color:var(--gold); margin:6px 0 4px; }
+    table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.92rem; }
+    th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
+    th { font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:#cfc8b4; }
+    .meta { font-family:var(--serif); font-size:clamp(1.12rem,1.9vw,1.4rem); border-left:5px solid var(--gold); padding:12px 18px; background:rgba(213,174,88,.08); border-radius:0 12px 12px 0; margin:16px 0; }
+    .home { display:inline-block; margin-top:18px; color:var(--gold); font-family:var(--mono); font-size:.8rem; text-decoration:none; }
+    @media (max-width:640px){ .cards{grid-template-columns:1fr;} .hud{grid-template-columns:1fr 1fr;} .chip{grid-column:1/-1;} }
+    @media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important;} }
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TITLE -->
+  <section class="screen active" id="title">
+    <p class="kicker">A teaching game · C.O.R.E. &amp; H.E.A.R.T.</p>
+    <h1>Common Ground</h1>
+    <p class="lede">You teach social studies in a polarized moment. Every charged question is a chance to model <em>how to think</em> &mdash; or to lose the room.</p>
+    <div class="mentor">
+      <div>
+        <span class="who">The staffroom mentor</span>
+        <p>&ldquo;You won't avoid the hard moments &mdash; and you shouldn't. Lead with your C.O.R.E. and your H.E.A.R.T.: keep it rigorous, keep it humane, and teach them how to think, not what to think.&rdquo;</p>
+      </div>
+    </div>
+    <p>You'll face <strong>five classroom moments</strong>. Each choice moves three things: <em>Civil Discourse</em>, <em>Academic Rigor</em>, and <em>Student Trust</em>. Cheap moves spike one and tank another &mdash; the craft is holding all three.</p>
+    <p style="margin-top:18px;"><button class="btn" id="startBtn">Walk into the room &rarr;</button></p>
+    <p class="credit">Built on Micah Miner's C.O.R.E. (Critical Thinking, Openness, Respect, Engagement) and H.E.A.R.T. (Honesty, Empathy, Accountability, Responsibility, Thoughtfulness) frameworks and "Teaching Balanced History in a Polarized World." Scenarios are nonpartisan and process-focused.</p>
+  </section>
+
+  <!-- PLAY -->
+  <section class="screen" id="play">
+    <div class="roundline"><span id="roundLabel">Moment 1 of 5</span><span id="momentTag"></span></div>
+    <div class="hud">
+      <div class="meter"><div class="top"><span>Civil Discourse</span><span id="civilNum">55</span></div><div class="bar civil"><span id="civilBar" style="width:55%"></span></div></div>
+      <div class="meter"><div class="top"><span>Academic Rigor</span><span id="rigorNum">55</span></div><div class="bar rigor"><span id="rigorBar" style="width:55%"></span></div></div>
+      <div class="meter"><div class="top"><span>Student Trust</span><span id="trustNum">55</span></div><div class="bar trust"><span id="trustBar" style="width:55%"></span></div></div>
+      <div class="chip steady" id="climChip"><span class="lbl">Climate</span><span class="val" id="climVal">Steady</span></div>
+    </div>
+
+    <div class="situation">
+      <span class="ava" aria-hidden="true">&#127979;</span>
+      <div><span class="who">The moment</span><p id="sitText" aria-live="polite"></p></div>
+    </div>
+
+    <p class="prompt">How do you respond? &mdash; press 1&ndash;4 or click.</p>
+    <div class="cards" id="cards"></div>
+
+    <div class="feedback" id="feedback" style="display:none" aria-live="polite">
+      <span class="principle" id="fbPrinciple"></span>
+      <div class="delta" id="fbDelta"></div>
+      <div class="txt" id="fbText"></div>
+    </div>
+    <div class="row"><button class="btn" id="continueBtn" style="display:none">Continue &rarr;</button></div>
+  </section>
+
+  <!-- DEBRIEF -->
+  <section class="screen" id="debrief">
+    <p class="kicker">Debrief</p>
+    <h2>Your classroom climate</h2>
+    <div class="hud">
+      <div class="meter"><div class="top"><span>Civil Discourse</span><span id="dCivil">0</span></div><div class="bar civil"><span id="dCivilBar"></span></div></div>
+      <div class="meter"><div class="top"><span>Academic Rigor</span><span id="dRigor">0</span></div><div class="bar rigor"><span id="dRigorBar"></span></div></div>
+      <div class="meter"><div class="top"><span>Student Trust</span><span id="dTrust">0</span></div><div class="bar trust"><span id="dTrustBar"></span></div></div>
+      <div class="chip" id="dClimChip"><span class="lbl">Climate</span><span class="val" id="dClim"></span></div>
+    </div>
+    <p class="standing" id="standing"></p>
+    <p id="standingSub" style="color:#e8e2d2;"></p>
+
+    <h2 style="margin-top:22px; font-size:1.35rem;">Your leadership profile</h2>
+    <p style="margin:0 0 4px; color:#cfc8b4;">The principles your choices leaned on most:</p>
+    <table><thead><tr><th>Principle</th><th>Framework</th><th>Times</th></tr></thead><tbody id="profileTable"></tbody></table>
+    <p id="antiNote" style="color:#f0b8a6; font-size:.95rem;"></p>
+
+    <div class="meta">Balanced history isn't telling students what to think &mdash; and it isn't avoiding hard things. It's teaching them <em>how</em> to think, with rigor and dignity intact.</div>
+    <p style="margin-top:18px;"><button class="btn" id="replayBtn">Teach it again &rarr;</button></p>
+    <a class="home" href="../">&larr; Back to the deck</a>
+  </section>
+
+</div>
+
+<script>
+  var FW = {
+    "Critical Thinking":"C.O.R.E.", "Openness":"C.O.R.E.", "Respect":"C.O.R.E.", "Engagement":"C.O.R.E.",
+    "Honesty":"H.E.A.R.T.", "Empathy":"H.E.A.R.T.", "Accountability":"H.E.A.R.T.", "Responsibility":"H.E.A.R.T.", "Thoughtfulness":"H.E.A.R.T."
+  };
+
+  var MOMENTS = [
+    {
+      tag:"The loaded question",
+      sit:"A student asks, “Wasn't slavery actually good for the economy — so wasn't it kind of justified?” The room goes quiet and turns to you.",
+      options:[
+        { txt:"“Two different questions: a factual one — what was slavery's economic role? — and a moral one. We'll source both, and be honest that an economic argument never settles a moral one.”", civil:8, rigor:14, trust:10, tags:["Critical Thinking","Honesty","Respect"], best:true },
+        { txt:"“We don't talk about that here. Next question.”", civil:2, rigor:-12, trust:-10, tags:["Anti-pattern"] },
+        { txt:"“Well, there are two sides to everything.”", civil:4, rigor:-10, trust:-6, tags:["Anti-pattern"] },
+        { txt:"“Interesting — what made you ask that?”", civil:6, rigor:2, trust:5, tags:["Openness"] }
+      ]
+    },
+    {
+      tag:"The parent email",
+      sit:"A parent emails the principal that your Reconstruction unit is “political indoctrination,” and the principal forwards it to you.",
+      options:[
+        { txt:"Share the sourced lesson plan and learning goals; invite the parent to see how primary documents and multiple perspectives are used.", civil:6, rigor:8, trust:10, tags:["Accountability","Honesty"], best:true },
+        { txt:"Quietly drop the Reconstruction unit to avoid the trouble.", civil:4, rigor:-16, trust:-8, tags:["Anti-pattern"] },
+        { txt:"Reply that the parent is wrong and it's not their business what you teach.", civil:-12, rigor:0, trust:-4, tags:["Anti-pattern"] },
+        { txt:"Forward it back to admin without engaging the substance.", civil:2, rigor:-2, trust:-2, tags:["Anti-pattern"] }
+      ]
+    },
+    {
+      tag:"The legislated limit",
+      sit:"A new state rule restricts how you're allowed to frame a required topic in your course.",
+      options:[
+        { txt:"Meet the legal requirement while protecting inquiry: teach the standards with sourced, multi-perspective documents and let students reason to their own conclusions.", civil:6, rigor:12, trust:8, tags:["Responsibility","Thoughtfulness"], best:true },
+        { txt:"Openly defy the rule in class and dare anyone to report you.", civil:-6, rigor:4, trust:2, tags:["Anti-pattern"] },
+        { txt:"Over-comply: flatten the topic to a few safe bullet points, no interpretation.", civil:4, rigor:-14, trust:-6, tags:["Anti-pattern"] },
+        { txt:"Skip the topic entirely so you can't get in trouble.", civil:0, rigor:-12, trust:-4, tags:["Anti-pattern"] }
+      ]
+    },
+    {
+      tag:"The viral claim",
+      sit:"A student shares a viral post making a dramatic historical claim. Classmates are already repeating it as fact.",
+      options:[
+        { txt:"“Let's slow down and read it laterally together — who's behind this, what's the source, and what do reliable sources say?”", civil:6, rigor:14, trust:8, tags:["Critical Thinking","Engagement"], best:true },
+        { txt:"“I get why it's compelling — let's put it to the test before we believe or dismiss it.”", civil:6, rigor:9, trust:9, tags:["Empathy","Critical Thinking"] },
+        { txt:"“That's nonsense — just ignore it.”", civil:-2, rigor:-6, trust:-8, tags:["Anti-pattern"] },
+        { txt:"“Could be true, could be false — who's to say, really.”", civil:2, rigor:-8, trust:-2, tags:["Anti-pattern"] }
+      ]
+    },
+    {
+      tag:"The heated exchange",
+      sit:"Two students start talking over each other on a charged topic. Voices rise and the rest of the room tenses up.",
+      options:[
+        { txt:"Pause and set a discourse protocol: each side states the other's best point first, speaks from evidence, and uses “I” statements.", civil:14, rigor:8, trust:8, tags:["Respect","Engagement"], best:true },
+        { txt:"“Drop it — we're moving on.”", civil:2, rigor:-8, trust:-8, tags:["Anti-pattern"] },
+        { txt:"Step in on the side of the student you happen to agree with.", civil:-10, rigor:-2, trust:-10, tags:["Anti-pattern"] },
+        { txt:"Let them keep arguing unstructured and hope it resolves.", civil:-6, rigor:-2, trust:-4, tags:["Anti-pattern"] }
+      ]
+    }
+  ];
+
+  var state = {};
+  function reset(){ state = { mi:0, civil:55, rigor:55, trust:55, picked:false, principleCounts:{}, antis:0 }; }
+
+  var $ = function(id){ return document.getElementById(id); };
+  function clamp(v){ return Math.max(0, Math.min(100, v)); }
+  function climate(avg){ return avg>=72?"Thriving":avg>=55?"Steady":avg>=40?"Strained":"Fraying"; }
+
+  function show(id){ ["title","play","debrief"].forEach(function(s){ $(s).classList.toggle("active", s===id); }); window.scrollTo(0,0); }
+
+  function updateHud(){
+    $("civilNum").textContent=Math.round(state.civil); $("rigorNum").textContent=Math.round(state.rigor); $("trustNum").textContent=Math.round(state.trust);
+    $("civilBar").style.width=clamp(state.civil)+"%"; $("rigorBar").style.width=clamp(state.rigor)+"%"; $("trustBar").style.width=clamp(state.trust)+"%";
+    var c = climate((state.civil+state.rigor+state.trust)/3);
+    $("climVal").textContent=c; $("climChip").className="chip "+c.toLowerCase();
+  }
+
+  function renderMoment(){
+    var m = MOMENTS[state.mi];
+    $("roundLabel").textContent = "Moment " + (state.mi+1) + " of " + MOMENTS.length;
+    $("momentTag").textContent = m.tag;
+    $("sitText").textContent = m.sit;
+    $("feedback").style.display="none";
+    $("continueBtn").style.display="none";
+    state.picked=false;
+    var wrap=$("cards"); wrap.innerHTML="";
+    m.options.forEach(function(opt,i){
+      var b=document.createElement("button"); b.className="card";
+      b.innerHTML='<span class="num">'+(i+1)+'</span><span class="txt">'+opt.txt+'</span>';
+      b.addEventListener("click", function(){ pick(i); });
+      wrap.appendChild(b);
+    });
+    updateHud();
+  }
+
+  function pick(i){
+    if(state.picked) return; state.picked=true;
+    var opt = MOMENTS[state.mi].options[i];
+    state.civil=clamp(state.civil+opt.civil); state.rigor=clamp(state.rigor+opt.rigor); state.trust=clamp(state.trust+opt.trust);
+    var anti = opt.tags.indexOf("Anti-pattern")>=0;
+    if(anti){ state.antis++; }
+    else { opt.tags.forEach(function(t){ state.principleCounts[t]=(state.principleCounts[t]||0)+1; }); }
+    var btns=$("cards").querySelectorAll(".card");
+    btns.forEach(function(b,bi){ b.disabled=true; if(bi===i){ b.style.borderColor="var(--gold)"; b.style.background="rgba(213,174,88,.15)"; } });
+    updateHud();
+    var sign=function(n){ return (n>=0?"+":"")+n; };
+    var pEl=$("fbPrinciple");
+    if(anti){ pEl.className="principle anti"; pEl.textContent="Anti-pattern"; }
+    else { pEl.className="principle good"; pEl.textContent = opt.tags.join(" · "); }
+    $("fbDelta").textContent = "Civil " + sign(opt.civil) + "  ·  Rigor " + sign(opt.rigor) + "  ·  Trust " + sign(opt.trust);
+    $("fbText").textContent = feedbackLine(opt, anti);
+    $("feedback").style.display="block";
+    $("continueBtn").style.display="inline-flex"; $("continueBtn").focus();
+  }
+
+  function feedbackLine(opt, anti){
+    if(opt.best) return "Strong move — you held rigor and dignity at once, and modeled how to think rather than what to think.";
+    if(anti) return "Tempting, but it trades away rigor or trust to buy short-term calm. The hard moment is the teachable one.";
+    return "Reasonable, but it leaves something on the table — push for evidence and keep every student in the conversation.";
+  }
+
+  function next(){
+    if(state.mi < MOMENTS.length-1){ state.mi++; renderMoment(); }
+    else { debrief(); }
+  }
+
+  function debrief(){
+    show("debrief");
+    $("dCivil").textContent=Math.round(state.civil); $("dRigor").textContent=Math.round(state.rigor); $("dTrust").textContent=Math.round(state.trust);
+    $("dCivilBar").style.width=clamp(state.civil)+"%"; $("dRigorBar").style.width=clamp(state.rigor)+"%"; $("dTrustBar").style.width=clamp(state.trust)+"%";
+    var avg=Math.round((state.civil+state.rigor+state.trust)/3);
+    var c=climate(avg); $("dClim").textContent=c; $("dClimChip").className="chip "+c.toLowerCase();
+    var band, sub;
+    if(avg>=72){ band="Hard things, handled well"; sub="Your room can hold a charged question with rigor and dignity intact — exactly what balanced history asks of us."; }
+    else if(avg>=55){ band="Steady, with strain"; sub="You kept the room mostly together. Watch the moments where calm came at the cost of rigor or trust."; }
+    else if(avg>=40){ band="Frayed edges"; sub="Several moves bought short-term peace by lowering rigor or dignity. The hard moment is the teachable one — try holding all three."; }
+    else { band="The room came apart"; sub="Avoidance and side-taking eroded trust and rigor. Lead with C.O.R.E. and H.E.A.R.T. and run it back."; }
+    $("standing").textContent = band + "  ·  climate " + avg + "/100";
+    $("standingSub").textContent = sub;
+    var tb=$("profileTable"); tb.innerHTML="";
+    var keys=Object.keys(state.principleCounts).sort(function(a,b){ return state.principleCounts[b]-state.principleCounts[a]; });
+    if(keys.length===0){ tb.innerHTML="<tr><td colspan='3' style='color:#cfc8b4'>No framework principles drawn on — that's the lesson.</td></tr>"; }
+    keys.forEach(function(k){ var tr=document.createElement("tr"); tr.innerHTML="<td>"+k+"</td><td style='color:#cfc8b4'>"+FW[k]+"</td><td>"+state.principleCounts[k]+"</td>"; tb.appendChild(tr); });
+    $("antiNote").textContent = state.antis>0 ? ("Anti-patterns chosen: " + state.antis + " — moments where calm or avoidance won out over rigor and dignity.") : "No anti-patterns — you met every hard moment head-on.";
+  }
+
+  function start(){ reset(); show("play"); renderMoment(); }
+  $("startBtn").addEventListener("click", start);
+  $("replayBtn").addEventListener("click", start);
+  $("continueBtn").addEventListener("click", next);
+  document.addEventListener("keydown", function(e){
+    if($("play").classList.contains("active")){
+      if(!state.picked && e.key>="1" && e.key<="4"){ pick(parseInt(e.key,10)-1); }
+      else if(state.picked && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); next(); }
+    } else if(e.key==="Enter" && $("title").classList.contains("active")){ start(); }
+  });
+  reset();
+</script>
+</body>
+</html>
