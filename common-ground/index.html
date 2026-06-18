@@ -1,314 +1,1520 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Common Ground: The Polarized Classroom — a teacher-facing decision game. Navigate charged social studies moments with C.O.R.E. and H.E.A.R.T. Part of Micah Miner's learning games.">
-  <title>Common Ground: The Polarized Classroom | Teaching Game</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Common Ground | Civil Discourse Classroom Simulation</title>
   <style>
     :root {
-      --ink:#171914; --paper:#f4f0e6; --forest:#183c32; --moss:#49735f;
-      --ember:#b84f32; --gold:#d5ae58; --blue:#315d7a; --muted:#6b6b62;
-      --line:rgba(255,255,255,.16); --serif:Georgia,"Times New Roman",serif;
-      --sans:"Segoe UI",Arial,sans-serif; --mono:Consolas,"Courier New",monospace;
+      --ink: #0f0a0d;
+      --ink-2: #1c1318;
+      --paper: #f4ead7;
+      --paper-2: #fffcf6;
+      --line: rgba(244, 234, 215, 0.16);
+      --line-dark: rgba(15, 10, 13, 0.16);
+      --gold: #d7a13d;
+      --rose: #d4685d;
+      --rose-light: rgba(212, 104, 93, 0.12);
+      --teal: #64c6bd;
+      --teal-dark: #22756f;
+      --teal-light: rgba(100, 198, 189, 0.12);
+      --blue: #7d9fd6;
+      --blue-light: rgba(125, 159, 214, 0.12);
+      --muted: #a1979b;
+      --radius: 12px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      --transition-speed: 0.2s;
     }
-    * { box-sizing:border-box; }
-    html,body { margin:0; height:100%; }
-    body {
-      font-family:var(--sans); color:#f6f0df; min-height:100vh;
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
       background:
-        radial-gradient(circle at 88% 6%, rgba(49,93,122,.30), transparent 32%),
-        linear-gradient(150deg, #16302a, #10160f 70%);
-      display:grid; place-items:center; padding:clamp(14px,3vw,40px);
+        radial-gradient(circle at 10% 20%, rgba(125, 159, 214, 0.12), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(215, 161, 61, 0.12), transparent 26%),
+        linear-gradient(135deg, #0a0709, #170f14 60%, #110b0e);
+      color: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    button,a { font:inherit; color:inherit; }
-    button:focus-visible,a:focus-visible { outline:3px solid var(--gold); outline-offset:3px; }
-    .wrap { width:min(100%,980px); }
-    .screen { display:none; animation:rise .35s ease; }
-    .screen.active { display:block; }
-    @keyframes rise { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
-    .kicker { font-family:var(--mono); text-transform:uppercase; letter-spacing:.12em; font-size:.78rem; color:var(--gold); font-weight:700; }
-    h1 { font-family:var(--serif); font-weight:600; letter-spacing:-.03em; line-height:1; font-size:clamp(2.6rem,6.4vw,4.8rem); margin:.18em 0 .25em; }
-    h2 { font-family:var(--serif); font-weight:600; font-size:clamp(1.4rem,3vw,2.2rem); margin:0 0 .4em; letter-spacing:-.02em; }
-    p { line-height:1.5; color:#e8e2d2; }
-    .lede { font-family:var(--serif); font-size:clamp(1.15rem,2vw,1.5rem); color:#f6f0df; max-width:48ch; }
-    em { color:var(--gold); font-style:italic; }
-    .mentor { display:flex; gap:14px; align-items:flex-start; margin:22px 0; padding:16px 18px; border:1px solid var(--line); border-left:5px solid var(--gold); border-radius:14px; background:rgba(213,174,88,.08); }
-    .mentor .who { font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--gold); display:block; margin-bottom:5px; }
-    .mentor p { margin:0; font-family:var(--serif); font-size:clamp(1rem,1.5vw,1.18rem); }
-    .btn { display:inline-flex; align-items:center; gap:10px; margin-top:6px; padding:14px 26px; border:1px solid var(--gold); border-radius:999px; background:var(--gold); color:#241c08; font-weight:750; cursor:pointer; transition:transform .15s ease; }
-    .btn:hover { transform:translateY(-2px); }
-    .credit { color:var(--muted); font-size:.8rem; margin-top:22px; }
 
-    .hud { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:14px; margin-bottom:16px; align-items:end; }
-    .meter .top { display:flex; justify-content:space-between; font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:#cfc8b4; margin-bottom:6px; }
-    .bar { height:10px; border-radius:999px; background:rgba(255,255,255,.12); overflow:hidden; }
-    .bar > span { display:block; height:100%; width:55%; border-radius:999px; transition:width .5s cubic-bezier(.2,.7,.2,1); }
-    .bar.civil > span { background:linear-gradient(90deg,var(--blue),#7fb0c8); }
-    .bar.rigor > span { background:linear-gradient(90deg,var(--moss),var(--gold)); }
-    .bar.trust > span { background:linear-gradient(90deg,#9a6cae,var(--gold)); }
-    .chip { text-align:center; padding:8px 14px; border-radius:12px; border:1px solid var(--line); background:rgba(255,255,255,.05); }
-    .chip .lbl { font-family:var(--mono); font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; color:#cfc8b4; display:block; }
-    .chip .val { font-weight:800; font-size:1.0rem; }
-    .chip.thriving .val{color:var(--gold);} .chip.steady .val{color:#7fb0c8;} .chip.strained .val{color:#e0a23c;} .chip.fraying .val{color:var(--ember);}
-    .roundline { display:flex; justify-content:space-between; align-items:center; font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:10px; }
+    body {
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
 
-    .situation { display:flex; gap:14px; align-items:flex-start; padding:18px 20px; border:1px solid var(--line); border-left:5px solid var(--blue); border-radius:14px; background:rgba(49,93,122,.14); margin-bottom:8px; }
-    .situation .ava { font-size:1.6rem; line-height:1; }
-    .situation .who { font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:#a9cbe0; display:block; margin-bottom:5px; }
-    .situation p { margin:0; font-family:var(--serif); font-size:clamp(1.08rem,1.6vw,1.35rem); color:#fff; }
-    .prompt { font-family:var(--mono); font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:#cfc8b4; margin:16px 2px 10px; }
+    button, select {
+      font: inherit;
+    }
 
-    .cards { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .card { text-align:left; cursor:pointer; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.05); padding:15px 16px; transition:transform .14s ease, border-color .14s ease, background .14s ease; }
-    .card:hover:not(:disabled) { transform:translateY(-3px); border-color:var(--gold); background:rgba(213,174,88,.12); }
-    .card:disabled { opacity:.5; cursor:default; }
-    .card .num { font-family:var(--mono); font-size:.66rem; color:var(--gold); display:inline-grid; place-items:center; width:18px; height:18px; border-radius:5px; background:rgba(213,174,88,.2); margin-bottom:8px; }
-    .card .txt { font-size:.98rem; line-height:1.36; color:#ece6d6; }
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
 
-    .feedback { margin-top:16px; border:1px solid var(--line); border-radius:14px; padding:16px 18px; background:rgba(255,255,255,.05); }
-    .feedback .delta { font-family:var(--mono); font-size:.72rem; letter-spacing:.04em; color:var(--gold); margin-bottom:8px; }
-    .feedback .principle { font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; display:inline-block; padding:4px 10px; border-radius:999px; border:1px solid var(--line); margin-bottom:10px; }
-    .feedback .principle.good { color:var(--gold); border-color:rgba(213,174,88,.5); background:rgba(213,174,88,.1); }
-    .feedback .principle.anti { color:#f0b8a6; border-color:rgba(184,79,50,.5); background:rgba(184,79,50,.12); }
-    .row { display:flex; justify-content:flex-end; margin-top:16px; }
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
 
-    .standing { font-family:var(--serif); font-size:clamp(1.5rem,2.8vw,2.2rem); color:var(--gold); margin:6px 0 4px; }
-    table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.92rem; }
-    th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); }
-    th { font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:#cfc8b4; }
-    .meta { font-family:var(--serif); font-size:clamp(1.12rem,1.9vw,1.4rem); border-left:5px solid var(--gold); padding:12px 18px; background:rgba(213,174,88,.08); border-radius:0 12px 12px 0; margin:16px 0; }
-    .home { display:inline-block; margin-top:18px; color:var(--gold); font-family:var(--mono); font-size:.8rem; text-decoration:none; }
-    @media (max-width:640px){ .cards{grid-template-columns:1fr;} .hud{grid-template-columns:1fr 1fr;} .chip{grid-column:1/-1;} }
-    @media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important;} }
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px clamp(16px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(10, 7, 9, 0.85);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(215, 161, 61, 0.5);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      background: rgba(215, 161, 61, 0.05);
+      box-shadow: inset 0 0 0 6px rgba(215, 161, 61, 0.04);
+      flex: 0 0 auto;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.3rem, 2.5vw, 1.85rem);
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .hud {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hud-meter {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 120px;
+    }
+
+    .hud-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .hud-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hud-bar span {
+      display: block;
+      height: 100%;
+      transition: width 0.35s cubic-bezier(0.1, 0.8, 0.2, 1);
+    }
+
+    .hud-discourse span {
+      background: var(--blue);
+    }
+
+    .hud-rigor span {
+      background: var(--teal);
+    }
+
+    .hud-trust span {
+      background: var(--gold);
+    }
+
+    /* Screen Styles */
+    .screen {
+      padding: clamp(16px, 3vw, 34px);
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Title Screen */
+    .screen-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(80vh - 86px);
+      text-align: center;
+      max-width: 760px;
+      padding: 40px 20px;
+    }
+
+    .tag-cloud {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tag-chip {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      border-radius: 99px;
+      border: 1px solid transparent;
+    }
+
+    .tag-chip.friction {
+      background: var(--rose-light);
+      border-color: rgba(212, 104, 93, 0.3);
+      color: var(--rose);
+    }
+
+    .tag-chip.discourse {
+      background: var(--blue-light);
+      border-color: rgba(125, 159, 214, 0.3);
+      color: var(--blue);
+    }
+
+    .tag-chip.pd {
+      background: rgba(215, 161, 61, 0.12);
+      border-color: rgba(215, 161, 61, 0.3);
+      color: var(--gold);
+    }
+
+    .screen-title h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      margin: 0 0 16px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--paper-2), var(--gold) 85%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .screen-title p.subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      color: var(--muted);
+      margin: 0 0 32px;
+      font-family: Georgia, serif;
+      font-style: italic;
+    }
+
+    .framing-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.04);
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 34px);
+      margin-bottom: 36px;
+      text-align: left;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--gold);
+    }
+
+    .framing-card p {
+      margin: 0 0 16px;
+      font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+      line-height: 1.6;
+    }
+    .framing-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .framing-card strong {
+      color: var(--gold);
+    }
+
+    .btn-action {
+      background: var(--gold);
+      color: var(--ink);
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 14px 44px;
+      border: 1px solid var(--gold);
+      box-shadow: 0 10px 24px rgba(215, 161, 61, 0.25);
+    }
+
+    .btn-action:hover {
+      background: var(--paper-2);
+      border-color: var(--paper-2);
+    }
+
+    /* Play Screen Layout */
+    .game-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.9fr) minmax(460px, 1.3fr) minmax(320px, 1fr);
+      gap: 20px;
+      height: calc(100vh - 150px);
+      min-height: 550px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(244, 234, 215, 0.04);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(10, 7, 9, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+    }
+
+    .panel-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Left Panel: Classroom Moment Card */
+    .moment-card {
+      background: linear-gradient(180deg, var(--paper-2), rgba(244, 234, 215, 0.9));
+      color: var(--ink);
+      border-radius: var(--radius);
+      padding: 22px;
+      border: 1px solid rgba(215, 161, 61, 0.35);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .moment-meta {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gold);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .moment-card h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(1.35rem, 1.8vw, 1.65rem);
+      margin: 0 0 10px;
+      line-height: 1.3;
+    }
+
+    .moment-card p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .mentor-box {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.02);
+      border-radius: var(--radius);
+      margin-top: auto;
+    }
+
+    .mentor-header {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .mentor-header:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .mentor-header h4 {
+      margin: 0;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold);
+    }
+
+    .mentor-toggle-icon {
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+
+    .mentor-content {
+      padding: 0 16px 16px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--muted);
+      display: none;
+    }
+
+    .mentor-content.open {
+      display: block;
+    }
+
+    /* Middle Panel: Options */
+    .options-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .option-btn {
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.9rem;
+      line-height: 1.45;
+      display: flex;
+      align-items: start;
+      gap: 12px;
+    }
+
+    .option-btn-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      margin-top: 7px;
+      flex-shrink: 0;
+      transition: background 0.1s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--gold);
+      background: rgba(215, 161, 61, 0.06);
+    }
+
+    .option-btn:hover:not(:disabled) .option-btn-dot {
+      background: var(--gold);
+    }
+
+    .option-btn.selected {
+      border-color: var(--gold);
+      background: rgba(215, 161, 61, 0.08);
+    }
+
+    .option-btn.selected .option-btn-dot {
+      background: var(--gold);
+    }
+
+    /* Right Panel: Feedback */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      color: var(--muted);
+      padding: 20px;
+    }
+
+    .empty-state-icon {
+      font-size: 2.2rem;
+      color: rgba(244, 234, 215, 0.15);
+      margin-bottom: 12px;
+    }
+
+    .feedback-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .feedback-box.correct {
+      border-color: var(--teal);
+      background: var(--teal-light);
+      border-left: 5px solid var(--teal);
+    }
+
+    .feedback-box.incorrect {
+      border-color: var(--rose);
+      background: var(--rose-light);
+      border-left: 5px solid var(--rose);
+    }
+
+    .feedback-box strong {
+      display: block;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+    }
+
+    .feedback-box.correct strong { color: var(--teal); }
+    .feedback-box.incorrect strong { color: var(--rose); }
+
+    .btn-next {
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 800;
+      padding: 12px;
+      text-align: center;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn-next:hover {
+      background: var(--paper-2);
+    }
+
+    /* Screen: Debrief */
+    .debrief-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      padding-bottom: 60px;
+    }
+
+    .debrief-intro {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .debrief-intro h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin: 0 0 10px;
+      color: var(--paper-2);
+    }
+
+    .debrief-intro p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .debrief-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.03);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h3 {
+      margin: 0 0 16px;
+      font-family: Georgia, serif;
+      font-size: 1.25rem;
+      color: var(--gold);
+    }
+
+    .stat-dial-container {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin-bottom: 16px;
+      display: grid;
+      place-items: center;
+    }
+
+    .circular-progress {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(var(--teal) 0%, rgba(255, 255, 255, 0.06) 0%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 14px rgba(10, 7, 9, 0.9);
+      position: relative;
+    }
+
+    .circular-progress::after {
+      content: "";
+      position: absolute;
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: rgba(10, 7, 9, 0.7);
+      z-index: 1;
+    }
+
+    .dial-val {
+      font-family: Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--paper-2);
+      z-index: 2;
+      position: relative;
+    }
+
+    .dial-val span {
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    .stat-card p.stat-desc {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .verdict-box {
+      border: 1px solid var(--gold);
+      background: rgba(215, 161, 61, 0.06);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 10px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .verdict-box h4 {
+      margin: 0 0 8px;
+      font-family: Georgia, serif;
+      font-size: 1.3rem;
+      color: var(--paper-2);
+    }
+    .verdict-box p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--paper);
+    }
+
+    /* Leadership Profile Grid */
+    .profile-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.02);
+      border-radius: var(--radius);
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .profile-card h3 {
+      margin: 0 0 18px;
+      font-family: Georgia, serif;
+      font-size: 1.4rem;
+      color: var(--paper-2);
+      text-align: center;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .profile-item {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.01);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .profile-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .profile-item h4 {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--paper-2);
+    }
+
+    .profile-count {
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: var(--gold);
+      color: var(--ink);
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    .profile-item p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* Essay Columns */
+    .essay-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .essay-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.02);
+      border-radius: var(--radius);
+      padding: 26px;
+    }
+
+    .essay-card.highlight {
+      border-left: 5px solid var(--gold);
+    }
+
+    .essay-card h3 {
+      margin: 0 0 16px;
+      font-family: Georgia, serif;
+      font-size: 1.35rem;
+      color: var(--paper-2);
+    }
+
+    .essay-card p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+    .essay-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .replay-area {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .game-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 0;
+      }
+      .panel {
+        max-height: 550px;
+      }
+      .essay-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 <body>
-<div class="wrap">
+  <div class="app">
+    <div id="announcer" class="sr-only" aria-live="polite"></div>
 
-  <!-- TITLE -->
-  <section class="screen active" id="title">
-    <p class="kicker">A teaching game · C.O.R.E. &amp; H.E.A.R.T.</p>
-    <h1>Common Ground</h1>
-    <p class="lede">You teach social studies in a polarized moment. Every charged question is a chance to model <em>how to think</em> &mdash; or to lose the room.</p>
-    <div class="mentor">
-      <div>
-        <span class="who">The staffroom mentor</span>
-        <p>&ldquo;You won't avoid the hard moments &mdash; and you shouldn't. Lead with your C.O.R.E. and your H.E.A.R.T.: keep it rigorous, keep it humane, and teach them how to think, not what to think.&rdquo;</p>
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">G</div>
+        <div class="brand-text">
+          <h1>Common Ground</h1>
+          <p>Teaching Balanced History under Polarization</p>
+        </div>
       </div>
-    </div>
-    <p>You'll face <strong>five classroom moments</strong>. Each choice moves three things: <em>Civil Discourse</em>, <em>Academic Rigor</em>, and <em>Student Trust</em>. Cheap moves spike one and tank another &mdash; the craft is holding all three.</p>
-    <p style="margin-top:18px;"><button class="btn" id="startBtn">Walk into the room &rarr;</button></p>
-    <p class="credit">Built on Micah Miner's C.O.R.E. (Critical Thinking, Openness, Respect, Engagement) and H.E.A.R.T. (Honesty, Empathy, Accountability, Responsibility, Thoughtfulness) frameworks and "Teaching Balanced History in a Polarized World." Scenarios are nonpartisan and process-focused.</p>
-  </section>
+      
+      <!-- HUD meters (hidden in title screen) -->
+      <div class="hud" id="hudMeters" style="display: none;">
+        <div class="hud-meter">
+          <div class="hud-label">
+            <span>Civil Discourse</span>
+            <span id="lblDiscourse">55%</span>
+          </div>
+          <div class="hud-bar hud-discourse" aria-hidden="true">
+            <span id="barDiscourse" style="width: 55%;"></span>
+          </div>
+        </div>
+        <div class="hud-meter">
+          <div class="hud-label">
+            <span>Academic Rigor</span>
+            <span id="lblRigor">55%</span>
+          </div>
+          <div class="hud-bar hud-rigor" aria-hidden="true">
+            <span id="barRigor" style="width: 55%;"></span>
+          </div>
+        </div>
+        <div class="hud-meter">
+          <div class="hud-label">
+            <span>Student Trust</span>
+            <span id="lblTrust">55%</span>
+          </div>
+          <div class="hud-bar hud-trust" aria-hidden="true">
+            <span id="barTrust" style="width: 55%;"></span>
+          </div>
+        </div>
+      </div>
+    </header>
 
-  <!-- PLAY -->
-  <section class="screen" id="play">
-    <div class="roundline"><span id="roundLabel">Moment 1 of 5</span><span id="momentTag"></span></div>
-    <div class="hud">
-      <div class="meter"><div class="top"><span>Civil Discourse</span><span id="civilNum">55</span></div><div class="bar civil"><span id="civilBar" style="width:55%"></span></div></div>
-      <div class="meter"><div class="top"><span>Academic Rigor</span><span id="rigorNum">55</span></div><div class="bar rigor"><span id="rigorBar" style="width:55%"></span></div></div>
-      <div class="meter"><div class="top"><span>Student Trust</span><span id="trustNum">55</span></div><div class="bar trust"><span id="trustBar" style="width:55%"></span></div></div>
-      <div class="chip steady" id="climChip"><span class="lbl">Climate</span><span class="val" id="climVal">Steady</span></div>
-    </div>
+    <main id="mainContent" role="main">
+      <!-- SCREEN: TITLE -->
+      <div class="screen screen-title" id="screenTitle">
+        <div class="tag-cloud">
+          <span class="tag-chip friction">Pedagogical Friction</span>
+          <span class="tag-chip discourse">Civic Discourse</span>
+          <span class="tag-chip pd">Teacher PD</span>
+        </div>
 
-    <div class="situation">
-      <span class="ava" aria-hidden="true">&#127979;</span>
-      <div><span class="who">The moment</span><p id="sitText" aria-live="polite"></p></div>
-    </div>
+        <h2>Lead with C.O.R.E. and H.E.A.R.T.</h2>
+        <p class="subtitle">A classroom facilitation game for history educators under pressure</p>
 
-    <p class="prompt">How do you respond? &mdash; press 1&ndash;4 or click.</p>
-    <div class="cards" id="cards"></div>
+        <div class="framing-card">
+          <p>You teach history in a polarized moment. State laws, parent distrust, and internet outrage create intense pressure to avoid difficult topics or supply students with safe, tidy answers.</p>
+          <p><strong>Every charged moment is a choice.</strong> You can take shortcuts that protect surface civility but gut academic rigor, or pick sides and destroy student trust. Or, you can model how to think &mdash; leading with C.O.R.E. and H.E.A.R.T.</p>
+          <p>In this simulation, you will navigate 5 realistic classroom dilemmas. Your choices will directly affect your classroom's <strong>Civil Discourse</strong>, <strong>Academic Rigor</strong>, and <strong>Student Trust</strong>.</p>
+        </div>
 
-    <div class="feedback" id="feedback" style="display:none" aria-live="polite">
-      <span class="principle" id="fbPrinciple"></span>
-      <div class="delta" id="fbDelta"></div>
-      <div class="txt" id="fbText"></div>
-    </div>
-    <div class="row"><button class="btn" id="continueBtn" style="display:none">Continue &rarr;</button></div>
-  </section>
+        <button class="btn-action" id="btnStartGame">Begin Facilitation</button>
+      </div>
 
-  <!-- DEBRIEF -->
-  <section class="screen" id="debrief">
-    <p class="kicker">Debrief</p>
-    <h2>Your classroom climate</h2>
-    <div class="hud">
-      <div class="meter"><div class="top"><span>Civil Discourse</span><span id="dCivil">0</span></div><div class="bar civil"><span id="dCivilBar"></span></div></div>
-      <div class="meter"><div class="top"><span>Academic Rigor</span><span id="dRigor">0</span></div><div class="bar rigor"><span id="dRigorBar"></span></div></div>
-      <div class="meter"><div class="top"><span>Student Trust</span><span id="dTrust">0</span></div><div class="bar trust"><span id="dTrustBar"></span></div></div>
-      <div class="chip" id="dClimChip"><span class="lbl">Climate</span><span class="val" id="dClim"></span></div>
-    </div>
-    <p class="standing" id="standing"></p>
-    <p id="standingSub" style="color:#e8e2d2;"></p>
+      <!-- SCREEN: PLAY -->
+      <div class="screen" id="screenPlay" style="display: none;">
+        <div class="game-grid">
+          
+          <!-- Column 1: Classroom Moment Setup -->
+          <section class="panel" aria-labelledby="colMomentTitle">
+            <div class="panel-header">
+              <h3 id="colMomentTitle">Classroom Moment</h3>
+              <span id="momentTracker" style="font-size: 0.8rem; font-weight: bold; color: var(--gold);">Moment 1 of 5</span>
+            </div>
+            <div class="panel-body">
+              <div class="moment-card" id="momentCard">
+                <span class="moment-meta" id="momentKicker">Opinion Stated as Fact</span>
+                <h2 id="momentTopic">Student opinion stated as settled fact</h2>
+                <p id="momentSituation">During a discussion on the causes of the American Revolution, a student asserts: 'The colonists were just greedy tax evaders, and there was no real principle behind it.'</p>
+              </div>
 
-    <h2 style="margin-top:22px; font-size:1.35rem;">Your leadership profile</h2>
-    <p style="margin:0 0 4px; color:#cfc8b4;">The principles your choices leaned on most:</p>
-    <table><thead><tr><th>Principle</th><th>Framework</th><th>Times</th></tr></thead><tbody id="profileTable"></tbody></table>
-    <p id="antiNote" style="color:#f0b8a6; font-size:.95rem;"></p>
+              <!-- Mentor Box -->
+              <div class="mentor-box">
+                <div class="mentor-header" id="mentorHeader" role="button" aria-expanded="false" tabindex="0">
+                  <h4>
+                    <span>📓</span>
+                    <span>Teacher's Log</span>
+                  </h4>
+                  <span class="mentor-toggle-icon" id="mentorToggleIcon">▼</span>
+                </div>
+                <div class="mentor-content" id="mentorContent">
+                  Hint Content
+                </div>
+              </div>
+            </div>
+          </section>
 
-    <div class="meta">Balanced history isn't telling students what to think &mdash; and it isn't avoiding hard things. It's teaching them <em>how</em> to think, with rigor and dignity intact.</div>
-    <p style="margin-top:18px;"><button class="btn" id="replayBtn">Teach it again &rarr;</button></p>
-    <a class="home" href="../">&larr; Back to the deck</a>
-  </section>
+          <!-- Column 2: Response Choices -->
+          <section class="panel" aria-labelledby="colChoicesTitle">
+            <div class="panel-header">
+              <h3 id="colChoicesTitle">Choose Response</h3>
+            </div>
+            <div class="panel-body">
+              <p style="font-size: 0.88rem; color:var(--muted); margin: 0 0 4px;">Choose the response that best models historical inquiry, respects dignity, and protects rigor:</p>
+              <div class="options-stack" id="optionsGrid">
+                <!-- Options injected dynamically -->
+              </div>
+            </div>
+          </section>
 
-</div>
+          <!-- Column 3: Feedback & Analysis -->
+          <section class="panel" aria-labelledby="colFeedbackTitle">
+            <div class="panel-header">
+              <h3 id="colFeedbackTitle">Impact &amp; Framework Analysis</h3>
+            </div>
+            <div class="panel-body">
+              <div class="empty-state" id="feedbackEmptyState">
+                <div class="empty-state-icon">⚖️</div>
+                <p>Select a response option to see the trade-offs, meter changes, and CORE/HEART framework alignments.</p>
+              </div>
 
-<script>
-  var FW = {
-    "Critical Thinking":"C.O.R.E.", "Openness":"C.O.R.E.", "Respect":"C.O.R.E.", "Engagement":"C.O.R.E.",
-    "Honesty":"H.E.A.R.T.", "Empathy":"H.E.A.R.T.", "Accountability":"H.E.A.R.T.", "Responsibility":"H.E.A.R.T.", "Thoughtfulness":"H.E.A.R.T."
-  };
+              <div id="feedbackContent" style="display: none; flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                <div class="feedback-box" id="feedbackBox">
+                  <!-- Feedback text -->
+                </div>
 
-  var MOMENTS = [
-    {
-      tag:"Opinion stated as fact",
-      sit:"Mid-discussion, a student states a sweeping opinion about a contested issue as if it were settled fact. A few classmates nod; others fold their arms.",
-      options:[
-        { txt:"“Let's treat that as a claim we can test together. What's the strongest evidence for it — and the strongest case against? What would change your mind?”", civil:8, rigor:14, trust:10, tags:["Critical Thinking","Openness","Engagement"], best:true },
-        { txt:"“Say more about where that comes from — then let's see what the sources actually show.”", civil:6, rigor:6, trust:7, tags:["Openness"] },
-        { txt:"“Everyone's entitled to their opinion. Let's move on.”", civil:4, rigor:-12, trust:-2, tags:["Anti-pattern"] },
-        { txt:"Settle it for the class by sharing which side you think is right.", civil:-4, rigor:-2, trust:-10, tags:["Anti-pattern"] }
-      ]
-    },
-    {
-      tag:"The family concern",
-      sit:"A family worries that one of your units is “pushing a viewpoint” on their child, and asks to meet about it.",
-      options:[
-        { txt:"Share the unit's goals and sources, and show how multiple perspectives and primary documents are used — and welcome them to review the materials.", civil:6, rigor:8, trust:12, tags:["Accountability","Honesty","Respect"], best:true },
-        { txt:"Prepare the materials with your admin, then meet the family together.", civil:4, rigor:4, trust:7, tags:["Responsibility"] },
-        { txt:"Quietly water the unit down so no one can object.", civil:4, rigor:-16, trust:-6, tags:["Anti-pattern"] },
-        { txt:"Reply that your curriculum isn't up for discussion.", civil:-12, rigor:0, trust:-6, tags:["Anti-pattern"] }
-      ]
-    },
-    {
-      tag:"Teaching a painful chapter",
-      sit:"Your next unit covers a painful injustice in the curriculum. You want students to engage it honestly — without sliding into either a sanitized version or a blame session.",
-      options:[
-        { txt:"Ground it in primary sources and the experiences of the people who lived it; be honest about what happened and why it still matters today.", civil:8, rigor:12, trust:10, tags:["Honesty","Empathy"], best:true },
-        { txt:"Add a reflective writing step so students can process it thoughtfully.", civil:5, rigor:6, trust:8, tags:["Empathy","Thoughtfulness"] },
-        { txt:"Soften it to the safest possible summary so no one feels uncomfortable.", civil:4, rigor:-14, trust:-8, tags:["Anti-pattern"] },
-        { txt:"Frame it as present-day groups owing or blaming one another.", civil:-10, rigor:-4, trust:-10, tags:["Anti-pattern"] }
-      ]
-    },
-    {
-      tag:"The viral claim",
-      sit:"A student shares a viral post making a dramatic historical claim. Classmates are already repeating it as fact.",
-      options:[
-        { txt:"“Let's slow down and read it laterally together — who's behind this, what's the source, and what do reliable sources say?”", civil:6, rigor:14, trust:8, tags:["Critical Thinking","Engagement"], best:true },
-        { txt:"“I get why it's compelling — let's put it to the test before we believe or dismiss it.”", civil:6, rigor:9, trust:9, tags:["Empathy","Critical Thinking"] },
-        { txt:"“That's nonsense — just ignore it.”", civil:-2, rigor:-6, trust:-8, tags:["Anti-pattern"] },
-        { txt:"“Could be true, could be false — who's to say, really.”", civil:2, rigor:-8, trust:-2, tags:["Anti-pattern"] }
-      ]
-    },
-    {
-      tag:"The heated exchange",
-      sit:"Two students start talking over each other on a charged topic. Voices rise and the rest of the room tenses up.",
-      options:[
-        { txt:"Pause and set a discourse protocol: each side states the other's best point first, speaks from evidence, and uses “I” statements.", civil:14, rigor:8, trust:8, tags:["Respect","Engagement"], best:true },
-        { txt:"“Drop it — we're moving on.”", civil:2, rigor:-8, trust:-8, tags:["Anti-pattern"] },
-        { txt:"Step in on the side of the student you happen to agree with.", civil:-10, rigor:-2, trust:-10, tags:["Anti-pattern"] },
-        { txt:"Let them keep arguing unstructured and hope it resolves.", civil:-6, rigor:-2, trust:-4, tags:["Anti-pattern"] }
-      ]
-    }
-  ];
+                <button class="btn-next" id="btnNextMoment">Continue Arc</button>
+              </div>
+            </div>
+          </section>
 
-  var state = {};
-  function reset(){ state = { mi:0, civil:55, rigor:55, trust:55, picked:false, principleCounts:{}, antis:0 }; }
+        </div>
+      </div>
 
-  var $ = function(id){ return document.getElementById(id); };
-  function clamp(v){ return Math.max(0, Math.min(100, v)); }
-  function climate(avg){ return avg>=72?"Thriving":avg>=55?"Steady":avg>=40?"Strained":"Fraying"; }
+      <!-- SCREEN: DEBRIEF -->
+      <div class="screen" id="screenDebrief" style="display: none;">
+        <div class="debrief-layout">
+          
+          <div class="debrief-intro">
+            <h2>Facilitation Complete</h2>
+            <p>You have finished navigating the polarized classroom dilemmas. Here is your leadership profile.</p>
+          </div>
 
-  function show(id){ ["title","play","debrief"].forEach(function(s){ $(s).classList.toggle("active", s===id); }); window.scrollTo(0,0); }
+          <!-- Dials Dashboard -->
+          <div class="debrief-stats-grid">
+            <div class="stat-card">
+              <h3>Civil Discourse</h3>
+              <div class="stat-dial-container">
+                <div class="circular-progress" id="dialDiscourse" style="background: conic-gradient(var(--blue) 55%, rgba(255,255,255,0.06) 55%);">
+                  <span class="dial-val" id="valDiscourse">55<span>%</span></span>
+                </div>
+              </div>
+              <p class="stat-desc">Measures if your classroom remains a place where students can disagree productively and humanely, without collapsing into shouting or silence.</p>
+            </div>
 
-  function updateHud(){
-    $("civilNum").textContent=Math.round(state.civil); $("rigorNum").textContent=Math.round(state.rigor); $("trustNum").textContent=Math.round(state.trust);
-    $("civilBar").style.width=clamp(state.civil)+"%"; $("rigorBar").style.width=clamp(state.rigor)+"%"; $("trustBar").style.width=clamp(state.trust)+"%";
-    var c = climate((state.civil+state.rigor+state.trust)/3);
-    $("climVal").textContent=c; $("climChip").className="chip "+c.toLowerCase();
-  }
+            <div class="stat-card">
+              <h3>Academic Rigor</h3>
+              <div class="stat-dial-container">
+                <div class="circular-progress" id="dialRigor">
+                  <span class="dial-val" id="valRigor">55<span>%</span></span>
+                </div>
+              </div>
+              <p class="stat-desc">Measures if claims in your room remain bound to primary sources, evidence, and critical cross-examination rather than superficial opinions.</p>
+            </div>
 
-  function renderMoment(){
-    var m = MOMENTS[state.mi];
-    $("roundLabel").textContent = "Moment " + (state.mi+1) + " of " + MOMENTS.length;
-    $("momentTag").textContent = m.tag;
-    $("sitText").textContent = m.sit;
-    $("feedback").style.display="none";
-    $("continueBtn").style.display="none";
-    state.picked=false;
-    var wrap=$("cards"); wrap.innerHTML="";
-    m.options.forEach(function(opt,i){
-      var b=document.createElement("button"); b.className="card";
-      b.innerHTML='<span class="num">'+(i+1)+'</span><span class="txt">'+opt.txt+'</span>';
-      b.addEventListener("click", function(){ pick(i); });
-      wrap.appendChild(b);
+            <div class="stat-card">
+              <h3>Student Trust</h3>
+              <div class="stat-dial-container">
+                <div class="circular-progress" id="dialTrust">
+                  <span class="dial-val" id="valTrust">55<span>%</span></span>
+                </div>
+              </div>
+              <p class="stat-desc">Measures if students feel their basic human dignity and diverse identities are safe in your room, protecting them from hostility or silencing.</p>
+            </div>
+          </div>
+
+          <!-- Leadership Profile Tally -->
+          <div class="profile-card">
+            <h3>CORE &amp; HEART Leadership Profile</h3>
+            <p style="text-align: center; color: var(--muted); margin: 0 0 20px; font-size: 0.95rem;">Based on your choices, here are the pedagogical principles you leaned on most:</p>
+            <div class="profile-grid" id="profileGrid">
+              <!-- Dynamically populated tallies -->
+            </div>
+
+            <div class="verdict-box">
+              <h4>Classroom Climate Verdict</h4>
+              <p id="verdictDesc">Description...</p>
+            </div>
+          </div>
+
+          <!-- Essay Box -->
+          <div class="essay-grid">
+            <div class="essay-card highlight">
+              <h3>The Stance of the Balanced History Teacher</h3>
+              <p>Teaching history under polarization is not about finding a safe middle ground that avoids conflict. It is about **restoring the struggle of the discipline** itself.</p>
+              <p>Balanced history does not tell students what to think, and it doesn't sanitise difficult events. Instead, it teaches them **how to think** using rigorous, source-grounded methods. When teachers protect this friction, the classroom shifts from a battleground of opinions to a workshop of evidence.</p>
+            </div>
+            
+            <div class="essay-card">
+              <h3>Discipline vs. Opinion</h3>
+              <p>The fastest way to lose a classroom is to allow opinions to stand in place of inquiry. When a teacher enforces civility without requiring evidence, they create a false, superficial consensus. When they allow unevidenced personal attacks, trust dissolves.</p>
+              <p>By keeping the focus strictly on **evidence, accountability, and empathy**, we build a resilient space where students feel safe to stretch their thinking.</p>
+            </div>
+          </div>
+
+          <div class="replay-area">
+            <button class="btn-action" id="btnReplay">Facilitate Again</button>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // --- DILEMMA MOMENTS DATA ---
+    const momentsData = [
+      {
+        kicker: "Opinion Stated as Fact",
+        topic: "Student opinion stated as settled fact",
+        situation: "During a discussion on the causes of the American Revolution, a student asserts: 'The colonists were just greedy tax evaders, and there was no real principle behind it.'",
+        hint: "Instead of validating it as fact or shutting the student down, transform the sweeping opinion into a testable claim. Require evidence for both sides.",
+        options: [
+          {
+            text: "Let's treat that as a claim we can test. What is the strongest evidence in the primary sources for that, and what evidence contradicts it?",
+            feedback: "Correct! You transform an emotional opinion into an academic inquiry. This models Critical Thinking, Openness, and Engagement. (+15 Discourse, +20 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 20, trust: 15 },
+            tags: ["C", "O", "E"],
+            best: true
+          },
+          {
+            text: "Well, everyone is entitled to their opinion. Let's move on to the next slide about the Boston Tea Party.",
+            feedback: "Sub-optimal. You protect Discourse superficially by avoiding conflict, but you surrender Academic Rigor and leave the claim unexamined. (+5 Discourse, -15 Rigor, -5 Trust)",
+            deltas: { discourse: 5, rigor: -15, trust: -5 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "That is incorrect. The colonists were standing up for fundamental British constitutional rights against tyranny.",
+            feedback: "Sub-optimal. By taking a side directly, you shut down discussion. Other students who agree with the first student will now withdraw their trust. (-15 Discourse, +5 Rigor, -20 Trust)",
+            deltas: { discourse: -15, rigor: 5, trust: -20 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "That's an interesting claim. Tell me more about what leads you to say that.",
+            feedback: "Workable. You prompt the student to expand, which encourages Engagement, but you must still follow up by bringing in other sources. (+10 Discourse, +10 Rigor, +10 Trust)",
+            deltas: { discourse: 10, rigor: 10, trust: 10 },
+            tags: ["E"]
+          }
+        ]
+      },
+      {
+        kicker: "The Family Concern",
+        topic: "A family worries a unit is pushing a viewpoint",
+        situation: "A parent emails you expressing concern that your unit on the U.S. Constitution's slave compromises is 'pushing a political viewpoint' and making students feel guilty.",
+        hint: "Respond professionally by being transparent about your sources. Emphasize that your goal is to analyze period records rather than judge modern students.",
+        options: [
+          {
+            text: "Share the unit outline, the primary source packets (federalist notes, debates), and invite the parent to review the materials, explaining the goal is evaluating period arguments.",
+            feedback: "Correct! Transparency builds massive trust. You model Accountability, Honesty, and Respect. (+20 Discourse, +15 Rigor, +20 Trust)",
+            deltas: { discourse: 20, rigor: 15, trust: 20 },
+            tags: ["A", "H", "R"],
+            best: true
+          },
+          {
+            text: "Acknowledge the email, prepare details with your administrator, and suggest a meeting to listen to their concerns directly.",
+            feedback: "Workable. Meeting is respectful and protects trust, though sharing sources immediately is a stronger first step in transparency. (+15 Discourse, +10 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 10, trust: 15 },
+            tags: ["R"]
+          },
+          {
+            text: "To avoid further parent complaints, quietly reduce the time spent on the three-fifths compromise and focus on the branch structure.",
+            feedback: "Sub-optimal. You avoid parental friction by sanitizing the curriculum, directly sacrificing Academic Rigor and student trust in your honesty. (+10 Discourse, -20 Rigor, -10 Trust)",
+            deltas: { discourse: 10, rigor: -20, trust: -10 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "Inform the parent that your curriculum aligns strictly with state standards and is not open to individual negotiation.",
+            feedback: "Sub-optimal. While factually true, a defensive wall damages trust and misses a chance to show that historical inquiry is about evidence, not indoctrination. (-20 Discourse, +5 Rigor, -15 Trust)",
+            deltas: { discourse: -20, rigor: 5, trust: -15 },
+            tags: ["anti-pattern"]
+          }
+        ]
+      },
+      {
+        kicker: "Teaching a Painful Chapter",
+        topic: "Engaging honestly with painful historical injustices",
+        situation: "You are preparing a unit on the Indian Removal Act of 1830. You want to teach this chapter honestly without creating a classroom environment of modern collective guilt or defensive sanitization.",
+        hint: "Focus the inquiry strictly on primary sources and the actions, arguments, and costs of removal at the time, helping students analyze constraints rather than debate modern blame.",
+        options: [
+          {
+            text: "Ground the unit in primary source treaties, congressional debates, and Cherokee petitions, exploring the arguments, the costs, and the decisions of those who lived it.",
+            feedback: "Correct! Rooting the lesson in period sources protects rigor and builds deep empathy without slipping into modern moralizing. (+15 Discourse, +20 Rigor, +20 Trust)",
+            deltas: { discourse: 15, rigor: 20, trust: 20 },
+            tags: ["H", "E"],
+            best: true
+          },
+          {
+            text: "Have students write in journals to reflect on how learning about this historical removal affects their understanding of justice today.",
+            feedback: "Workable. Encourages Thoughtfulness and processes emotion safely, though it needs to be paired with strong source analysis. (+15 Discourse, +10 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 10, trust: 15 },
+            tags: ["T"]
+          },
+          {
+            text: "Soften the description of the Trail of Tears to avoid upsetting students, focusing instead on the legal expansion of state boundaries.",
+            feedback: "Sub-optimal. Sanitizing the past to prevent discomfort guts Academic Rigor and violates Honesty. (+10 Discourse, -20 Rigor, -10 Trust)",
+            deltas: { discourse: 10, rigor: -20, trust: -10 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "Frame the removal primarily around current identity groups, asking students to debate which modern institutions owe apologies.",
+            feedback: "Sub-optimal. This slides into presentism, converting a historical removal inquiry into a modern moral courtroom that damages classroom trust. (-15 Discourse, +5 Rigor, -20 Trust)",
+            deltas: { discourse: -15, rigor: 5, trust: -20 },
+            tags: ["anti-pattern"]
+          }
+        ]
+      },
+      {
+        kicker: "The Viral Claim",
+        topic: "A student shares a dramatic viral claim",
+        situation: "A student excitedly shares a TikTok video claim: 'The U.S. government intentionally started the Spanish-American War by blowing up the USS Maine themselves.'",
+        hint: "Rather than dismissing the claim or validating it, use it as a teaching moment for lateral reading and source verification. Check what historians know about the Maine.",
+        options: [
+          {
+            text: "Let's read this claim laterally. What is the video's source? What evidence does it show? Let's check what the historical consensus and naval investigations actually found.",
+            feedback: "Correct! You teach them how to source and verify online claims, modeling Critical Thinking and Engagement under pressure. (+15 Discourse, +20 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 20, trust: 15 },
+            tags: ["C", "E"],
+            best: true
+          },
+          {
+            text: "I appreciate you sharing that. Why don't you do a quick write-up of that theory for extra credit?",
+            feedback: "Workable. Shows Empathy/Thoughtfulness, but fails to model verification in the room, potentially leaving a myth uncorrected. (+10 Discourse, +10 Rigor, +10 Trust)",
+            deltas: { discourse: 10, rigor: 10, trust: 10 },
+            tags: ["T"]
+          },
+          {
+            text: "That is nonsense from social media. Our textbook explicitly says the cause of the explosion remains controversial. Ignore TikTok.",
+            feedback: "Sub-optimal. Dismissing them defensively cuts off a valuable lesson in media literacy and damages student trust in your openness. (-10 Discourse, -10 Rigor, -15 Trust)",
+            deltas: { discourse: -10, rigor: -10, trust: -15 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "Well, history is written by the winners, so who's to say what really happened? Both versions are interesting.",
+            feedback: "Sub-optimal. Falling into lazy cynicism ('who's to say') destroys Academic Rigor and teaches students that evidence doesn't matter. (-5 Discourse, -20 Rigor, -10 Trust)",
+            deltas: { discourse: -5, rigor: -20, trust: -10 },
+            tags: ["anti-pattern"]
+          }
+        ]
+      },
+      {
+        kicker: "The Heated Exchange",
+        topic: "Two students talk over each other in debate",
+        situation: "During a discussion on immigration policy, two students begin shouting over each other, making personal accusations rather than discussing the policy data.",
+        hint: "Do not let the argument escalate or shut it down. Enforce a structured discourse protocol that requires students to steelman each other's evidence.",
+        options: [
+          {
+            text: "Pause the class. Let's enforce our protocol: each side must state the other side's strongest evidence before responding, and base arguments on the data packet.",
+            feedback: "Correct! You preserve safety and rigour by introducing structure. Models Respect and Engagement. (+25 Discourse, +15 Rigor, +20 Trust)",
+            deltas: { discourse: 25, rigor: 15, trust: 20 },
+            tags: ["R", "E"],
+            best: true
+          },
+          {
+            text: "This is getting too heated. Everyone shut your notebooks. Turn to page 142 and read silently for the rest of the period.",
+            feedback: "Sub-optimal. You enforce order (Discourse) by shutting down learning entirely, leaving the conflict unresolved and teaching students to fear disagreement. (-5 Discourse, -15 Rigor, -10 Trust)",
+            deltas: { discourse: -5, rigor: -15, trust: -10 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "Intervene by pointing out that the student arguing for immigration has the factual data, and explain why their opponent is incorrect.",
+            feedback: "Sub-optimal. By taking a side in a student dispute, you destroy your role as a neutral facilitator and ruin student trust in your fairness. (-20 Discourse, +5 Rigor, -25 Trust)",
+            deltas: { discourse: -20, rigor: 5, trust: -25 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "Let them go for a minute. Conflict is natural, and they need to learn to resolve these arguments themselves.",
+            feedback: "Sub-optimal. Allowing unstructured shouting in a classroom environment damages safety and student trust that the teacher is in control. (-25 Discourse, -10 Rigor, -15 Trust)",
+            deltas: { discourse: -25, rigor: -10, trust: -15 },
+            tags: ["anti-pattern"]
+          }
+        ]
+      }
+    ];
+
+    // --- CORE & HEART EXPLANATION TALLIES ---
+    const traitDescriptions = {
+      C: { title: "Critical Thinking", desc: "You modeled how to interrogate claims rather than accept them, turning opinions and viral videos into evidence-based inquiries." },
+      O: { title: "Openness", desc: "You treated claims as starting points and brought in multiple competing perspectives, showing you welcome diverse arguments." },
+      R: { title: "Respect", desc: "You protected the dignity of dialogue, establishing clear protocols for civil disagreement under pressure." },
+      E: { title: "Engagement", desc: "You favored active student inquiry, Socratic steelmanning, and direct source investigation over passive consumption." },
+      H: { title: "Honesty", desc: "You engaged honestly with painful or controversial history, refusing to sanitize difficult truths to avoid complaints." },
+      E_H: { title: "Empathy", desc: "You focused on understanding historical actors on their own terms, rejecting easy moralizing or presentist judgments." },
+      A: { title: "Accountability", desc: "You held yourself accountable to parents and stakeholders, building trust through transparency and review." },
+      T: { title: "Thoughtfulness", desc: "You encouraged metacognition, reflective writing, and deliberate pacing rather than fast, reactionary media comments." }
+    };
+
+    // --- GAME STATE VARIABLES ---
+    let currentMomentIdx = 0;
+    let discourse = 55;
+    let rigor = 55;
+    let trust = 55;
+    let selectedTags = []; // tallies of letters chosen in 'best' options
+
+    // --- DOM ELEMENTS ---
+    const screenTitle = document.getElementById("screenTitle");
+    const screenPlay = document.getElementById("screenPlay");
+    const screenDebrief = document.getElementById("screenDebrief");
+    const hudMeters = document.getElementById("hudMeters");
+
+    // HUD Meters
+    const lblDiscourse = document.getElementById("lblDiscourse");
+    const barDiscourse = document.getElementById("barDiscourse");
+    const lblRigor = document.getElementById("lblRigor");
+    const barRigor = document.getElementById("barRigor");
+    const lblTrust = document.getElementById("lblTrust");
+    const barTrust = document.getElementById("barTrust");
+
+    // Play Elements
+    const momentTracker = document.getElementById("momentTracker");
+    const momentKicker = document.getElementById("momentKicker");
+    const momentTopic = document.getElementById("momentTopic");
+    const momentSituation = document.getElementById("momentSituation");
+    const optionsGrid = document.getElementById("optionsGrid");
+    
+    const mentorHeader = document.getElementById("mentorHeader");
+    const mentorToggleIcon = document.getElementById("mentorToggleIcon");
+    const mentorContent = document.getElementById("mentorContent");
+
+    const feedbackEmptyState = document.getElementById("feedbackEmptyState");
+    const feedbackContent = document.getElementById("feedbackContent");
+    const feedbackBox = document.getElementById("feedbackBox");
+    const btnNextMoment = document.getElementById("btnNextMoment");
+
+    // Debrief Elements
+    const valDiscourse = document.getElementById("valDiscourse");
+    const dialDiscourse = document.getElementById("dialDiscourse");
+    const valRigor = document.getElementById("valRigor");
+    const dialRigor = document.getElementById("dialRigor");
+    const valTrust = document.getElementById("valTrust");
+    const dialTrust = document.getElementById("dialTrust");
+    const profileGrid = document.getElementById("profileGrid");
+    const verdictDesc = document.getElementById("verdictDesc");
+
+    const announcer = document.getElementById("announcer");
+
+    // --- EVENT LISTENERS ---
+    document.getElementById("btnStartGame").addEventListener("click", startGame);
+    document.getElementById("btnReplay").addEventListener("click", resetToTitle);
+    
+    mentorHeader.addEventListener("click", toggleMentor);
+    mentorHeader.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        toggleMentor();
+      }
     });
-    updateHud();
-  }
 
-  function pick(i){
-    if(state.picked) return; state.picked=true;
-    var opt = MOMENTS[state.mi].options[i];
-    state.civil=clamp(state.civil+opt.civil); state.rigor=clamp(state.rigor+opt.rigor); state.trust=clamp(state.trust+opt.trust);
-    var anti = opt.tags.indexOf("Anti-pattern")>=0;
-    if(anti){ state.antis++; }
-    else { opt.tags.forEach(function(t){ state.principleCounts[t]=(state.principleCounts[t]||0)+1; }); }
-    var btns=$("cards").querySelectorAll(".card");
-    btns.forEach(function(b,bi){ b.disabled=true; if(bi===i){ b.style.borderColor="var(--gold)"; b.style.background="rgba(213,174,88,.15)"; } });
-    updateHud();
-    var sign=function(n){ return (n>=0?"+":"")+n; };
-    var pEl=$("fbPrinciple");
-    if(anti){ pEl.className="principle anti"; pEl.textContent="Anti-pattern"; }
-    else { pEl.className="principle good"; pEl.textContent = opt.tags.join(" · "); }
-    $("fbDelta").textContent = "Civil " + sign(opt.civil) + "  ·  Rigor " + sign(opt.rigor) + "  ·  Trust " + sign(opt.trust);
-    $("fbText").textContent = feedbackLine(opt, anti);
-    $("feedback").style.display="block";
-    $("continueBtn").style.display="inline-flex"; $("continueBtn").focus();
-  }
+    btnNextMoment.addEventListener("click", advanceMoment);
 
-  function feedbackLine(opt, anti){
-    if(opt.best) return "Strong move — you held rigor and dignity at once, and modeled how to think rather than what to think.";
-    if(anti) return "Tempting, but it trades away rigor or trust to buy short-term calm. The hard moment is the teachable one.";
-    return "Reasonable, but it leaves something on the table — push for evidence and keep every student in the conversation.";
-  }
+    // Keyboard navigation (1-4 keys for option selection)
+    window.addEventListener("keydown", (e) => {
+      if (screenPlay.style.display === "block") {
+        if (e.key === "1" || e.key === "2" || e.key === "3" || e.key === "4") {
+          const idx = parseInt(e.key) - 1;
+          const buttons = optionsGrid.querySelectorAll(".option-btn");
+          if (buttons && buttons[idx] && !buttons[idx].disabled) {
+            buttons[idx].click();
+          }
+        }
+      }
+    });
 
-  function next(){
-    if(state.mi < MOMENTS.length-1){ state.mi++; renderMoment(); }
-    else { debrief(); }
-  }
+    // --- UTILITIES ---
+    function announce(msg) {
+      announcer.textContent = msg;
+    }
 
-  function debrief(){
-    show("debrief");
-    $("dCivil").textContent=Math.round(state.civil); $("dRigor").textContent=Math.round(state.rigor); $("dTrust").textContent=Math.round(state.trust);
-    $("dCivilBar").style.width=clamp(state.civil)+"%"; $("dRigorBar").style.width=clamp(state.rigor)+"%"; $("dTrustBar").style.width=clamp(state.trust)+"%";
-    var avg=Math.round((state.civil+state.rigor+state.trust)/3);
-    var c=climate(avg); $("dClim").textContent=c; $("dClimChip").className="chip "+c.toLowerCase();
-    var band, sub;
-    if(avg>=72){ band="Hard things, handled well"; sub="Your room can hold a charged question with rigor and dignity intact — exactly what balanced history asks of us."; }
-    else if(avg>=55){ band="Steady, with strain"; sub="You kept the room mostly together. Watch the moments where calm came at the cost of rigor or trust."; }
-    else if(avg>=40){ band="Frayed edges"; sub="Several moves bought short-term peace by lowering rigor or dignity. The hard moment is the teachable one — try holding all three."; }
-    else { band="The room came apart"; sub="Avoidance and side-taking eroded trust and rigor. Lead with C.O.R.E. and H.E.A.R.T. and run it back."; }
-    $("standing").textContent = band + "  ·  climate " + avg + "/100";
-    $("standingSub").textContent = sub;
-    var tb=$("profileTable"); tb.innerHTML="";
-    var keys=Object.keys(state.principleCounts).sort(function(a,b){ return state.principleCounts[b]-state.principleCounts[a]; });
-    if(keys.length===0){ tb.innerHTML="<tr><td colspan='3' style='color:#cfc8b4'>No framework principles drawn on — that's the lesson.</td></tr>"; }
-    keys.forEach(function(k){ var tr=document.createElement("tr"); tr.innerHTML="<td>"+k+"</td><td style='color:#cfc8b4'>"+FW[k]+"</td><td>"+state.principleCounts[k]+"</td>"; tb.appendChild(tr); });
-    $("antiNote").textContent = state.antis>0 ? ("Anti-patterns chosen: " + state.antis + " — moments where calm or avoidance won out over rigor and dignity.") : "No anti-patterns — you met every hard moment head-on.";
-  }
+    function clamp(val, min, max) {
+      return Math.min(Math.max(val, min), max);
+    }
 
-  function start(){ reset(); show("play"); renderMoment(); }
-  $("startBtn").addEventListener("click", start);
-  $("replayBtn").addEventListener("click", start);
-  $("continueBtn").addEventListener("click", next);
-  document.addEventListener("keydown", function(e){
-    if($("play").classList.contains("active")){
-      if(!state.picked && e.key>="1" && e.key<="4"){ pick(parseInt(e.key,10)-1); }
-      else if(state.picked && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); next(); }
-    } else if(e.key==="Enter" && $("title").classList.contains("active")){ start(); }
-  });
-  reset();
-</script>
+    function updateMeters() {
+      discourse = clamp(discourse, 0, 100);
+      rigor = clamp(rigor, 0, 100);
+      trust = clamp(trust, 0, 100);
+
+      lblDiscourse.textContent = `${discourse}%`;
+      barDiscourse.style.width = `${discourse}%`;
+
+      lblRigor.textContent = `${rigor}%`;
+      barRigor.style.width = `${rigor}%`;
+
+      lblTrust.textContent = `${trust}%`;
+      barTrust.style.width = `${trust}%`;
+    }
+
+    // --- FLOW LOGIC ---
+
+    function resetToTitle() {
+      screenDebrief.style.display = "none";
+      screenTitle.style.display = "flex";
+      hudMeters.style.display = "none";
+      announce("Returned to title screen.");
+    }
+
+    function startGame() {
+      currentMomentIdx = 0;
+      discourse = 55;
+      rigor = 55;
+      trust = 55;
+      selectedTags = [];
+
+      screenTitle.style.display = "none";
+      screenPlay.style.display = "block";
+      hudMeters.style.display = "flex";
+
+      updateMeters();
+      loadMoment(currentMomentIdx);
+      announce("Simulation started. First dilemma loaded.");
+    }
+
+    function loadMoment(idx) {
+      const moment = momentsData[idx];
+
+      momentTracker.textContent = `Moment ${idx + 1} of 5`;
+      momentKicker.textContent = moment.kicker;
+      momentTopic.textContent = moment.topic;
+      momentSituation.textContent = moment.situation;
+
+      mentorContent.textContent = moment.hint;
+      mentorContent.classList.remove("open");
+      mentorHeader.setAttribute("aria-expanded", "false");
+      mentorToggleIcon.textContent = "▼";
+
+      feedbackEmptyState.style.display = "flex";
+      feedbackContent.style.display = "none";
+
+      optionsGrid.innerHTML = "";
+      moment.options.forEach((opt, oIdx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.innerHTML = `
+          <div class="option-btn-dot"></div>
+          <span>${oIdx + 1}. ${opt.text}</span>
+        `;
+        btn.addEventListener("click", () => handleOptionSelect(opt, btn));
+        optionsGrid.appendChild(btn);
+      });
+    }
+
+    function toggleMentor() {
+      const isOpen = mentorContent.classList.toggle("open");
+      mentorHeader.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      mentorToggleIcon.textContent = isOpen ? "▲" : "▼";
+    }
+
+    function handleOptionSelect(opt, selectedBtn) {
+      const buttons = optionsGrid.querySelectorAll(".option-btn");
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.remove("selected");
+      });
+      selectedBtn.classList.add("selected");
+
+      // Apply deltas
+      discourse += opt.deltas.discourse;
+      rigor += opt.deltas.rigor;
+      trust += opt.deltas.trust;
+
+      // Accumulate tags if they are in the selected best/ok options
+      if (opt.tags) {
+        opt.tags.forEach(tag => {
+          selectedTags.push(tag);
+        });
+      }
+
+      updateMeters();
+
+      // Show Feedback
+      feedbackEmptyState.style.display = "none";
+      feedbackContent.style.display = "flex";
+
+      feedbackBox.className = "feedback-box";
+      if (opt.best) {
+        feedbackBox.classList.add("correct");
+        feedbackBox.innerHTML = `
+          <strong>🎯 CORE / HEART Stance Aligned</strong>
+          ${opt.feedback}
+        `;
+        announce("Stance aligned. Discourse, rigor, and trust increased.");
+      } else {
+        feedbackBox.classList.add("incorrect");
+        feedbackBox.innerHTML = `
+          <strong>⚠️ Facilitation Anti-pattern</strong>
+          ${opt.feedback}
+        `;
+        announce("Anti-pattern chosen. Trust or rigor compromised.");
+      }
+      
+      // Auto scroll column 3 into view on mobile
+      feedbackContent.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function advanceMoment() {
+      currentMomentIdx++;
+      if (currentMomentIdx < 5) {
+        loadMoment(currentMomentIdx);
+      } else {
+        showDebrief();
+      }
+    }
+
+    function showDebrief() {
+      screenPlay.style.display = "none";
+      hudMeters.style.display = "none";
+      screenDebrief.style.display = "block";
+
+      // Circular dials
+      valDiscourse.innerHTML = `${discourse}<span>%</span>`;
+      dialDiscourse.style.background = `conic-gradient(var(--blue) ${discourse}%, rgba(255, 255, 255, 0.06) ${discourse}%)`;
+
+      valRigor.innerHTML = `${rigor}<span>%</span>`;
+      dialRigor.style.background = `conic-gradient(var(--teal) ${rigor}%, rgba(255, 255, 255, 0.06) ${rigor}%)`;
+
+      valTrust.innerHTML = `${trust}<span>%</span>`;
+      dialTrust.style.background = `conic-gradient(var(--gold) ${trust}%, rgba(255, 255, 255, 0.06) ${trust}%)`;
+
+      // Build Leadership Profile Tally
+      profileGrid.innerHTML = "";
+      
+      // Count tags
+      const counts = { C: 0, O: 0, R: 0, E: 0, H: 0, E_H: 0, A: 0, T: 0 };
+      
+      // Map E to E_H (Empathy) where appropriate based on tag string
+      selectedTags.forEach(tag => {
+        let key = tag;
+        if (tag === "E") {
+          // If best choice is Honesty/Empathy, map the second E to Empathy (E_H)
+          // Let's count E as Engagement, and check if we want to count it for Empathy
+          // To keep it simple, let's increment the specific key in counts
+        }
+        if (counts.hasOwnProperty(key)) {
+          counts[key]++;
+        }
+      });
+
+      // Special manual check: if CherokeeRemoval best option was chosen, it had H and E.
+      // E in CherokeeRemoval was Empathy. Let's map tag "E" to "E_H" when paired with "H"
+      // Let's count tags explicitly
+      let cCount = selectedTags.filter(t => t === "C").length;
+      let oCount = selectedTags.filter(t => t === "O").length;
+      let rCount = selectedTags.filter(t => t === "R").length;
+      let eCount = selectedTags.filter(t => t === "E").length; // Engagement
+      let hCount = selectedTags.filter(t => t === "H").length;
+      let ehCount = selectedTags.filter(t => t === "E").length && selectedTags.filter(t => t === "H").length ? 1 : 0; // Empathy
+      let aCount = selectedTags.filter(t => t === "A").length;
+      let tCount = selectedTags.filter(t => t === "T").length;
+
+      const results = [
+        { key: "C", count: cCount, title: "Critical Thinking", desc: "You turned loaded opinions and viral claims into source-grounded claims to test." },
+        { key: "O", count: oCount, desc: "You welcomed diverse arguments and treated claims as open starting points." },
+        { key: "R", count: rCount, desc: "You protected the dignity of dialogue, establishing clear protocols for civil disagreement." },
+        { key: "E", count: eCount, desc: "You favored active student inquiry and Socratic steelmanning over passive silent reading." },
+        { key: "H", count: hCount, desc: "You engaged honestly with painful history, refusing to sanitize difficult truths." },
+        { key: "E_H", count: ehCount, desc: "You focused on understanding historical actors on their own terms, rejecting easy moralizing." },
+        { key: "A", count: aCount, desc: "You held yourself accountable to parents, building trust through curricular transparency." },
+        { key: "T", count: tCount, desc: "You encouraged reflective writing and deliberate pacing rather than reactionary comments." }
+      ];
+
+      results.forEach(res => {
+        const item = document.createElement("div");
+        item.className = "profile-item";
+        
+        // Find title
+        const meta = traitDescriptions[res.key] || { title: res.key === "E_H" ? "Empathy" : "Engagement" };
+        const displayTitle = meta.title || res.key;
+        const displayDesc = res.count > 0 ? meta.desc : `You did not explicitly activate this letter's最佳 choice.`;
+
+        item.innerHTML = `
+          <div class="profile-item-header">
+            <h4>${displayTitle}</h4>
+            <span class="profile-count">${res.count}</span>
+          </div>
+          <p>${displayDesc}</p>
+        `;
+        profileGrid.appendChild(item);
+      });
+
+      // Classroom climate verdict
+      let verdictTitle = "";
+      let verdictDescText = "";
+
+      if (discourse >= 70 && rigor >= 70 && trust >= 70) {
+        verdictTitle = "🎯 Deliberative and Rigorous Classroom";
+        verdictDescText = "Exceptional work! You successfully navigated classroom polarization without sacrificing rigor or trust. Your students speak from evidence, steelman opposing points of view, and trust that their dignity and identities are secure. You model the C.O.R.E. and H.E.A.R.T. stance perfectly.";
+      } else if (rigor < 50) {
+        verdictTitle = "⚠️ Civility without Rigor (Safe but Shallow)";
+        verdictDescText = "Your discourse is civil, but your rigor is low. By letting opinions pass unchallenged to avoid parental complaints or student discomfort, your classroom risks becoming a 'banking model' of safe, unexamined summaries rather than a workshop of evidence.";
+      } else if (trust < 50) {
+        verdictTitle = "⚠️ Rigorous but Hostile (Debate Courtroom)";
+        verdictDescText = "You pushed for source analysis and facts, but student trust has collapsed. When you take sides in student debates or allow personal accusations to continue without discourse protocols, students shut down and refuse to take intellectual risks.";
+      } else {
+        verdictTitle = "⚖️ Developing Facilitator Climate";
+        verdictDescText = "You have mostly kept the classroom climate balanced. Disagreements remain manageable, and sources are checked, but you can build higher trust and academic rigor by introducing structured Socratic protocols and absolute transparency with families.";
+      }
+
+      const verdictTitleEl = verdictBox.querySelector("h4");
+      const verdictTextEl = document.getElementById("verdictDesc");
+      verdictTitleEl.textContent = verdictTitle;
+      verdictTextEl.textContent = verdictDescText;
+
+      announce("Simulation debrief loaded.");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
 </body>
 </html>

@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Informed Action | Civic Reasoning Decision Game</title>
+  <style>
+    :root {
+      --ink: #080d14;
+      --ink-2: #111a26;
+      --paper: #f4ead7;
+      --paper-2: #fffdf9;
+      --line: rgba(244, 234, 215, 0.16);
+      --line-dark: rgba(8, 13, 20, 0.16);
+      --gold: #d7a13d;
+      --rose: #d4685d;
+      --rose-light: rgba(212, 104, 93, 0.12);
+      --teal: #64c6bd;
+      --teal-dark: #22756f;
+      --teal-light: rgba(100, 198, 189, 0.12);
+      --muted: #92a2a6;
+      --radius: 12px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      --transition-speed: 0.2s;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(100, 198, 189, 0.12), transparent 32%),
+        radial-gradient(circle at 88% 8%, rgba(215, 161, 61, 0.12), transparent 28%),
+        linear-gradient(135deg, #050a0f, #0f1822 60%, #0c141d);
+      color: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    button, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px clamp(16px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 10, 15, 0.85);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(100, 198, 189, 0.5);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--teal);
+      background: rgba(100, 198, 189, 0.05);
+      box-shadow: inset 0 0 0 6px rgba(100, 198, 189, 0.04);
+      flex: 0 0 auto;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.3rem, 2.5vw, 1.85rem);
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .hud {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hud-meter {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 120px;
+    }
+
+    .hud-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .hud-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hud-bar span {
+      display: block;
+      height: 100%;
+      transition: width 0.35s cubic-bezier(0.1, 0.8, 0.2, 1), background-color 0.3s;
+    }
+
+    .hud-evidence span {
+      background: var(--teal);
+    }
+
+    .hud-stakeholder span {
+      background: var(--blue, #7d9fd6);
+    }
+
+    .hud-feasibility span {
+      background: var(--gold);
+    }
+
+    .hud-ownership {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .hud-ownership-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .ownership-badge {
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: background var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed);
+    }
+
+    .ownership-badge.owned {
+      background: var(--teal-light);
+      border-color: rgba(100, 198, 189, 0.3);
+      color: var(--teal);
+    }
+
+    .ownership-badge.borrowed {
+      background: rgba(215, 161, 61, 0.12);
+      border-color: rgba(215, 161, 61, 0.3);
+      color: var(--gold);
+    }
+
+    .ownership-badge.outsourced {
+      background: var(--rose-light);
+      border-color: rgba(212, 104, 93, 0.3);
+      color: var(--rose);
+      box-shadow: 0 0 8px rgba(212, 104, 93, 0.2);
+    }
+
+    /* Screen Styles */
+    .screen {
+      padding: clamp(16px, 3vw, 34px);
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Title Screen */
+    .screen-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(80vh - 86px);
+      text-align: center;
+      max-width: 800px;
+      padding: 40px 20px;
+    }
+
+    .tag-cloud {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .screen-title h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      margin: 0 0 16px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--paper-2), var(--teal) 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .screen-title p.subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      color: var(--muted);
+      margin: 0 0 32px;
+      font-family: Georgia, serif;
+      font-style: italic;
+    }
+
+    .framing-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.04);
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 34px);
+      margin-bottom: 36px;
+      text-align: left;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--teal);
+    }
+
+    .framing-card p {
+      margin: 0 0 16px;
+      font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+      line-height: 1.6;
+    }
+    .framing-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .framing-card strong {
+      color: var(--teal);
+    }
+
+    .selector-area {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 36px;
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .selector-area label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .issue-selector {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      color: var(--paper);
+      background: var(--ink-2);
+      outline: none;
+      transition: border-color var(--transition-speed);
+      cursor: pointer;
+    }
+
+    .issue-selector:focus {
+      border-color: var(--teal);
+    }
+
+    .btn-action {
+      background: var(--teal-dark);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: 14px 44px;
+      border: 1px solid var(--teal-dark);
+      box-shadow: 0 10px 24px rgba(34, 117, 111, 0.25);
+    }
+
+    .btn-action:hover {
+      background: var(--teal);
+      border-color: var(--teal);
+    }
+
+    /* Play Screen Layout */
+    .game-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.8fr) minmax(460px, 1.3fr) minmax(320px, 0.9fr);
+      gap: 20px;
+      height: calc(100vh - 150px);
+      min-height: 550px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(244, 234, 215, 0.04);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      transition: border-color var(--transition-speed);
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 10, 15, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--teal);
+    }
+
+    .panel-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Left Panel: Phase Tracker */
+    .phase-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .phase-item {
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      transition: all var(--transition-speed);
+    }
+
+    .phase-item-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+
+    .phase-item.active {
+      color: var(--paper-2);
+      background: rgba(100, 198, 189, 0.06);
+      border-color: rgba(100, 198, 189, 0.2);
+      font-weight: 800;
+    }
+
+    .phase-item.active .phase-item-dot {
+      background: var(--teal);
+      box-shadow: 0 0 8px var(--teal);
+    }
+
+    .phase-item.completed {
+      color: var(--teal);
+    }
+
+    .phase-item.completed .phase-item-dot {
+      background: var(--teal);
+    }
+
+    .mentor-box {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.02);
+      border-radius: var(--radius);
+      margin-top: auto;
+    }
+
+    .mentor-header {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .mentor-header:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .mentor-header h4 {
+      margin: 0;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--teal);
+    }
+
+    .mentor-toggle-icon {
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+
+    .mentor-content {
+      padding: 0 16px 16px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--muted);
+      display: none;
+    }
+
+    .mentor-content.open {
+      display: block;
+    }
+
+    /* Middle Panel: Decision Options */
+    .scenario-info-card {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 16px;
+      border-radius: var(--radius);
+    }
+
+    .scenario-info-card h4 {
+      margin: 0 0 6px;
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      color: var(--gold);
+    }
+
+    .scenario-info-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .decision-prompt {
+      font-family: Georgia, serif;
+      font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+      line-height: 1.35;
+      margin: 0 0 8px;
+      color: var(--paper-2);
+    }
+
+    .options-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .option-btn {
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.92rem;
+      line-height: 1.45;
+      display: flex;
+      align-items: start;
+      gap: 14px;
+    }
+
+    .option-btn-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.1s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--teal);
+      background: rgba(100, 198, 189, 0.06);
+    }
+
+    .option-btn:hover:not(:disabled) .option-btn-num {
+      border-color: var(--teal);
+      background: var(--teal);
+      color: var(--ink);
+    }
+
+    .option-btn.selected {
+      border-color: var(--teal);
+      background: rgba(100, 198, 189, 0.08);
+    }
+
+    .option-btn.selected .option-btn-num {
+      border-color: var(--teal);
+      background: var(--teal);
+      color: var(--ink);
+    }
+
+    /* AI Assist Card (Temptation Overlay) */
+    .ai-assist-container {
+      display: none;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .ai-assist-card {
+      border: 1px solid var(--gold);
+      background: rgba(215, 161, 61, 0.06);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border-left: 5px solid var(--gold);
+      box-shadow: var(--shadow);
+    }
+
+    .ai-assist-header {
+      font-weight: bold;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .ai-assist-card p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .ai-assist-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .btn-shortcut {
+      background: var(--gold);
+      color: var(--ink);
+      padding: 10px 18px;
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+    .btn-shortcut:hover {
+      background: var(--paper-2);
+    }
+
+    .btn-interrogate {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--paper);
+      padding: 10px 18px;
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+    .btn-interrogate:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--teal);
+    }
+
+    /* Flaw Interrogation Area */
+    .flaw-section {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ai-draft-box {
+      border: 1px dashed var(--muted);
+      border-radius: var(--radius);
+      padding: 18px;
+      background: rgba(255,255,255,0.01);
+      font-family: Georgia, serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .flaw-options-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .flaw-btn {
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      color: var(--paper);
+      background: rgba(255,255,255,0.02);
+      font-size: 0.88rem;
+      line-height: 1.4;
+    }
+
+    .flaw-btn:hover:not(:disabled) {
+      border-color: var(--rose);
+      background: rgba(212, 104, 93, 0.05);
+    }
+
+    .flaw-btn.selected {
+      border-color: var(--rose);
+      background: rgba(212, 104, 93, 0.08);
+    }
+
+    .flaw-btn.correct-flaw {
+      border-color: var(--teal);
+      background: rgba(100, 198, 189, 0.08);
+    }
+
+    /* Right Panel: Feedback */
+    .feedback-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .feedback-box.correct {
+      border-color: var(--teal);
+      background: var(--teal-light);
+      border-left: 5px solid var(--teal);
+    }
+
+    .feedback-box.incorrect {
+      border-color: var(--rose);
+      background: var(--rose-light);
+      border-left: 5px solid var(--rose);
+    }
+
+    .feedback-box.assist {
+      border-color: var(--gold);
+      background: rgba(215, 161, 61, 0.08);
+      border-left: 5px solid var(--gold);
+    }
+
+    .feedback-box strong {
+      display: block;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+    }
+
+    .feedback-box.correct strong { color: var(--teal); }
+    .feedback-box.incorrect strong { color: var(--rose); }
+    .feedback-box.assist strong { color: var(--gold); }
+
+    .btn-next {
+      background: var(--teal-dark);
+      color: #fff;
+      font-weight: 800;
+      padding: 12px;
+      text-align: center;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn-next:hover {
+      background: var(--teal);
+    }
+
+    /* Screen: Debrief */
+    .debrief-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      padding-bottom: 60px;
+    }
+
+    .debrief-intro {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .debrief-intro h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin: 0 0 10px;
+      color: var(--paper-2);
+    }
+
+    .debrief-intro p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .debrief-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.03);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h3 {
+      margin: 0 0 16px;
+      font-family: Georgia, serif;
+      font-size: 1.25rem;
+      color: var(--teal);
+    }
+
+    .stat-dial-container {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin-bottom: 16px;
+      display: grid;
+      place-items: center;
+    }
+
+    .circular-progress {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(var(--teal) 0%, rgba(255, 255, 255, 0.06) 0%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 14px rgba(5, 10, 15, 0.9);
+      position: relative;
+    }
+
+    .circular-progress::after {
+      content: "";
+      position: absolute;
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: rgba(5, 10, 15, 0.7);
+      z-index: 1;
+    }
+
+    .dial-val {
+      font-family: Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--paper-2);
+      z-index: 2;
+      position: relative;
+    }
+
+    .dial-val span {
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    .stat-card p.stat-desc {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .verdict-box {
+      border: 1px solid var(--teal);
+      background: var(--teal-light);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 10px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .verdict-box h4 {
+      margin: 0 0 8px;
+      font-family: Georgia, serif;
+      font-size: 1.3rem;
+      color: var(--paper-2);
+    }
+    .verdict-box p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--paper);
+    }
+
+    /* Essay & Framework Cards */
+    .essay-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .essay-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.02);
+      border-radius: var(--radius);
+      padding: 26px;
+    }
+
+    .essay-card.highlight {
+      border-left: 5px solid var(--teal);
+    }
+
+    .essay-card h3 {
+      margin: 0 0 16px;
+      font-family: Georgia, serif;
+      font-size: 1.35rem;
+      color: var(--paper-2);
+    }
+
+    .essay-card p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+    .essay-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .essay-card strong {
+      color: var(--paper);
+    }
+
+    .framework-card {
+      border: 1px solid var(--line);
+      background: rgba(244, 234, 215, 0.03);
+      border-radius: var(--radius);
+      padding: 26px;
+    }
+
+    .framework-card h3 {
+      margin: 0 0 20px;
+      font-family: Georgia, serif;
+      font-size: 1.45rem;
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .framework-subgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .fw-item {
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: var(--radius);
+    }
+
+    .fw-item h4 {
+      margin: 0 0 8px;
+      font-family: Georgia, serif;
+      font-size: 1.1rem;
+      color: var(--paper-2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fw-item p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .fw-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: rgba(215, 161, 61, 0.15);
+      color: var(--gold);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .replay-area {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .game-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 0;
+      }
+      .panel {
+        max-height: 550px;
+      }
+      .essay-grid, .framework-subgrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div id="announcer" class="sr-only" aria-live="polite"></div>
+
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">C</div>
+        <div class="brand-text">
+          <h1>Informed Action</h1>
+          <p>A Civics &amp; AI Friction Game</p>
+        </div>
+      </div>
+      
+      <!-- HUD meters (hidden in title screen) -->
+      <div class="hud" id="hudMeters" style="display: none;">
+        <div class="hud-meter">
+          <div class="hud-label">
+            <span>Evidence Base</span>
+            <span id="lblEvidence">40%</span>
+          </div>
+          <div class="hud-bar hud-evidence" aria-hidden="true">
+            <span id="barEvidence" style="width: 40%;"></span>
+          </div>
+        </div>
+        <div class="hud-meter">
+          <div class="hud-label">
+            <span>Stakeholders</span>
+            <span id="lblStakeholder">40%</span>
+          </div>
+          <div class="hud-bar hud-stakeholder" aria-hidden="true">
+            <span id="barStakeholder" style="width: 40%;"></span>
+          </div>
+        </div>
+        <div class="hud-meter">
+          <div class="hud-label">
+            <span>Feasibility</span>
+            <span id="lblFeasibility">50%</span>
+          </div>
+          <div class="hud-bar hud-feasibility" aria-hidden="true">
+            <span id="barFeasibility" style="width: 50%;"></span>
+          </div>
+        </div>
+        <div class="hud-ownership">
+          <span class="hud-ownership-label">Plan Ownership</span>
+          <span class="ownership-badge owned" id="badgeOwnership">Owned</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="mainContent" role="main">
+      <!-- SCREEN: TITLE -->
+      <div class="screen screen-title" id="screenTitle">
+        <div class="tag-cloud">
+          <span class="ownership-badge owned" style="font-size: 0.7rem; border-radius: 99px;">Civics</span>
+          <span class="ownership-badge owned" style="font-size: 0.7rem; border-radius: 99px; background: rgba(125, 159, 214, 0.12); color:#7d9fd6; border-color: rgba(125, 159, 214, 0.3);">Source Literacy</span>
+          <span class="ownership-badge owned" style="font-size: 0.7rem; border-radius: 99px; background: rgba(215, 161, 61, 0.12); color:var(--gold); border-color: rgba(215, 161, 61, 0.3);">Pedagogical Friction</span>
+        </div>
+
+        <h2>Build a Plan You Can Defend.</h2>
+        <p class="subtitle">A civics decision game mapping stakeholders, evidence, and trade-offs</p>
+
+        <div class="framing-card">
+          <p>An issue in your community requires action. Generative AI can draft a polished, professional-sounding civic action plan in seconds &mdash; <strong>but this is a bypass trap.</strong> The plan arrives without the cognitive labor and research that makes a citizen truly informed.</p>
+          <p>In this game, you will navigate the <strong>C3 Framework Inquiry Arc</strong>. You must frame the problem, select credible evidence, map stakeholders, and weigh actions.</p>
+          <p><strong>The temptation:</strong> Throughout the game, AI will offer you frictionless summaries and shortcuts. Accepting them will save time, but will dilute your <strong>Evidence</strong>, ignore critical <strong>Stakeholders</strong>, and outsource your <strong>Ownership</strong>. Interrogate the AI to earn a plan you can stand behind.</p>
+        </div>
+
+        <div class="selector-area">
+          <label for="selectIssue">Select Civic Challenge:</label>
+          <select class="issue-selector" id="selectIssue">
+            <option value="crossing">The Dangerous Crossing (Street Safety Upgrade)</option>
+            <option value="phones">Classroom Connections (School Cell Phone Policy)</option>
+          </select>
+        </div>
+
+        <button class="btn-action" id="btnStartGame">Begin Planning</button>
+      </div>
+
+      <!-- SCREEN: PLAY -->
+      <div class="screen" id="screenPlay" style="display: none;">
+        <div class="game-grid">
+          
+          <!-- Column 1: Phase Tracker -->
+          <section class="panel" aria-labelledby="colTrackerTitle">
+            <div class="panel-header">
+              <h3 id="colTrackerTitle">C3 Inquiry Arc</h3>
+            </div>
+            <div class="panel-body">
+              <ul class="phase-list">
+                <li class="phase-item" id="phase-0">
+                  <div class="phase-item-dot"></div>
+                  <span>1. Frame the Question</span>
+                </li>
+                <li class="phase-item" id="phase-1">
+                  <div class="phase-item-dot"></div>
+                  <span>2. Gather Evidence</span>
+                </li>
+                <li class="phase-item" id="phase-2">
+                  <div class="phase-item-dot"></div>
+                  <span>3. Map Stakeholders</span>
+                </li>
+                <li class="phase-item" id="phase-3">
+                  <div class="phase-item-dot"></div>
+                  <span>4. Choose Action</span>
+                </li>
+                <li class="phase-item" id="phase-4">
+                  <div class="phase-item-dot"></div>
+                  <span>5. Review Plan</span>
+                </li>
+              </ul>
+
+              <div class="mentor-box">
+                <div class="mentor-header" id="mentorHeader" role="button" aria-expanded="false" tabindex="0">
+                  <h4>
+                    <span>💡</span>
+                    <span>Mentor Hint</span>
+                  </h4>
+                  <span class="mentor-toggle-icon" id="mentorToggleIcon">▼</span>
+                </div>
+                <div class="mentor-content" id="mentorContent">
+                  Hint Content
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Column 2: Decision Options & AI Temptation -->
+          <section class="panel" aria-labelledby="colDecisionTitle">
+            <div class="panel-header">
+              <h3 id="colDecisionTitle">Active Phase</h3>
+            </div>
+            <div class="panel-body">
+              <div class="scenario-info-card" id="scenarioInfoCard">
+                <h4 id="scenarioTitle">The Dangerous Crossing</h4>
+                <p id="scenarioBrief">Students report near-misses at the main intersection near the school. You want to secure a safer crossing signal from the city.</p>
+              </div>
+
+              <!-- Normal Decision Panel -->
+              <div id="normalDecisionPanel" style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
+                <h2 class="decision-prompt" id="decisionPrompt">How do you frame your civic investigation?</h2>
+                <div class="options-stack" id="optionsGrid">
+                  <!-- Options injected here -->
+                </div>
+              </div>
+
+              <!-- AI Assist temptation card -->
+              <div class="ai-assist-container" id="aiAssistContainer">
+                <div class="ai-assist-card">
+                  <div class="ai-assist-header">🤖 AI shortcut offer</div>
+                  <p id="aiAssistPrompt">AI has drafted an instant summary of the traffic data and academic studies on phone distractions. Save time by using this ready-made template.</p>
+                  <div class="ai-assist-actions" id="aiAssistActions">
+                    <!-- Action buttons injected here -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Flaw Interrogation Column 2 -->
+              <div class="flaw-section" id="flawSection">
+                <h2 class="decision-prompt">Audit the AI proposal text:</h2>
+                <div class="ai-draft-box" id="aiDraftBox">
+                  Draft text...
+                </div>
+                <p style="font-size:0.88rem; color:var(--muted); margin:0;"><strong>Friction Audit:</strong> Select the major design flaw in this draft plan before submitting it.</p>
+                <div class="flaw-options-grid" id="flawOptionsGrid">
+                  <!-- Flaw buttons injected here -->
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Column 3: Feedback & Actions -->
+          <section class="panel" aria-labelledby="colFeedbackTitle">
+            <div class="panel-header">
+              <h3 id="colFeedbackTitle">Friction Log &amp; Analysis</h3>
+            </div>
+            <div class="panel-body">
+              <div class="empty-state" id="feedbackEmptyState">
+                <div class="empty-state-icon">📝</div>
+                <p>Choose an option or evaluate the AI shortcut to see the reasoning analysis and impact on your plan's meters.</p>
+              </div>
+
+              <div id="feedbackContent" style="display: none; flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                <div class="feedback-box" id="feedbackBox">
+                  <!-- Feedback text -->
+                </div>
+
+                <button class="btn-next" id="btnNextPhase">Continue Arc</button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- SCREEN: DEBRIEF -->
+      <div class="screen" id="screenDebrief" style="display: none;">
+        <div class="debrief-layout">
+          
+          <div class="debrief-intro">
+            <h2>Civic Plan Audit</h2>
+            <p>Your civic action plan has been finalized. Let's inspect your ownership and planning rigor.</p>
+          </div>
+
+          <!-- Meters Dashboard -->
+          <div class="debrief-stats-grid">
+            <div class="stat-card">
+              <h3>Evidence Base</h3>
+              <div class="stat-dial-container">
+                <div class="circular-progress" id="dialEvidence">
+                  <span class="dial-val" id="valEvidence">40<span>%</span></span>
+                </div>
+              </div>
+              <p class="stat-desc">Measures if your plan relies on credible, triangulated, verified statistics and local surveys rather than national vibes or unverified summaries.</p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Stakeholder Breadth</h3>
+              <div class="stat-dial-container">
+                <div class="circular-progress" id="dialStakeholder" style="background: conic-gradient(var(--blue, #7d9fd6) 0%, rgba(255,255,255,0.06) 0%);">
+                  <span class="dial-val" id="valStakeholder">40<span>%</span></span>
+                </div>
+              </div>
+              <p class="stat-desc">Measures whose voices and interests are incorporated in the plan. High scores require consulting those most affected and marginalized.</p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Feasibility</h3>
+              <div class="stat-dial-container">
+                <div class="circular-progress" id="dialFeasibility" style="background: conic-gradient(var(--gold) 0%, rgba(255,255,255,0.06) 0%);">
+                  <span class="dial-val" id="valFeasibility">50<span>%</span></span>
+                </div>
+              </div>
+              <p class="stat-desc">Measures if your proposed action is realistic, targets the correct decision-making body, and operates within real-world scopes.</p>
+            </div>
+
+            <div class="stat-card" style="justify-content: center; gap: 10px;">
+              <h3>Plan Ownership</h3>
+              <span class="ownership-badge owned" style="font-size: 1.5rem; padding: 10px 24px; border-radius: 8px;" id="valOwnership">Owned</span>
+              <p class="stat-desc" style="margin-top: 10px;">Indicates whether this plan is truly yours. Accepting pre-packaged AI plans outsources your agency, while interrogating details secures it.</p>
+              
+              <div class="verdict-box" id="verdictBox">
+                <h4>Defensible Action Plan</h4>
+                <p>Content...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Essay Box -->
+          <div class="essay-grid">
+            <div class="essay-card highlight">
+              <h3>The Trap of the Frictionless Plan</h3>
+              <p>Generative AI is a powerful tool for drafting proposals, summarizing documents, and organizing tasks. However, in civics education, **the process is the product**.</p>
+              <p>When you let AI write the plan without interrogating its sources, mapping the local stakeholders yourself, or verifying the legal authorities, you ship a plan that is **fluent but hollow**. Real citizenship requires taking responsibility for the accuracy, equity, and viability of the claims you make.</p>
+            </div>
+            
+            <div class="essay-card">
+              <h3>Interrogating vs. Banning</h3>
+              <p>This game models a balanced path. Banning AI hides its presence, but uncritical adoption surrenders cognitive labor. The ideal move is to **use AI as a sparring partner** &mdash; generating drafts and then subjecting them to intense human critique and local verification.</p>
+              <p>By forcing yourself to look for what the AI left out, you build the **pedagogical friction** necessary for real conceptual learning and ownership.</p>
+            </div>
+          </div>
+
+          <!-- Framework Card -->
+          <div class="framework-card">
+            <h3>C.O.R.E. &amp; H.E.A.R.T. Alignment</h3>
+            <div class="framework-subgrid">
+              <div class="fw-item">
+                <h4><span class="fw-tag">C.O.R.E.</span> Critical Thinking &amp; Engagement</h4>
+                <p>Critical thinking is activated when you audit AI plans for omissions. Engagement is maintained by building the plan actively rather than passively receiving pre-packaged text.</p>
+              </div>
+              <div class="fw-item">
+                <h4><span class="fw-tag">H.E.A.R.T.</span> Responsibility &amp; Empathy</h4>
+                <p>Responsibility means standing behind the viability of your plan. Empathy requires mapping stakeholders carefully, ensuring that those with the least institutional power are not omitted or tokenized.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="replay-area">
+            <button class="btn-action" id="btnReplay">Plan Another Issue</button>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // --- SCENARIO DATA MODEL ---
+    const scenarios = {
+      crossing: {
+        title: "The Dangerous Crossing",
+        brief: "Students report near-misses at the main intersection near the school. You want to secure a safer crossing signal from the city.",
+        phases: [
+          {
+            kind: "normal",
+            question: "How do you frame your civic investigation question?",
+            hint: "Look for a researchable, well-scoped question that specifies who actually has the power to solve this problem, rather than loaded emotional statements or massive, un-actionable goals.",
+            options: [
+              {
+                text: "Should the city council upgrade the school intersection crossing signal, and what evidence best proves the safety hazard?",
+                feedback: "Excellent. This is scoped, actionable, and identifies the correct legal body (the city) that controls streets. (+15 Feasibility, +10 Stakeholders)",
+                deltas: { ev: 0, st: 10, fe: 15, own: 0 },
+                best: true
+              },
+              {
+                text: "Why are local drivers so reckless, and how do we block traffic and ban cars near the school entirely?",
+                feedback: "Trap. This is a loaded, combative question that targets drivers as enemies. It is highly unfeasible and alienates stakeholders. (-10 Evidence, -10 Stakeholders, -20 Feasibility)",
+                deltas: { ev: -10, st: -10, fe: -20, own: 0 }
+              },
+              {
+                text: "How do we make our city's streets completely safe for everyone?",
+                feedback: "Vague. This is too broad to produce an actionable plan in your school neighborhood. (-15 Feasibility)",
+                deltas: { ev: 0, st: 0, fe: -15, own: 0 }
+              }
+            ]
+          },
+          {
+            kind: "assist",
+            question: "What sources will you rely on to gather your evidence?",
+            hint: " Triangulating evidence means combining official records (crash counts) with direct local data (surveys). Beware of unverified summaries that save time but cost accuracy.",
+            aiPrompt: "AI can generate an instant summary of traffic studies and crash data for you, saving hours of research time. Do you want to accept this shortcut plan?",
+            options: [
+              {
+                text: "Use the AI summary as a starting draft, but crosscheck its facts against the city's official traffic crash database and run a student survey at the school.",
+                feedback: "Smart move. You use AI to speed up initial framing but preserve your rigor by verifying against official local databases and collecting original primary evidence. (+25 Evidence, +10 Stakeholders, +10 Feasibility, preserves Owned status)",
+                deltas: { ev: 25, st: 10, fe: 10, own_change: "keep" }
+              },
+              {
+                text: "Accept the AI's instant summary and import it directly into your proposal files without checking local records.",
+                feedback: "Shortcut taken. The summary is fluent but lacks local specificity. Your plan's ownership shifts to Borrowed. (+5 Feasibility, Ownership shifts to Borrowed)",
+                deltas: { ev: 0, st: 0, fe: 5, own_change: "borrowed" }
+              },
+              {
+                text: "Rely solely on a single viral social media post showing a student dodging a car at the intersection last week.",
+                feedback: "Vibes-based evidence. A single post shows urgency but doesn't prove a statistical pattern. Traffic engineers will dismiss it. (-15 Evidence, -5 Stakeholders)",
+                deltas: { ev: -15, st: -5, fe: 0, own_change: "keep" }
+              }
+            ]
+          },
+          {
+            kind: "normal",
+            question: "Whose voices and interests must you map and weigh in your proposal?",
+            hint: "Inclusive civic planning requires evaluating groups with opposing views (like drivers who hate traffic delays) and groups with special needs (like disabled pedestrians), not just students.",
+            options: [
+              {
+                text: "Map interests of students/pedestrians, local drivers, neighborhood residents, the city traffic department, and disability access advocates.",
+                feedback: "Excellent stakeholder mapping. Weighing driver delays and disability ramp requirements makes your plan robust and hard for the city to ignore. (+25 Stakeholders, +10 Evidence, +10 Feasibility)",
+                deltas: { ev: 10, st: 25, fe: 10, own: 0 },
+                best: true
+              },
+              {
+                text: "Focus exclusively on student anger, omitting the concerns of local drivers and the technical constraints of the city traffic engineers.",
+                feedback: "Omission Trap. Ignoring the city traffic department means you fail to anticipate their technical arguments, reducing your plan's viability. (-15 Stakeholders, -10 Feasibility)",
+                deltas: { ev: 0, st: -15, fe: -10, own: 0 }
+              },
+              {
+                text: "Focus on students and drivers, and quote a single local resident to show you consulted the community, without investigating how neighborhood parking is affected.",
+                feedback: "Tokenization. Consulting stakeholders superficially looks nice but doesn't address their structural concerns, leaving your plan open to resident protests. (-5 Stakeholders)",
+                deltas: { ev: 0, st: -5, fe: 0, own: 0 }
+              }
+            ]
+          },
+          {
+            kind: "normal",
+            question: "What civic action will you take to advocate for this signal?",
+            hint: "Performative actions (hashtags, online petitions) require low effort but have no legal weight. Target the specific agency that actually holds the keys to the budget and street design.",
+            options: [
+              {
+                text: "Submit a formally drafted proposal with crash data and surveys to the City Traffic Commission and request a slot to speak at their public meeting.",
+                feedback: "Substantive and targeted. You present credible evidence to the exact body that holds decision-making authority. (+25 Feasibility, +15 Stakeholders, +10 Evidence)",
+                deltas: { ev: 10, st: 15, fe: 25, own: 0 },
+                best: true
+              },
+              {
+                text: "Start a Change.org petition for school safety and launch a hashtag campaign on Instagram to raise community awareness.",
+                feedback: "Performative action. Hashtags raise awareness but have zero policy authority. City Council does not vote on Change.org counts. (+15 Feasibility, -5 Evidence)",
+                deltas: { ev: -5, st: 0, fe: 15, own: 0 }
+              },
+              {
+                text: "Organize an unpermitted student walkout to block the intersection and demand a complete ban on cars within 5 blocks of the school.",
+                feedback: "Overreach. Blocking streets without a permit creates safety hazards and alienates city officials and local residents. The ban is unfeasible. (-30 Feasibility, -15 Stakeholders, -10 Evidence)",
+                deltas: { ev: -10, st: -15, fe: -30, own: 0 }
+              }
+            ]
+          },
+          {
+            kind: "climactic",
+            question: "Review your final proposal draft:",
+            hint: "AI is ready to ship your plan. Carefully read the draft. If it pitches to a body with no street authority or ignores disability access, you must interrogate and fix it.",
+            aiPrompt: "AI has compiled all your choices into a complete, polished proposal. You can submit it instantly to finish your task, or take time to audit it for hidden design errors.",
+            draftText: "PROPOSAL FOR SCHOOL ZONE UPGRADE<br>Submitted to: The Beach Park District 3 School Board of Education<br>Subject: Signal upgrade at School Crossing<br><br>We the undersigned demand a new automated pedestrian signal. While research shows signal upgrades reduce incidents, this plan assumes standard crossing signals are sufficient for all users. We request immediate funding from school budgets to implement this traffic signal...",
+            flaws: [
+              {
+                text: "The plan addresses the School Board (who has no authority over city streets) and overlooks ADA disability access needs.",
+                correct: true,
+                feedback: "Sharp audit! You caught the fatal errors: the School Board doesn't control city street signals, and standard signals ignore blind or physically disabled pedestrians. Correcting these secures your plan. (+15 Evidence, +15 Stakeholders, +15 Feasibility, preserves/restores Owned status)"
+              },
+              {
+                text: "The plan requests too much funding and should focus on adding volunteers rather than city signals.",
+                correct: false,
+                feedback: "Incorrect. The main failure is institutional authority and disability inclusion, not the request for a signal itself. (Ownership drops to Borrowed/Outsourced)"
+              },
+              {
+                text: "The plan doesn't have enough student signatures attached.",
+                correct: false,
+                feedback: "Incorrect. Signatures are a procedural detail; targeting the wrong government agency and ignoring ADA requirements are structural failures. (Ownership drops)"
+              }
+            ]
+          }
+        ]
+      },
+      phones: {
+        title: "Classroom Connections",
+        brief: "Recommending a cell phone management policy for your high school that balances classroom focus with student communication needs.",
+        phases: [
+          {
+            kind: "normal",
+            question: "How do you frame your school phone policy investigation?",
+            hint: "A balanced policy question must weigh multiple competing interests (classroom focus vs. student emergencies/medical accommodations) rather than starting with a biased conclusion.",
+            options: [
+              {
+                text: "How can our school manage phone usage to minimize classroom distractions while respecting student safety, emergency contact needs, and medical accommodations?",
+                feedback: "Excellent framing. This acknowledges the tension between classroom focus and essential communication/accessibility needs. (+15 Feasibility, +15 Stakeholders)",
+                deltas: { ev: 0, st: 15, fe: 15, own: 0 },
+                best: true
+              },
+              {
+                text: "Why are school phone bans an authoritarian violation of student rights, and how can students organize to defeat them?",
+                feedback: "Trap. This is a one-sided, loaded question that shuts out the legitimate concern teachers have regarding classroom distraction. (-5 Evidence, -15 Stakeholders, -15 Feasibility)",
+                deltas: { ev: -5, st: -15, fe: -15, own: 0 }
+              },
+              {
+                text: "How can we implement a total signal-jamming blocker in the school building to prevent all cellular transmissions?",
+                feedback: "Unfeasible. Signal jammers are a violation of federal FCC law and create massive safety hazards during emergencies. (-10 Evidence, -10 Stakeholders, -30 Feasibility)",
+                deltas: { ev: -10, st: -10, fe: -30, own: 0 }
+              }
+            ]
+          },
+          {
+            kind: "assist",
+            question: "What sources will you rely on to gather your evidence?",
+            hint: "National studies tell one story, but school policy must fit the actual teachers and families in your building. Combine pre-packaged summaries with local surveys.",
+            aiPrompt: "AI can draft an instant summary of academic research on phone distractions and cognitive load, saving you from reading separate studies. Do you want to accept this shortcut?",
+            options: [
+              {
+                text: "Use the AI summary as a starting draft, but cross-examine its findings by surveying teachers, students, and parents about our school's specific environment.",
+                feedback: "Rigor preserved. You use the tool for broad literature research but ground your actual plan in local primary data representing your specific school community. (+20 Evidence, +15 Stakeholders, +10 Feasibility, preserves Owned status)",
+                deltas: { ev: 20, st: 15, fe: 10, own_change: "keep" }
+              },
+              {
+                text: "Accept the AI's instant summary of distraction research and import it directly into your proposal files.",
+                feedback: "Shortcut taken. The research summary is polished, but completely lacks local data about your school's actual rules or needs. Ownership shifts to Borrowed. (+5 Feasibility, Ownership shifts to Borrowed)",
+                deltas: { ev: 0, st: 0, fe: 5, own_change: "borrowed" }
+              },
+              {
+                text: "Rely solely on a single national newspaper editorial arguing that phone bans are the only way to save student mental health.",
+                feedback: "Thin evidence base. An editorial represents one opinion, not structured data or local context. (-10 Evidence, -5 Stakeholders)",
+                deltas: { ev: -10, st: -5, fe: 0, own_change: "keep" }
+              }
+            ]
+          },
+          {
+            kind: "normal",
+            question: "Whose voices and interests must you map and weigh in your proposal?",
+            hint: "An equitable school policy must look beyond the majority. Consider students who require phones for medical tracking (like diabetes apps) or translation support.",
+            options: [
+              {
+                text: "Map interests of students, classroom teachers, school administrators, parents, and students who require phone access for medical tracking or translation.",
+                feedback: "Excellent. Weighing medical (e.g. continuous glucose monitors) and translation accommodations ensures your policy doesn't violate student health or civil rights. (+30 Stakeholders, +10 Feasibility)",
+                deltas: { ev: 0, st: 30, fe: 10, own: 0 },
+                best: true
+              },
+              {
+                text: "Focus entirely on teacher and administrator demands for absolute silence, ignoring student perspectives and emergency contact concerns.",
+                feedback: "Omission Trap. A policy that treats students purely as passive subjects will face massive defiance and fail in practice. (-10 Evidence, -20 Stakeholders, -10 Feasibility)",
+                deltas: { ev: -10, st: -20, fe: -10, own: 0 }
+              },
+              {
+                text: "Acknowledge parents want emergency contact, but assume that medical tracking and translation accommodations can just be handled 'as they come up.'",
+                feedback: "Tokenization. Failing to write accommodation exemptions directly into the policy leads to students being wrongfully penalized or facing health risks. (-5 Stakeholders)",
+                deltas: { ev: 0, st: -5, fe: 0, own: 0 }
+              }
+            ]
+          },
+          {
+            kind: "normal",
+            question: "What policy action will you propose, and to whom?",
+            hint: "Look for a policy that is enforceable and balances focus with access. Pitch it to the school principal or council who can actually write the student handbook rules.",
+            options: [
+              {
+                text: "Propose a collaborative cell phone handbook policy (pouch storage during class, access during lunch and passing periods) to the Principal and School Council.",
+                feedback: "Substantive and feasible. You target the local administrators who set the school rules, offering a balanced compromise. (+25 Feasibility, +15 Stakeholders, +10 Evidence)",
+                deltas: { ev: 10, st: 15, fe: 25, own: 0 },
+                best: true
+              },
+              {
+                text: "Create a student-led poster campaign for the hallways urging students to voluntarily limit their phone use.",
+                feedback: "Performative. Posters look nice but voluntary campaigns rarely change school-wide patterns of distraction in the absence of policy. (+15 Feasibility, -5 Stakeholders, -5 Evidence)",
+                deltas: { ev: -5, st: -5, fe: 15, own: 0 }
+              },
+              {
+                text: "Demand that the school board purchase expensive smart-lock lockers ($50,000) for every single classroom to seal phones away.",
+                feedback: "Overreach. Requesting a massive budget allocation for lockers is unfeasible for a school facing standard funding constraints. (-25 Feasibility, -10 Stakeholders)",
+                deltas: { ev: 0, st: -10, fe: -25, own: 0 }
+              }
+            ]
+          },
+          {
+            kind: "climactic",
+            question: "Review your final policy draft:",
+            hint: "AI is ready to compile your handbook update. Read it closely. Zero-tolerance rules that fail to mention legal or medical exemptions create massive liability.",
+            aiPrompt: "AI has compiled all your choices into a complete, polished handbook policy draft. You can submit it instantly, or take time to audit it for hidden design errors.",
+            draftText: "CELL PHONE USE - SCHOOL POLICY AMENDMENT<br>Effective: Fall Term<br><br>To protect the learning environment, cell phones, smart watches, and personal devices are strictly prohibited inside all classrooms. Devices must be powered off and stored at all times. Any device seen or heard will be confiscated immediately, with zero exceptions. Repeat violations will lead to suspension...",
+            flaws: [
+              {
+                text: "The policy enforces a zero-tolerance ban that fails to provide exceptions for medical tracking (e.g. glucose monitoring) or translation accommodations.",
+                correct: true,
+                feedback: "Brilliant audit! You identified that a 'zero exception' ban violates the rights of students who require phones for medical safety or language access. Correcting this secures your plan. (+15 Evidence, +15 Stakeholders, +15 Feasibility, preserves/restores Owned status)"
+              },
+              {
+                text: "The policy does not specify that phones must be turned off during passing periods.",
+                correct: false,
+                feedback: "Incorrect. The main failure is student health and civil rights accommodations (ADA/Section 504), not the passing period rules. (Ownership drops)"
+              },
+              {
+                text: "The policy doesn't designate which administrator handles phone collection.",
+                correct: false,
+                feedback: "Incorrect. Procedural assignments are secondary to the legal liability of confiscating medical tracking devices without exemption clauses. (Ownership drops)"
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    // --- GAME STATE VARIABLES ---
+    let activeScenarioKey = "crossing";
+    let activeScenario = null;
+    let currentPhaseIdx = 0;
+    
+    // HUD meters
+    let evidence = 40;
+    let stakeholders = 40;
+    let feasibility = 50;
+    let ownership = "owned"; // owned, borrowed, outsourced
+
+    // --- DOM ELEMENTS ---
+    const screenTitle = document.getElementById("screenTitle");
+    const screenPlay = document.getElementById("screenPlay");
+    const screenDebrief = document.getElementById("screenDebrief");
+    const hudMeters = document.getElementById("hudMeters");
+
+    // HUD Elements
+    const lblEvidence = document.getElementById("lblEvidence");
+    const barEvidence = document.getElementById("barEvidence");
+    const lblStakeholder = document.getElementById("lblStakeholder");
+    const barStakeholder = document.getElementById("barStakeholder");
+    const lblFeasibility = document.getElementById("lblFeasibility");
+    const barFeasibility = document.getElementById("barFeasibility");
+    const badgeOwnership = document.getElementById("badgeOwnership");
+
+    // Play Screen Elements
+    const scenarioTitle = document.getElementById("scenarioTitle");
+    const scenarioBrief = document.getElementById("scenarioBrief");
+    const decisionPrompt = document.getElementById("decisionPrompt");
+    const optionsGrid = document.getElementById("optionsGrid");
+    
+    const mentorHeader = document.getElementById("mentorHeader");
+    const mentorToggleIcon = document.getElementById("mentorToggleIcon");
+    const mentorContent = document.getElementById("mentorContent");
+
+    const normalDecisionPanel = document.getElementById("normalDecisionPanel");
+    const aiAssistContainer = document.getElementById("aiAssistContainer");
+    const aiAssistPrompt = document.getElementById("aiAssistPrompt");
+    const aiAssistActions = document.getElementById("aiAssistActions");
+
+    const flawSection = document.getElementById("flawSection");
+    const aiDraftBox = document.getElementById("aiDraftBox");
+    const flawOptionsGrid = document.getElementById("flawOptionsGrid");
+
+    const feedbackEmptyState = document.getElementById("feedbackEmptyState");
+    const feedbackContent = document.getElementById("feedbackContent");
+    const feedbackBox = document.getElementById("feedbackBox");
+    const btnNextPhase = document.getElementById("btnNextPhase");
+
+    // Debrief Elements
+    const valEvidence = document.getElementById("valEvidence");
+    const dialEvidence = document.getElementById("dialEvidence");
+    const valStakeholder = document.getElementById("valStakeholder");
+    const dialStakeholder = document.getElementById("dialStakeholder");
+    const valFeasibility = document.getElementById("valFeasibility");
+    const dialFeasibility = document.getElementById("dialFeasibility");
+    const valOwnership = document.getElementById("valOwnership");
+    const verdictBox = document.getElementById("verdictBox");
+
+    const announcer = document.getElementById("announcer");
+
+    // --- EVENT LISTENERS ---
+    document.getElementById("btnStartGame").addEventListener("click", startGame);
+    document.getElementById("btnReplay").addEventListener("click", resetToTitle);
+
+    mentorHeader.addEventListener("click", toggleMentor);
+    mentorHeader.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        toggleMentor();
+      }
+    });
+
+    btnNextPhase.addEventListener("click", advancePhase);
+
+    // Keyboard navigation (1-3 keys for option selection)
+    window.addEventListener("keydown", (e) => {
+      if (screenPlay.style.display === "block" && normalDecisionPanel.style.display === "flex") {
+        if (e.key === "1" || e.key === "2" || e.key === "3") {
+          const idx = parseInt(e.key) - 1;
+          const buttons = optionsGrid.querySelectorAll(".option-btn");
+          if (buttons && buttons[idx] && !buttons[idx].disabled) {
+            buttons[idx].click();
+          }
+        }
+      }
+    });
+
+    // --- UTILITIES ---
+    function announce(msg) {
+      announcer.textContent = msg;
+    }
+
+    function clamp(val, min, max) {
+      return Math.min(Math.max(val, min), max);
+    }
+
+    function updateMeters() {
+      evidence = clamp(evidence, 0, 100);
+      stakeholders = clamp(stakeholders, 0, 100);
+      feasibility = clamp(feasibility, 0, 100);
+
+      lblEvidence.textContent = `${evidence}%`;
+      barEvidence.style.width = `${evidence}%`;
+
+      lblStakeholder.textContent = `${stakeholders}%`;
+      barStakeholder.style.width = `${stakeholders}%`;
+
+      lblFeasibility.textContent = `${feasibility}%`;
+      barFeasibility.style.width = `${feasibility}%`;
+
+      // Update Ownership Chip
+      badgeOwnership.className = "ownership-badge";
+      if (ownership === "owned") {
+        badgeOwnership.classList.add("owned");
+        badgeOwnership.textContent = "Owned";
+      } else if (ownership === "borrowed") {
+        badgeOwnership.classList.add("borrowed");
+        badgeOwnership.textContent = "Borrowed";
+      } else {
+        badgeOwnership.classList.add("outsourced");
+        badgeOwnership.textContent = "Outsourced";
+      }
+    }
+
+    // --- GAME FLOW LOGIC ---
+
+    function resetToTitle() {
+      screenDebrief.style.display = "none";
+      screenTitle.style.display = "flex";
+      hudMeters.style.display = "none";
+      announce("Returned to title screen.");
+    }
+
+    function startGame() {
+      activeScenarioKey = document.getElementById("selectIssue").value;
+      activeScenario = scenarios[activeScenarioKey];
+      currentPhaseIdx = 0;
+
+      // Reset meters
+      evidence = 40;
+      stakeholders = 40;
+      feasibility = 50;
+      ownership = "owned";
+
+      screenTitle.style.display = "none";
+      screenPlay.style.display = "block";
+      hudMeters.style.display = "flex";
+
+      // Load scenario details
+      scenarioTitle.textContent = activeScenario.title;
+      scenarioBrief.textContent = activeScenario.brief;
+
+      updateMeters();
+      loadPhase(currentPhaseIdx);
+      announce(`Investigation started. Planning issue: ${activeScenario.title}.`);
+    }
+
+    function loadPhase(idx) {
+      const phase = activeScenario.phases[idx];
+
+      // Update tracker styling
+      for (let i = 0; i < 5; i++) {
+        const item = document.getElementById(`phase-${i}`);
+        item.className = "phase-item";
+        if (i < idx) {
+          item.classList.add("completed");
+        } else if (i === idx) {
+          item.classList.add("active");
+        }
+      }
+
+      // Load Hint
+      mentorContent.textContent = phase.hint;
+      mentorContent.classList.remove("open");
+      mentorHeader.setAttribute("aria-expanded", "false");
+      mentorToggleIcon.textContent = "▼";
+
+      // Reset Panels
+      normalDecisionPanel.style.display = "none";
+      aiAssistContainer.style.display = "none";
+      flawSection.style.display = "none";
+
+      feedbackEmptyState.style.display = "flex";
+      feedbackContent.style.display = "none";
+
+      if (phase.kind === "normal") {
+        // Render Standard Phase
+        normalDecisionPanel.style.display = "flex";
+        decisionPrompt.textContent = phase.question;
+        
+        optionsGrid.innerHTML = "";
+        phase.options.forEach((opt, oIdx) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "option-btn";
+          btn.innerHTML = `
+            <span class="option-btn-num">${oIdx + 1}</span>
+            <span>${opt.text}</span>
+          `;
+          btn.addEventListener("click", () => handleOptionSelect(opt, btn));
+          optionsGrid.appendChild(btn);
+        });
+
+      } else if (phase.kind === "assist") {
+        // Render AI Assist Temptation
+        aiAssistContainer.style.display = "block";
+        aiAssistPrompt.textContent = phase.aiPrompt;
+
+        aiAssistActions.innerHTML = "";
+        phase.options.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          if (opt.own_change === "borrowed") {
+            btn.className = "btn-shortcut";
+          } else {
+            btn.className = "btn-interrogate";
+          }
+          btn.textContent = opt.text;
+          btn.addEventListener("click", () => handleAssistSelect(opt, btn));
+          aiAssistActions.appendChild(btn);
+        });
+
+      } else if (phase.kind === "climactic") {
+        // Render Climactic Shortcut
+        aiAssistContainer.style.display = "block";
+        aiAssistPrompt.textContent = phase.aiPrompt;
+
+        aiAssistActions.innerHTML = "";
+
+        // Button 1: Accept Shortcut (Outsource)
+        const btnAccept = document.createElement("button");
+        btnAccept.type = "button";
+        btnAccept.className = "btn-shortcut";
+        btnAccept.textContent = "Accept & Submit Plan (Frictionless)";
+        btnAccept.addEventListener("click", handleClimacticAccept);
+        aiAssistActions.appendChild(btnAccept);
+
+        // Button 2: Interrogate Plan
+        const btnInterrogate = document.createElement("button");
+        btnInterrogate.type = "button";
+        btnInterrogate.className = "btn-interrogate";
+        btnInterrogate.textContent = "Interrogate Plan (Friction)";
+        btnInterrogate.addEventListener("click", handleClimacticInterrogate);
+        aiAssistActions.appendChild(btnInterrogate);
+      }
+    }
+
+    function toggleMentor() {
+      const isOpen = mentorContent.classList.toggle("open");
+      mentorHeader.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      mentorToggleIcon.textContent = isOpen ? "▲" : "▼";
+    }
+
+    function handleOptionSelect(opt, selectedBtn) {
+      // Disable options
+      const buttons = optionsGrid.querySelectorAll(".option-btn");
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.remove("selected");
+      });
+      selectedBtn.classList.add("selected");
+
+      // Apply deltas
+      evidence += opt.deltas.ev;
+      stakeholders += opt.deltas.st;
+      feasibility += opt.deltas.fe;
+
+      updateMeters();
+
+      // Show Feedback Column
+      feedbackEmptyState.style.display = "none";
+      feedbackContent.style.display = "flex";
+
+      feedbackBox.className = "feedback-box"; // reset classes
+      if (opt.best) {
+        feedbackBox.classList.add("correct");
+        feedbackBox.innerHTML = `
+          <strong>🎯 Optimal Path Chosen</strong>
+          ${opt.feedback}
+        `;
+        announce("Optimal path selected. Plan stats increased.");
+      } else {
+        feedbackBox.classList.add("incorrect");
+        feedbackBox.innerHTML = `
+          <strong>⚠️ Sub-optimal Decision</strong>
+          ${opt.feedback}
+        `;
+        announce("Sub-optimal path selected. Plan stats decreased.");
+      }
+    }
+
+    function handleAssistSelect(opt, selectedBtn) {
+      // Disable assist buttons
+      const buttons = aiAssistActions.querySelectorAll("button");
+      buttons.forEach(btn => btn.disabled = true);
+
+      // Apply Ownership changes
+      if (opt.own_change === "borrowed") {
+        if (ownership === "owned") {
+          ownership = "borrowed";
+        }
+      }
+      
+      evidence += opt.deltas.ev;
+      stakeholders += opt.deltas.st;
+      feasibility += opt.deltas.fe;
+
+      updateMeters();
+
+      // Show Feedback
+      feedbackEmptyState.style.display = "none";
+      feedbackContent.style.display = "flex";
+
+      feedbackBox.className = "feedback-box";
+      if (opt.own_change === "borrowed") {
+        feedbackBox.classList.add("assist");
+        feedbackBox.innerHTML = `
+          <strong>🤖 AI Summary Accepted</strong>
+          ${opt.feedback}
+        `;
+        announce("AI Summary shortcut accepted. Ownership shifted to Borrowed.");
+      } else if (opt.deltas.ev > 0) {
+        feedbackBox.classList.add("correct");
+        feedbackBox.innerHTML = `
+          <strong>🎯 AI Output Interrogated &amp; Verified</strong>
+          ${opt.feedback}
+        `;
+        announce("AI Output verified against local surveys. Rigor and Ownership preserved.");
+      } else {
+        feedbackBox.classList.add("incorrect");
+        feedbackBox.innerHTML = `
+          <strong>⚠️ Unverified Source Used</strong>
+          ${opt.feedback}
+        `;
+        announce("Unverified viral post used. Evidence base depleted.");
+      }
+    }
+
+    // Climactic actions
+    function handleClimacticAccept() {
+      // Outsource plan completely
+      ownership = "outsourced";
+      updateMeters();
+
+      feedbackEmptyState.style.display = "none";
+      feedbackContent.style.display = "flex";
+
+      feedbackBox.className = "feedback-box incorrect";
+      feedbackBox.innerHTML = `
+        <strong>⚠️ Plan Outsourced to AI</strong>
+        You accepted the frictionless, pre-packaged AI action plan. The plan has been submitted to school/city records, but you bypassed the critical reasoning needed to verify its flaws.
+      `;
+
+      // Disable card actions
+      const buttons = aiAssistActions.querySelectorAll("button");
+      buttons.forEach(btn => btn.disabled = true);
+
+      // Go to final debrief button
+      btnNextPhase.textContent = "See Plan Audit";
+      announce("AI Plan submitted directly. Ownership is now Outsourced.");
+    }
+
+    function handleClimacticInterrogate() {
+      // Hide shortcut card, show flaw checker
+      aiAssistContainer.style.display = "none";
+      flawSection.style.display = "flex";
+
+      const phase = activeScenario.phases[4];
+      aiDraftBox.innerHTML = phase.draftText;
+
+      // Populate flaw choices
+      flawOptionsGrid.innerHTML = "";
+      phase.flaws.forEach((flaw, fIdx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "flaw-btn";
+        btn.textContent = flaw.text;
+        btn.addEventListener("click", () => handleFlawSelection(flaw, btn));
+        flawOptionsGrid.appendChild(btn);
+      });
+      announce("AI plan text revealed. Identify the structural design flaws in the draft.");
+    }
+
+    function handleFlawSelection(flaw, selectedBtn) {
+      const buttons = flawOptionsGrid.querySelectorAll(".flaw-btn");
+      buttons.forEach(btn => btn.disabled = true);
+
+      feedbackEmptyState.style.display = "none";
+      feedbackContent.style.display = "flex";
+      feedbackBox.className = "feedback-box";
+
+      if (flaw.correct) {
+        // Success
+        selectedBtn.classList.add("correct-flaw");
+        feedbackBox.classList.add("correct");
+        feedbackBox.innerHTML = `
+          <strong>🎯 Flaws Corrected Successfully</strong>
+          ${flaw.feedback}
+        `;
+
+        evidence += 15;
+        stakeholders += 15;
+        feasibility += 15;
+        // Restores or preserves owned status if not completely outsourced
+        if (ownership === "borrowed") {
+          ownership = "owned";
+        }
+        announce("Correct flaws identified. Plan corrected, rigor increased, and Ownership secured.");
+      } else {
+        // Fail
+        selectedBtn.classList.add("selected");
+        feedbackBox.classList.add("incorrect");
+        feedbackBox.innerHTML = `
+          <strong>❌ Unidentified Flaws</strong>
+          ${flaw.feedback}
+        `;
+        ownership = "outsourced";
+        announce("Failed to identify structural flaws. Plan remains flawed and outsourced.");
+      }
+
+      updateMeters();
+      btnNextPhase.textContent = "See Plan Audit";
+    }
+
+    function advancePhase() {
+      if (currentPhaseIdx < 4) {
+        currentPhaseIdx++;
+        loadPhase(currentPhaseIdx);
+      } else {
+        showDebrief();
+      }
+    }
+
+    function showDebrief() {
+      screenPlay.style.display = "none";
+      hudMeters.style.display = "none";
+      screenDebrief.style.display = "block";
+
+      // Render Debrief Dials
+      valEvidence.innerHTML = `${evidence}<span>%</span>`;
+      dialEvidence.style.background = `conic-gradient(var(--teal) ${evidence}%, rgba(255, 255, 255, 0.06) ${evidence}%)`;
+
+      valStakeholder.innerHTML = `${stakeholders}<span>%</span>`;
+      dialStakeholder.style.background = `conic-gradient(var(--blue, #7d9fd6) ${stakeholders}%, rgba(255, 255, 255, 0.06) ${stakeholders}%)`;
+
+      valFeasibility.innerHTML = `${feasibility}<span>%</span>`;
+      dialFeasibility.style.background = `conic-gradient(var(--gold) ${feasibility}%, rgba(255, 255, 255, 0.06) ${feasibility}%)`;
+
+      // Ownership badge
+      valOwnership.className = "ownership-badge";
+      if (ownership === "owned") {
+        valOwnership.classList.add("owned");
+        valOwnership.textContent = "Owned Plan";
+      } else if (ownership === "borrowed") {
+        valOwnership.classList.add("borrowed");
+        valOwnership.textContent = "Borrowed Plan";
+      } else {
+        valOwnership.classList.add("outsourced");
+        valOwnership.textContent = "Outsourced Plan";
+      }
+
+      // Verdict Box content
+      let title = "";
+      let desc = "";
+
+      if (ownership === "outsourced") {
+        title = "❌ Outsourced / Flawed Action Plan";
+        desc = "Your plan was submitted directly from the raw AI draft. Because you bypassed the interrogation phase, your plan targeted the wrong institutional authority (e.g. School Board for streets) and omitted crucial medical or ADA accessibility accommodations. It faces high legal and structural failure risks.";
+        verdictBox.style.background = "var(--rose-light)";
+        verdictBox.style.borderColor = "var(--rose)";
+      } else if (ownership === "borrowed") {
+        title = "⚠️ Promising but Borrowed Plan";
+        desc = "Your plan is clean and has decent statistics, but relies heavily on imported AI templates without complete local verification. While it is mostly workable, you will struggle to defend the local data sources and details if questioned in public committee.";
+        verdictBox.style.background = "rgba(215, 161, 61, 0.08)";
+        verdictBox.style.borderColor = "var(--gold)";
+      } else {
+        title = "🎯 Defensible Civic Action Plan";
+        desc = "Excellent work! You successfully navigated the inquiry arc. Your plan is grounded in local survey statistics and crash databases, maps inclusive stakeholder interests, and targets the principal or city commission who actually holds policy authority. You audited the AI draft, caught its flaws, and own the plan completely.";
+        verdictBox.style.background = "var(--teal-light)";
+        verdictBox.style.borderColor = "var(--teal)";
+      }
+
+      verdictBox.querySelector("h4").textContent = title;
+      verdictBox.querySelector("p").textContent = desc;
+
+      announce("Inquiry debrief generated. Audit complete.");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
