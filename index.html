@@ -18,6 +18,7 @@
       --muted: #6b6b62;
       --line: rgba(23, 25, 20, .18);
       --shadow: 0 24px 70px rgba(0, 0, 0, .28);
+      --controls-safe-area: clamp(220px, 18vw, 360px);
       --serif: Georgia, "Times New Roman", serif;
       --sans: "Segoe UI", Arial, sans-serif;
       --mono: Consolas, "Courier New", monospace;
@@ -166,7 +167,10 @@
     .footer {
       color: var(--muted);
       font-size: clamp(.72rem, 1vw, .95rem);
+      padding-right: var(--controls-safe-area);
+      flex-wrap: wrap;
     }
+    .footer span:last-child, .footer a:last-child { text-align: right; }
     .dark .footer, .blue .footer { color: rgba(255,255,255,.6); }
     .footer a { text-decoration-thickness: 1px; text-underline-offset: 4px; }
 
@@ -751,6 +755,8 @@
       .path-visual { min-height: 235px; }
       .techno-test { grid-template-columns: 1fr; }
       .techno-questions { grid-template-columns: repeat(5, minmax(90px, 1fr)); overflow-x: auto; padding-bottom: 4px; }
+      .footer { padding-right: 0; padding-bottom: 44px; }
+      .footer span:last-child, .footer a:last-child { text-align: left; }
     }
 
     @media (max-width: 620px) {
