@@ -675,9 +675,27 @@
         </div>
 
         <div class="friction-track">
-          <h3>Friction Meter</h3>
-          <div class="friction-scale" aria-hidden="true"><span class="pin" id="frictionPin"></span></div>
-          <div class="scale-labels"><span>Bypass</span><span>Productive</span><span>Blocked</span></div>
+          <h3>Cognitive Friction Calibration</h3>
+          
+          <div class="meter">
+            <div class="meter-label">
+              <span>Desirable Difficulty (Challenge)</span>
+              <span id="challengeVal">30%</span>
+            </div>
+            <div class="bar"><span id="challengeBar" style="width: 30%; background: linear-gradient(90deg, var(--rose), var(--gold) 60%, var(--teal));"></span></div>
+            <div class="scale-labels" style="margin-top: -2px;"><span style="font-size: 0.72rem;">Bypass (&lt;55%)</span><span style="font-size: 0.72rem; color: var(--teal);">Productive (55%-80%)</span><span style="font-size: 0.72rem;">Exhausting (&gt;80%)</span></div>
+          </div>
+          
+          <div style="height: 8px;"></div>
+          
+          <div class="meter">
+            <div class="meter-label">
+              <span>Exclusionary Barrier</span>
+              <span id="barrierVal">56%</span>
+            </div>
+            <div class="bar"><span id="barrierBar" style="width: 56%; background: linear-gradient(90deg, var(--teal), var(--gold) 40%, var(--rose));"></span></div>
+            <div class="scale-labels" style="margin-top: -2px;"><span style="font-size: 0.72rem; color: var(--teal);">Accessible (&lt;30%)</span><span style="font-size: 0.72rem;">Challenging (30%-50%)</span><span style="font-size: 0.72rem;">Excluded (&gt;50%)</span></div>
+          </div>
         </div>
 
         <div class="meter-stack" id="meterStack"></div>
@@ -691,6 +709,7 @@
           <h3>Debrief</h3>
           <ul id="debriefList"></ul>
         </div>
+        <p style="font-size: 0.8rem; color: var(--muted); text-align: center; margin-top: 10px; font-style: italic;">*Note: All scores and calibrations are illustrative simulations for pedagogical training and have not been statistically validated.</p>
 
         <div class="log">
           <h3>Move Log</h3>
@@ -709,7 +728,7 @@
         claim: "The American Revolution happened because colonists wanted freedom from unfair British taxes.",
         prompt: "The AI answer is clear, fast, and incomplete. Keep students from mistaking a clean cause for a historical explanation.",
         risk: "It flattens loyalist perspectives, imperial context, Indigenous stakes, economic interests, and source conflict.",
-        start: { sourcing: 18, context: 20, corroboration: 16, agency: 18, access: 44, friction: 28 }
+        start: { sourcing: 18, context: 20, corroboration: 16, agency: 18, access: 44, challenge: 30 }
       },
       {
         id: "federalist",
@@ -718,7 +737,7 @@
         claim: "Federalist No. 10 proves that a large republic is always the best solution to faction.",
         prompt: "The AI output sounds decisive. Students need to test the interpretation against the text and counterarguments.",
         risk: "It converts an argument into a settled answer and hides assumptions about faction, scale, representation, and power.",
-        start: { sourcing: 24, context: 18, corroboration: 18, agency: 16, access: 40, friction: 30 }
+        start: { sourcing: 24, context: 18, corroboration: 18, agency: 16, access: 40, challenge: 32 }
       },
       {
         id: "civil-rights",
@@ -727,7 +746,7 @@
         claim: "The Civil Rights Movement succeeded because peaceful protest changed public opinion.",
         prompt: "The AI summary is plausible but too smooth. Students need to recover local agency, conflict, backlash, and unfinished struggle.",
         risk: "It narrows the movement to a single tactic and obscures organizing, legal strategy, youth activism, economic pressure, and resistance.",
-        start: { sourcing: 20, context: 22, corroboration: 18, agency: 20, access: 42, friction: 32 }
+        start: { sourcing: 20, context: 22, corroboration: 18, agency: 20, access: 42, challenge: 30 }
       }
     ];
 
@@ -737,7 +756,7 @@
         title: "Source First",
         text: "Students inspect two primary sources before seeing any AI synthesis.",
         nodes: ["sourcing"],
-        delta: { sourcing: 28, context: 6, agency: 5, friction: 12 },
+        delta: { sourcing: 28, context: 6, agency: 5, challenge: 14 },
         log: "You protected sourcing before synthesis. Students now have evidence to compare against the AI claim."
       },
       {
@@ -745,7 +764,7 @@
         title: "AI as Rival",
         text: "Use AI to generate a competing interpretation that students must test.",
         nodes: ["agency", "corroboration"],
-        delta: { corroboration: 18, agency: 18, friction: 10 },
+        delta: { corroboration: 18, agency: 18, challenge: 12 },
         log: "AI became a challenger rather than an answer machine. Students must decide what survives evidence."
       },
       {
@@ -753,7 +772,7 @@
         title: "Context Window",
         text: "Pause for a mini-map of actors, constraints, time, place, and omitted voices.",
         nodes: ["context"],
-        delta: { context: 28, sourcing: 4, friction: 8 },
+        delta: { context: 28, sourcing: 4, challenge: 10 },
         log: "You added context so the claim sits inside conditions, not just a polished summary."
       },
       {
@@ -761,7 +780,7 @@
         title: "Corroboration Sprint",
         text: "Students find one source that supports, complicates, and challenges the claim.",
         nodes: ["corroboration", "sourcing"],
-        delta: { corroboration: 26, sourcing: 8, agency: 4, friction: 14 },
+        delta: { corroboration: 26, sourcing: 8, agency: 4, challenge: 15 },
         log: "The claim is now contestable. Students have to triangulate instead of accept fluency."
       },
       {
@@ -769,7 +788,7 @@
         title: "Access Scaffold",
         text: "Reduce exclusionary barriers with vocabulary support and source-reading bridges.",
         nodes: ["access"],
-        delta: { access: 24, context: 4, friction: -7 },
+        delta: { access: 24, context: 4, challenge: 0 },
         log: "You lowered a barrier without removing the historical thinking."
       },
       {
@@ -777,7 +796,7 @@
         title: "Friction Log",
         text: "Students write what confused them, what they tested, and how their thinking changed.",
         nodes: ["agency"],
-        delta: { agency: 22, corroboration: 8, friction: 9 },
+        delta: { agency: 22, corroboration: 8, challenge: 11 },
         log: "The invisible struggle became assessable evidence of learning."
       }
     ];
@@ -787,8 +806,11 @@
       metrics: {},
       used: new Set(),
       movesLeft: 4,
-      logs: []
+      logs: [],
+      rationales: []
     };
+
+    let pendingMoveId = null;
 
     const scenarioSelect = document.getElementById("scenarioSelect");
     const scenarioTitle = document.getElementById("scenarioTitle");
@@ -804,7 +826,6 @@
     const verdictBody = document.getElementById("verdictBody");
     const integrityDial = document.getElementById("integrityDial");
     const integrityCopy = document.getElementById("integrityCopy");
-    const frictionPin = document.getElementById("frictionPin");
     const debrief = document.getElementById("debrief");
     const debriefList = document.getElementById("debriefList");
 
@@ -814,16 +835,44 @@
 
     function integrityScore() {
       const m = state.metrics;
-      const thinking = (m.sourcing + m.context + m.corroboration + m.agency + m.access) / 5;
-      const frictionPenalty = Math.abs(58 - m.friction) * 0.28;
-      return Math.round(clamp(30 + thinking * 0.85 - frictionPenalty));
+      const barrier = 100 - m.access;
+      const challenge = m.challenge;
+      const thinking = (m.sourcing + m.context + m.corroboration + m.agency) / 4;
+      
+      let challengePenalty = 0;
+      if (challenge < 55) {
+        challengePenalty = (55 - challenge) * 0.5;
+      } else if (challenge > 80) {
+        challengePenalty = (challenge - 80) * 0.5;
+      }
+      
+      let barrierPenalty = 0;
+      if (barrier > 30) {
+        barrierPenalty = (barrier - 30) * 0.6;
+      }
+      
+      return Math.round(clamp(25 + thinking * 0.9 - challengePenalty - barrierPenalty));
     }
 
     function frictionStatus() {
-      const f = state.metrics.friction;
-      if (f < 38) return "too little friction: AI is still doing too much thinking";
-      if (f > 78) return "too much friction: access may be blocked";
-      return "productive friction: the struggle is doing instructional work";
+      const challenge = state.metrics.challenge;
+      const barrier = 100 - state.metrics.access;
+      
+      let statusStr = "";
+      if (challenge < 55) {
+        statusStr += "Bypass: AI is doing the thinking. ";
+      } else if (challenge > 80) {
+        statusStr += "Exhausting: Challenge is too high. ";
+      } else {
+        statusStr += "Productive challenge calibrated. ";
+      }
+      
+      if (barrier > 30) {
+        statusStr += `Exclusionary barrier is high (${Math.round(barrier)}%).`;
+      } else {
+        statusStr += "System is accessible.";
+      }
+      return statusStr;
     }
 
     function renderScenarioOptions() {
@@ -839,7 +888,7 @@
       `).join("");
 
       moveDeck.querySelectorAll(".move").forEach((button) => {
-        button.addEventListener("click", () => playMove(button.dataset.move));
+        button.addEventListener("click", () => initiatePendingMove(button.dataset.move));
       });
     }
 
@@ -886,16 +935,32 @@
       integrityDial.textContent = score;
       integrityDial.style.background = `conic-gradient(var(--teal) 0deg, var(--teal) ${score * 3.6}deg, rgba(244, 234, 215, 0.12) ${score * 3.6}deg)`;
       integrityCopy.textContent = score >= 78 ? "The class has evidence of inquiry, not just evidence of completion." : score >= 55 ? "The inquiry is forming, but one or two historical thinking moves still need protection." : "The artifact is smooth, but the inquiry is not yet visible.";
-      frictionPin.style.left = `${state.metrics.friction}%`;
+      
+      const challengeVal = document.getElementById("challengeVal");
+      const challengeBar = document.getElementById("challengeBar");
+      const barrierVal = document.getElementById("barrierVal");
+      const barrierBar = document.getElementById("barrierBar");
+      
+      const chal = state.metrics.challenge || 30;
+      const barr = 100 - (state.metrics.access || 40);
+      
+      if (challengeVal) challengeVal.textContent = `${Math.round(chal)}%`;
+      if (challengeBar) challengeBar.style.width = `${chal}%`;
+      if (barrierVal) barrierVal.textContent = `${Math.round(barr)}%`;
+      if (barrierBar) barrierBar.style.width = `${barr}%`;
+
       turnsLeft.textContent = `${state.movesLeft} move${state.movesLeft === 1 ? "" : "s"} left`;
       statusText.textContent = frictionStatus();
-      verdictTitle.textContent = score >= 78 ? "Inquiry protected" : score >= 55 ? "Inquiry emerging" : "Inquiry still fragile";
-      verdictBody.textContent = score >= 78
-        ? "The AI output is now an object of historical investigation, not a substitute for the investigation."
-        : `Main risk: ${state.scenario.risk}`;
+      
+      if (pendingMoveId === null) {
+        verdictTitle.textContent = score >= 78 ? "Inquiry protected" : score >= 55 ? "Inquiry emerging" : "Inquiry still fragile";
+        verdictBody.textContent = score >= 78
+          ? "The AI output is now an object of historical investigation, not a substitute for the investigation."
+          : `Main risk: ${state.scenario.risk}`;
+      }
 
       document.querySelectorAll(".move").forEach((button) => {
-        button.disabled = state.movesLeft === 0 || state.used.has(button.dataset.move);
+        button.disabled = state.movesLeft === 0 || state.used.has(button.dataset.move) || pendingMoveId !== null;
       });
 
       renderMeters();
@@ -909,23 +974,57 @@
       state.used = new Set();
       state.movesLeft = 4;
       state.logs = [];
+      state.rationales = [];
+      pendingMoveId = null;
       debrief.classList.remove("active");
       scenarioSelect.value = state.scenario.id;
       render();
     }
 
-    function playMove(id) {
+    function initiatePendingMove(id) {
       if (state.movesLeft <= 0 || state.used.has(id)) return;
-      const move = moves.find((item) => item.id === id);
-      if (!move) return;
+      pendingMoveId = id;
+      
+      const move = moves.find(m => m.id === id);
+      verdictTitle.innerHTML = `✏️ Rationale: ${move.title}`;
+      verdictBody.innerHTML = `
+        <p style="margin: 0 0 10px; font-size: 0.92rem; color: var(--paper);">Explain how this design choice addresses learning goals or scaffolding needs for this scenario:</p>
+        <textarea id="rationaleInput" placeholder="Type your prediction/rationale here..." style="width: 100%; height: 60px; border-radius: 6px; border: 1px solid var(--line); padding: 8px; background: rgba(16, 25, 35, 0.6); color: var(--paper); font-family: inherit; font-size: 0.9rem; resize: none; margin-bottom: 10px;"></textarea>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button class="ghost" type="button" onclick="cancelPendingMove()" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 999px;">Cancel</button>
+          <button class="primary" type="button" onclick="commitPendingMove()" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 999px;">Commit Choice</button>
+        </div>
+      `;
+      
+      document.querySelectorAll(".move").forEach((button) => {
+        button.disabled = true;
+      });
+    }
 
+    function commitPendingMove() {
+      const inputEl = document.getElementById("rationaleInput");
+      const text = inputEl ? inputEl.value.trim() : "";
+      if (!text) {
+        alert("Please enter a brief rationale before proceeding.");
+        return;
+      }
+      
+      const id = pendingMoveId;
+      const move = moves.find(m => m.id === id);
+      
+      state.logs.unshift(`${move.log} <br><i style="color: var(--gold); font-size: 0.85rem;">Your Rationale: "${text}"</i>`);
+      state.rationales.push({
+        scenario: state.scenario.title,
+        move: move.title,
+        rationale: text
+      });
+      
       Object.entries(move.delta).forEach(([key, value]) => {
         state.metrics[key] = clamp((state.metrics[key] || 0) + value);
       });
       state.used.add(id);
       state.movesLeft -= 1;
-      state.logs.unshift(move.log);
-
+      
       move.nodes.forEach((node) => {
         const el = document.querySelector(`[data-node="${node}"]`);
         if (el) {
@@ -937,7 +1036,68 @@
         }
       });
 
+      pendingMoveId = null;
       render();
+    }
+
+    function cancelPendingMove() {
+      pendingMoveId = null;
+      render();
+    }
+
+    function printReflectionSummary() {
+      const transferVal = document.getElementById("transferReflection")?.value || "Not completed";
+      const printWindow = window.open("", "_blank");
+      let rationalesHtml = "";
+      state.rationales.forEach(r => {
+        rationalesHtml += `
+          <div style="margin-bottom: 15px; border-left: 4px solid #d7a13d; padding-left: 10px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: #101923;">Move: ${r.move}</h3>
+            <p style="margin: 5px 0; font-style: italic; color: #555;">Rationale: "${r.rationale}"</p>
+          </div>
+        `;
+      });
+      
+      printWindow.document.write(`
+        <html>
+        <head>
+          <title>Keepers of Inquiry - Calibration Summary</title>
+          <style>
+            body { font-family: Georgia, serif; line-height: 1.6; padding: 40px; color: #111; max-width: 800px; margin: auto; }
+            h1 { border-bottom: 2px solid #101923; padding-bottom: 10px; font-family: Georgia, serif; }
+            h2 { color: #2b837e; font-family: sans-serif; font-size: 1.3rem; margin-top: 30px; }
+            .meta { background: #f4ead7; padding: 15px; border-radius: 6px; margin: 20px 0; }
+            .footer { margin-top: 50px; font-size: 0.8rem; color: #777; text-align: center; border-top: 1px solid #ccc; padding-top: 10px; }
+          </style>
+        </head>
+        <body>
+          <h1>Keepers of Inquiry: Calibration Summary</h1>
+          <p><strong>Educator:</strong> Micah Miner / Social Studies Practitioner</p>
+          
+          <div class="meta">
+            <strong>Scenario:</strong> \${state.scenario.title}<br>
+            <strong>Inquiry Integrity Score:</strong> \${integrityScore()}/100<br>
+            <strong>Desirable Difficulty (Challenge):</strong> \${Math.round(state.metrics.challenge)}%<br>
+            <strong>Exclusionary Barrier:</strong> \${Math.round(100 - state.metrics.access)}%
+          </div>
+          
+          <h2>1. Inquiry Design Rationales</h2>
+          \${rationalesHtml || "<p>No moves played.</p>"}
+          
+          <h2>2. Classroom Transfer & Evidence Plan</h2>
+          <p style="white-space: pre-wrap; background: #f9f9f9; padding: 15px; border: 1px dashed #ccc; border-radius: 6px;">\${transferVal}</p>
+          
+          <div class="footer">
+            Generated on \${new Date().toLocaleDateString()} &middot; Based on the Pedagogical Friction Framework (Micah J. Miner)
+          </div>
+          
+          <script>
+            window.onload = function() { window.print(); }
+          <\/script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
     }
 
     function showDebrief(accepted = false) {
@@ -954,13 +1114,29 @@
           ? "Students can now treat AI as part of the inquiry instead of the end of inquiry."
           : "The design is close, but the task still needs one more protected thinking move.";
 
-      debriefList.innerHTML = [
+      let html = [
         outcome,
-        `Friction status: ${frictionStatus()}.`,
-        `Watch next: ${weak.join(" and ")}.`,
-        `Transfer question: what must students still source, compare, revise, or defend?`
-      ].map((item) => `<li>${item}</li>`).join("");
+        `Friction status: \${frictionStatus()}.`,
+        `Watch next: \${weak.join(" and ")}.`
+      ].map((item) => `<li>\${item}</li>`).join("");
+
+      if (state.rationales.length > 0) {
+        html += `<h4 style="margin: 15px 0 5px; color: var(--gold);">Your Calibration Rationales:</h4>`;
+        state.rationales.forEach(r => {
+          html += `<div style="font-size: 0.84rem; margin-bottom: 8px; border-left: 2px solid var(--gold); padding-left: 6px; color: var(--paper);">
+            <strong>\${r.move}</strong>: "\${r.rationale}"
+          </div>`;
+        });
+      }
+
+      html += `<h4 style="margin: 15px 0 5px; color: var(--teal);">Transfer Challenge:</h4>`;
+      html += `<p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 10px;">How will you verify this calibration in your physical classroom? What student evidence will you collect?</p>`;
+      html += `<textarea id="transferReflection" placeholder="Type your final classroom transfer plan here..." style="width: 100%; height: 60px; border-radius: 6px; border: 1px solid var(--line); padding: 8px; background: rgba(16, 25, 35, 0.6); color: var(--paper); font-family: inherit; font-size: 0.85rem; resize: none; margin-bottom: 10px;"></textarea>`;
+      html += `<button class="primary" onclick="printReflectionSummary()" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 999px; width: 100%;">Print/Save Reflection Summary</button>`;
+
+      debriefList.innerHTML = html;
       debrief.classList.add("active");
+      debrief.scrollIntoView({ behavior: 'smooth' });
     }
 
     renderScenarioOptions();

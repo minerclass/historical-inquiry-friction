@@ -513,6 +513,12 @@
       border-left: 5px solid var(--rose);
     }
 
+    .feedback-box.workable {
+      border-color: var(--gold);
+      background: rgba(215, 161, 61, 0.1);
+      border-left: 5px solid var(--gold);
+    }
+
     .feedback-box strong {
       display: block;
       margin-bottom: 6px;
@@ -975,6 +981,7 @@
               <p class="stat-desc">Measures if students feel their basic human dignity and diverse identities are safe in your room, protecting them from hostility or silencing.</p>
             </div>
           </div>
+          <p style="font-size: 0.82rem; color: var(--muted); text-align: center; margin-top: 15px; font-style: italic;">*Note: All scores and calibrations are illustrative simulations for pedagogical training and have not been statistically validated.</p>
 
           <!-- Leadership Profile Tally -->
           <div class="profile-card">
@@ -1391,13 +1398,20 @@
           ${opt.feedback}
         `;
         announce("Stance aligned. Discourse, rigor, and trust increased.");
-      } else {
+      } else if (opt.tags && opt.tags.includes("anti-pattern")) {
         feedbackBox.classList.add("incorrect");
         feedbackBox.innerHTML = `
           <strong>⚠️ Facilitation Anti-pattern</strong>
           ${opt.feedback}
         `;
         announce("Anti-pattern chosen. Trust or rigor compromised.");
+      } else {
+        feedbackBox.classList.add("workable");
+        feedbackBox.innerHTML = `
+          <strong>⚖️ Workable Alternative</strong>
+          ${opt.feedback}
+        `;
+        announce("Workable alternative selected. Balanced outcome.");
       }
       
       // Auto scroll column 3 into view on mobile
