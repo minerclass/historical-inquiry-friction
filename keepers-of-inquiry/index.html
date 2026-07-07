@@ -1072,23 +1072,23 @@
         </head>
         <body>
           <h1>Keepers of Inquiry: Calibration Summary</h1>
-          <p><strong>Educator:</strong> Micah Miner / Social Studies Practitioner</p>
+          <p><strong>Educator:</strong> ________________________________</p>
           
           <div class="meta">
-            <strong>Scenario:</strong> \${state.scenario.title}<br>
-            <strong>Inquiry Integrity Score:</strong> \${integrityScore()}/100<br>
-            <strong>Desirable Difficulty (Challenge):</strong> \${Math.round(state.metrics.challenge)}%<br>
-            <strong>Exclusionary Barrier:</strong> \${Math.round(100 - state.metrics.access)}%
+            <strong>Scenario:</strong> ${state.scenario.title}<br>
+            <strong>Inquiry Integrity Score:</strong> ${integrityScore()}/100<br>
+            <strong>Desirable Difficulty (Challenge):</strong> ${Math.round(state.metrics.challenge)}%<br>
+            <strong>Exclusionary Barrier:</strong> ${Math.round(100 - state.metrics.access)}%
           </div>
           
           <h2>1. Inquiry Design Rationales</h2>
-          \${rationalesHtml || "<p>No moves played.</p>"}
+          ${rationalesHtml || "<p>No moves played.</p>"}
           
           <h2>2. Classroom Transfer & Evidence Plan</h2>
-          <p style="white-space: pre-wrap; background: #f9f9f9; padding: 15px; border: 1px dashed #ccc; border-radius: 6px;">\${transferVal}</p>
+          <p style="white-space: pre-wrap; background: #f9f9f9; padding: 15px; border: 1px dashed #ccc; border-radius: 6px;">${transferVal}</p>
           
           <div class="footer">
-            Generated on \${new Date().toLocaleDateString()} &middot; Based on the Pedagogical Friction Framework (Micah J. Miner)
+            Generated on ${new Date().toLocaleDateString()} &middot; Based on the Pedagogical Friction Framework (Micah J. Miner)
           </div>
           
           <script>
@@ -1116,15 +1116,15 @@
 
       let html = [
         outcome,
-        `Friction status: \${frictionStatus()}.`,
-        `Watch next: \${weak.join(" and ")}.`
-      ].map((item) => `<li>\${item}</li>`).join("");
+        `Friction status: ${frictionStatus()}.`,
+        `Watch next: ${weak.join(" and ")}.`
+      ].map((item) => `<li>${item}</li>`).join("");
 
       if (state.rationales.length > 0) {
         html += `<h4 style="margin: 15px 0 5px; color: var(--gold);">Your Calibration Rationales:</h4>`;
         state.rationales.forEach(r => {
           html += `<div style="font-size: 0.84rem; margin-bottom: 8px; border-left: 2px solid var(--gold); padding-left: 6px; color: var(--paper);">
-            <strong>\${r.move}</strong>: "\${r.rationale}"
+            <strong>${r.move}</strong>: "${r.rationale}"
           </div>`;
         });
       }

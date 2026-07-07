@@ -991,7 +991,7 @@
               <!-- Dynamically populated tallies -->
             </div>
 
-            <div class="verdict-box">
+            <div class="verdict-box" id="verdictBox">
               <h4>Classroom Climate Verdict</h4>
               <p id="verdictDesc">Description...</p>
             </div>
@@ -1001,14 +1001,14 @@
           <div class="essay-grid">
             <div class="essay-card highlight">
               <h3>The Stance of the Balanced History Teacher</h3>
-              <p>Teaching history under polarization is not about finding a safe middle ground that avoids conflict. It is about **restoring the struggle of the discipline** itself.</p>
-              <p>Balanced history does not tell students what to think, and it doesn't sanitise difficult events. Instead, it teaches them **how to think** using rigorous, source-grounded methods. When teachers protect this friction, the classroom shifts from a battleground of opinions to a workshop of evidence.</p>
+              <p>Teaching history under polarization is not about finding a safe middle ground that avoids conflict. It is about <strong>restoring the struggle of the discipline</strong> itself.</p>
+              <p>Balanced history does not tell students what to think, and it doesn't sanitize difficult events. Instead, it teaches them <strong>how to think</strong> using rigorous, source-grounded methods. When teachers protect this friction, the classroom shifts from a battleground of opinions to a workshop of evidence.</p>
             </div>
             
             <div class="essay-card">
               <h3>Discipline vs. Opinion</h3>
               <p>The fastest way to lose a classroom is to allow opinions to stand in place of inquiry. When a teacher enforces civility without requiring evidence, they create a false, superficial consensus. When they allow unevidenced personal attacks, trust dissolves.</p>
-              <p>By keeping the focus strictly on **evidence, accountability, and empathy**, we build a resilient space where students feel safe to stretch their thinking.</p>
+              <p>By keeping the focus strictly on <strong>evidence, accountability, and empathy</strong>, we build a resilient space where students feel safe to stretch their thinking.</p>
             </div>
           </div>
 
@@ -1491,7 +1491,7 @@
         // Find title
         const meta = traitDescriptions[res.key] || { title: res.key === "E_H" ? "Empathy" : "Engagement" };
         const displayTitle = meta.title || res.key;
-        const displayDesc = res.count > 0 ? meta.desc : `You did not explicitly activate this letter's最佳 choice.`;
+        const displayDesc = res.count > 0 ? meta.desc : `You did not lean on this principle in this run's strongest choices.`;
 
         item.innerHTML = `
           <div class="profile-item-header">
