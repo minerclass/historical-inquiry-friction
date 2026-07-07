@@ -1009,6 +1009,85 @@
         transition: none !important;
       }
     }
+
+    /* Hindsight Lens Styles */
+    #hindsight-lens {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border: 3px solid #a78bfa;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      display: none;
+      z-index: 10;
+      box-shadow: 0 0 0 9999px rgba(10, 17, 24, 0.72);
+      transition: left 0.1s cubic-bezier(0.1, 0.8, 0.2, 1), top 0.1s cubic-bezier(0.1, 0.8, 0.2, 1);
+    }
+
+    .tiles-grid.lens-active {
+      position: relative !important;
+      overflow: hidden !important;
+    }
+
+    .tile-btn.glow-violet {
+      outline: 3px solid #a78bfa !important;
+      box-shadow: 0 0 20px rgba(167, 139, 250, 0.7) !important;
+      border-color: #a78bfa !important;
+      background: rgba(167, 139, 250, 0.12) !important;
+      z-index: 12 !important;
+    }
+
+    .btn-lens-toggle {
+      background: transparent;
+      border: 1px solid rgba(167, 139, 250, 0.4);
+      color: #a78bfa;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+      user-select: none;
+      width: 100%;
+    }
+
+    .btn-lens-toggle:hover:not(:disabled) {
+      background: rgba(167, 139, 250, 0.08);
+      border-color: #a78bfa;
+    }
+
+    .btn-lens-toggle.active {
+      background: #a78bfa;
+      color: var(--ink);
+      border-color: #a78bfa;
+      box-shadow: 0 0 15px rgba(167, 139, 250, 0.4);
+    }
+    
+    .lens-warning-banner {
+      background: rgba(212, 104, 93, 0.12);
+      border: 1px solid var(--rose);
+      color: var(--paper);
+      font-size: 0.82rem;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-weight: 500;
+      animation: pulseDrift var(--transition-speed) infinite alternate;
+    }
+    
+    @keyframes pulseDrift {
+      from { opacity: 0.85; }
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -1112,6 +1191,16 @@
             </div>
             <div class="panel-body">
               <p class="instructions-pick" id="pickDesc">Select exactly <strong>3 knowledge tiles</strong> that were available to this actor at the time. Watch out for future facts or modern judgments.</p>
+              
+              <div style="display: flex; flex-direction: column; gap: 2px;">
+                <button type="button" class="btn-lens-toggle" id="btnLensToggle" aria-pressed="false">
+                  🔍 Hindsight Lens (Hold H or click to toggle)
+                </button>
+                <div class="lens-warning-banner" id="lensWarningBanner">
+                  ⚠️ WARNING: Lens active. Presentist Drift +3/s (glowing traps)
+                </div>
+              </div>
+
               <div class="tiles-grid" id="tilesGrid" role="group" aria-describedby="pickDesc">
                 <!-- Tiles injected dynamically -->
               </div>
@@ -1410,6 +1499,10 @@
     let trapsTriggered = []; // list of triggered trap ids
     let avoidedTrapsCount = 12; // starts at 12 (3 traps * 4 scenes), decrements as traps are hit
 
+    // Lens State
+    let lensActive = false;
+    let lensIntervalId = null;
+
     // --- DOM ELEMENTS ---
     const screenTitle = document.getElementById("screenTitle");
     const screenPlay = document.getElementById("screenPlay");
@@ -1423,6 +1516,10 @@
     const barDrift = document.getElementById("barDrift");
     const barDriftContainer = document.getElementById("barDriftContainer");
     const hudTrapsVal = document.getElementById("hudTrapsVal");
+
+    // Lens Elements
+    const btnLensToggle = document.getElementById("btnLensToggle");
+    const lensWarningBanner = document.getElementById("lensWarningBanner");
 
     // Play Screen Elements
     const sceneTracker = document.getElementById("sceneTracker");
@@ -1511,6 +1608,22 @@
     btnConfirmContext.addEventListener("click", lockInContext);
     btnNextScene.addEventListener("click", advanceGame);
 
+    // Lens listeners
+    btnLensToggle.addEventListener("click", toggleLensButton);
+    tilesGrid.addEventListener("mousemove", handleLensMouseMove);
+    
+    // Key listeners for H key press-and-hold
+    window.addEventListener("keydown", (e) => {
+      if ((e.key === "h" || e.key === "H") && !lensActive && screenPlay.style.display === "block" && !btnLensToggle.disabled) {
+        startLens();
+      }
+    });
+    window.addEventListener("keyup", (e) => {
+      if (e.key === "h" || e.key === "H") {
+        stopLens();
+      }
+    });
+
     // --- GAME FLOW LOGIC ---
 
     function initGame() {
@@ -1535,6 +1648,8 @@
       screenPlay.style.display = "block";
       hudMeters.style.display = "flex";
 
+      stopLens();
+
       updateMeters();
       loadScene(currentSceneIdx);
       
@@ -1558,8 +1673,17 @@
       mentorHeader.setAttribute("aria-expanded", "false");
       mentorToggleIcon.textContent = "▼";
 
+      stopLens();
+      btnLensToggle.disabled = false;
+
       // Context board loading
       tilesGrid.innerHTML = "";
+
+      // Re-inject lens container
+      const lens = document.createElement("div");
+      lens.id = "hindsight-lens";
+      tilesGrid.appendChild(lens);
+
       scene.tiles.forEach(tile => {
         const btn = document.createElement("button");
         btn.type = "button";
@@ -1568,6 +1692,11 @@
         btn.textContent = tile.text;
         btn.setAttribute("aria-pressed", "false");
         btn.addEventListener("click", () => toggleTileSelection(tile.id));
+        btn.addEventListener("focus", () => {
+          if (lensActive) {
+            centerLensOnElement(btn);
+          }
+        });
         tilesGrid.appendChild(btn);
       });
 
@@ -1581,6 +1710,122 @@
       judgmentsGrid.innerHTML = "";
       judgmentFeedback.style.display = "none";
       btnNextScene.style.display = "none";
+    }
+
+    // --- HINDSIGHT LENS HELPER FUNCTIONS ---
+    function toggleLensButton() {
+      if (lensActive) {
+        stopLens();
+      } else {
+        startLens();
+      }
+    }
+
+    function startLens() {
+      if (lensActive) return;
+      lensActive = true;
+      btnLensToggle.classList.add("active");
+      btnLensToggle.setAttribute("aria-pressed", "true");
+      lensWarningBanner.style.display = "flex";
+      tilesGrid.classList.add("lens-active");
+      
+      const lensEl = document.getElementById("hindsight-lens");
+      if (lensEl) lensEl.style.display = "block";
+
+      // If there is currently a focused tile button, center lens on it
+      const activeEl = document.activeElement;
+      if (activeEl && activeEl.classList.contains("tile-btn")) {
+        centerLensOnElement(activeEl);
+      }
+
+      // Interval drift penalty: +3 per second
+      lensIntervalId = setInterval(() => {
+        presentistDrift += 3;
+        updateMeters();
+        announce(`Hindsight Lens active. Presentist Drift is rising: ${presentistDrift}%`);
+      }, 1000);
+      announce("Hindsight Lens activated. Hold H or drag/hover over tiles. Watch out: presentist drift is rising.");
+    }
+
+    function stopLens() {
+      if (!lensActive) return;
+      lensActive = false;
+      btnLensToggle.classList.remove("active");
+      btnLensToggle.setAttribute("aria-pressed", "false");
+      lensWarningBanner.style.display = "none";
+      tilesGrid.classList.remove("lens-active");
+      
+      const lensEl = document.getElementById("hindsight-lens");
+      if (lensEl) lensEl.style.display = "none";
+
+      const tileBtns = tilesGrid.querySelectorAll(".tile-btn");
+      tileBtns.forEach(btn => btn.classList.remove("glow-violet"));
+
+      if (lensIntervalId) {
+        clearInterval(lensIntervalId);
+        lensIntervalId = null;
+      }
+      announce("Hindsight Lens deactivated.");
+    }
+
+    function handleLensMouseMove(e) {
+      if (!lensActive) return;
+      const lensEl = document.getElementById("hindsight-lens");
+      if (!lensEl) return;
+
+      const gridRect = tilesGrid.getBoundingClientRect();
+      const x = e.clientX - gridRect.left;
+      const y = e.clientY - gridRect.top;
+
+      lensEl.style.left = `${x}px`;
+      lensEl.style.top = `${y}px`;
+
+      // Check distance to each tile center
+      const tileBtns = tilesGrid.querySelectorAll(".tile-btn");
+      tileBtns.forEach(btn => {
+        const btnRect = btn.getBoundingClientRect();
+        const btnCenterX = btnRect.left + btnRect.width / 2 - gridRect.left;
+        const btnCenterY = btnRect.top + btnRect.height / 2 - gridRect.top;
+        const dist = Math.hypot(x - btnCenterX, y - btnCenterY);
+
+        const scene = activeScenes[currentSceneIdx];
+        const tile = scene.tiles.find(t => t.id === btn.id);
+
+        if (dist < 80) { // Lens radius is ~70-80px
+          if (tile && tile.type !== "period") {
+            btn.classList.add("glow-violet");
+          } else {
+            btn.classList.remove("glow-violet");
+          }
+        } else {
+          btn.classList.remove("glow-violet");
+        }
+      });
+    }
+
+    function centerLensOnElement(el) {
+      const lensEl = document.getElementById("hindsight-lens");
+      if (!lensEl) return;
+
+      const gridRect = tilesGrid.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const x = elRect.left + elRect.width / 2 - gridRect.left;
+      const y = elRect.top + elRect.height / 2 - gridRect.top;
+
+      lensEl.style.left = `${x}px`;
+      lensEl.style.top = `${y}px`;
+      lensEl.style.display = "block";
+
+      const tileBtns = tilesGrid.querySelectorAll(".tile-btn");
+      tileBtns.forEach(btn => {
+        const scene = activeScenes[currentSceneIdx];
+        const tile = scene.tiles.find(t => t.id === btn.id);
+        if (btn === el && tile && tile.type !== "period") {
+          btn.classList.add("glow-violet");
+        } else {
+          btn.classList.remove("glow-violet");
+        }
+      });
     }
 
     function toggleMentor() {
@@ -1628,6 +1873,10 @@
     function lockInContext() {
       const scene = activeScenes[currentSceneIdx];
       
+      // Stop and disable lens
+      stopLens();
+      btnLensToggle.disabled = true;
+
       // Disable further tile picking
       const tileButtons = tilesGrid.querySelectorAll(".tile-btn");
       tileButtons.forEach(btn => btn.disabled = true);

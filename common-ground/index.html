@@ -802,6 +802,11 @@
         transition: none !important;
       }
     }
+
+    /* Seating Chart visual styles */
+    .student-dot {
+      transition: cx 0.6s cubic-bezier(0.1, 0.8, 0.2, 1), cy 0.6s cubic-bezier(0.1, 0.8, 0.2, 1), fill 0.5s;
+    }
   </style>
 </head>
 <body>
@@ -881,6 +886,12 @@
               <span id="momentTracker" style="font-size: 0.8rem; font-weight: bold; color: var(--gold);">Moment 1 of 5</span>
             </div>
             <div class="panel-body">
+              <!-- Seating Chart Panel -->
+              <div style="border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; background: rgba(0,0,0,0.2); margin-bottom: 4px; text-align: center;">
+                <div style="font-family: ui-monospace, monospace; font-size: 9px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Classroom Seating Chart</div>
+                <div id="classroom-seating-chart"></div>
+              </div>
+
               <div class="moment-card" id="momentCard">
                 <span class="moment-meta" id="momentKicker">Opinion Stated as Fact</span>
                 <h2 id="momentTopic">Student opinion stated as settled fact</h2>
@@ -991,7 +1002,25 @@
               <!-- Dynamically populated tallies -->
             </div>
 
-            <div class="verdict-box">
+            <!-- Seating Chart Comparison Map -->
+            <div style="border-top: 1px solid var(--line); margin-top: 24px; padding-top: 24px;">
+              <h4 style="font-family: Georgia, serif; font-size: 1.2rem; color: var(--paper-2); text-align: center; margin-bottom: 6px;">Classroom Seating Chart Evolution</h4>
+              <p style="font-size: 0.88rem; color: var(--muted); text-align: center; margin-bottom: 20px;">
+                Compare how your facilitation choices shifted student trust and discourse between Moment 1 (initial state) and Moment 5 (final state).
+              </p>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="text-align: center; background: rgba(0,0,0,0.2); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;">
+                  <div style="font-family: ui-monospace, monospace; font-size: 9px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; font-weight: bold;">Moment 1 Seating Chart</div>
+                  <div id="debrief-room-m1"></div>
+                </div>
+                <div style="text-align: center; background: rgba(0,0,0,0.2); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;">
+                  <div style="font-family: ui-monospace, monospace; font-size: 9px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; font-weight: bold;">Moment 5 Seating Chart</div>
+                  <div id="debrief-room-m5"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="verdict-box" style="margin-top: 24px;">
               <h4>Classroom Climate Verdict</h4>
               <p id="verdictDesc">Description...</p>
             </div>
@@ -1032,26 +1061,26 @@
         options: [
           {
             text: "Let's treat that as a claim we can test. What is the strongest evidence in the primary sources for that, and what evidence contradicts it?",
-            feedback: "Correct! You transform an emotional opinion into an academic inquiry. This models Critical Thinking, Openness, and Engagement. (+15 Discourse, +20 Rigor, +15 Trust)",
+            feedback: "By transforming an emotional opinion into an academic inquiry, you protect discourse and rigor. This models Critical Thinking, Openness, and Engagement. (+15 Discourse, +20 Rigor, +15 Trust)",
             deltas: { discourse: 15, rigor: 20, trust: 15 },
             tags: ["C", "O", "E"],
             best: true
           },
           {
             text: "Well, everyone is entitled to their opinion. Let's move on to the next slide about the Boston Tea Party.",
-            feedback: "Sub-optimal. You protect Discourse superficially by avoiding conflict, but you surrender Academic Rigor and leave the claim unexamined. (+5 Discourse, -15 Rigor, -5 Trust)",
+            feedback: "You protect Discourse superficially by avoiding conflict, but you surrender Academic Rigor and leave the claim unexamined. (+5 Discourse, -15 Rigor, -5 Trust)",
             deltas: { discourse: 5, rigor: -15, trust: -5 },
             tags: ["anti-pattern"]
           },
           {
             text: "That is incorrect. The colonists were standing up for fundamental British constitutional rights against tyranny.",
-            feedback: "Sub-optimal. By taking a side directly, you shut down discussion. Other students who agree with the first student will now withdraw their trust. (-15 Discourse, +5 Rigor, -20 Trust)",
+            feedback: "By taking a side directly, you shut down discussion. Other students who agree with the first student will now withdraw their trust. (-15 Discourse, +5 Rigor, -20 Trust)",
             deltas: { discourse: -15, rigor: 5, trust: -20 },
             tags: ["anti-pattern"]
           },
           {
             text: "That's an interesting claim. Tell me more about what leads you to say that.",
-            feedback: "Workable. You prompt the student to expand, which encourages Engagement, but you must still follow up by bringing in other sources. (+10 Discourse, +10 Rigor, +10 Trust)",
+            feedback: "You prompt the student to expand, which encourages Engagement, but you must still follow up by bringing in other sources. (+10 Discourse, +10 Rigor, +10 Trust)",
             deltas: { discourse: 10, rigor: 10, trust: 10 },
             tags: ["E"]
           }
@@ -1065,26 +1094,26 @@
         options: [
           {
             text: "Share the unit outline, the primary source packets (federalist notes, debates), and invite the parent to review the materials, explaining the goal is evaluating period arguments.",
-            feedback: "Correct! Transparency builds massive trust. You model Accountability, Honesty, and Respect. (+20 Discourse, +15 Rigor, +20 Trust)",
+            feedback: "Transparency builds massive trust while maintaining curricular integrity. You model Accountability, Honesty, and Respect. (+20 Discourse, +15 Rigor, +20 Trust)",
             deltas: { discourse: 20, rigor: 15, trust: 20 },
             tags: ["A", "H", "R"],
             best: true
           },
           {
             text: "Acknowledge the email, prepare details with your administrator, and suggest a meeting to listen to their concerns directly.",
-            feedback: "Workable. Meeting is respectful and protects trust, though sharing sources immediately is a stronger first step in transparency. (+15 Discourse, +10 Rigor, +15 Trust)",
+            feedback: "Meeting is respectful and protects trust, though sharing sources immediately is a stronger first step in transparency. (+15 Discourse, +10 Rigor, +15 Trust)",
             deltas: { discourse: 15, rigor: 10, trust: 15 },
             tags: ["R"]
           },
           {
             text: "To avoid further parent complaints, quietly reduce the time spent on the three-fifths compromise and focus on the branch structure.",
-            feedback: "Sub-optimal. You avoid parental friction by sanitizing the curriculum, directly sacrificing Academic Rigor and student trust in your honesty. (+10 Discourse, -20 Rigor, -10 Trust)",
+            feedback: "Avoiding parental friction by sanitizing the curriculum directly sacrifices Academic Rigor and student trust in your honesty. (+10 Discourse, -20 Rigor, -10 Trust)",
             deltas: { discourse: 10, rigor: -20, trust: -10 },
             tags: ["anti-pattern"]
           },
           {
             text: "Inform the parent that your curriculum aligns strictly with state standards and is not open to individual negotiation.",
-            feedback: "Sub-optimal. While factually true, a defensive wall damages trust and misses a chance to show that historical inquiry is about evidence, not indoctrination. (-20 Discourse, +5 Rigor, -15 Trust)",
+            feedback: "A defensive response damages trust and misses a chance to show that historical inquiry is about evidence, not indoctrination. (-20 Discourse, +5 Rigor, -15 Trust)",
             deltas: { discourse: -20, rigor: 5, trust: -15 },
             tags: ["anti-pattern"]
           }
@@ -1098,26 +1127,26 @@
         options: [
           {
             text: "Ground the unit in primary source treaties, congressional debates, and Cherokee petitions, exploring the arguments, the costs, and the decisions of those who lived it.",
-            feedback: "Correct! Rooting the lesson in period sources protects rigor and builds deep empathy without slipping into modern moralizing. (+15 Discourse, +20 Rigor, +20 Trust)",
+            feedback: "Rooting the lesson in period sources protects rigor and builds deep empathy without slipping into modern moralizing. (+15 Discourse, +20 Rigor, +20 Trust)",
             deltas: { discourse: 15, rigor: 20, trust: 20 },
             tags: ["H", "E"],
             best: true
           },
           {
             text: "Have students write in journals to reflect on how learning about this historical removal affects their understanding of justice today.",
-            feedback: "Workable. Encourages Thoughtfulness and processes emotion safely, though it needs to be paired with strong source analysis. (+15 Discourse, +10 Rigor, +15 Trust)",
+            feedback: "This encourages Thoughtfulness and processes emotion safely, though it needs to be paired with strong source analysis. (+15 Discourse, +10 Rigor, +15 Trust)",
             deltas: { discourse: 15, rigor: 10, trust: 15 },
             tags: ["T"]
           },
           {
             text: "Soften the description of the Trail of Tears to avoid upsetting students, focusing instead on the legal expansion of state boundaries.",
-            feedback: "Sub-optimal. Sanitizing the past to prevent discomfort guts Academic Rigor and violates Honesty. (+10 Discourse, -20 Rigor, -10 Trust)",
+            feedback: "Sanitizing the past to prevent discomfort guts Academic Rigor and violates Honesty. (+10 Discourse, -20 Rigor, -10 Trust)",
             deltas: { discourse: 10, rigor: -20, trust: -10 },
             tags: ["anti-pattern"]
           },
           {
             text: "Frame the removal primarily around current identity groups, asking students to debate which modern institutions owe apologies.",
-            feedback: "Sub-optimal. This slides into presentism, converting a historical removal inquiry into a modern moral courtroom that damages classroom trust. (-15 Discourse, +5 Rigor, -20 Trust)",
+            feedback: "This slides into presentism, converting a historical removal inquiry into a modern moral courtroom that damages classroom trust. (-15 Discourse, +5 Rigor, -20 Trust)",
             deltas: { discourse: -15, rigor: 5, trust: -20 },
             tags: ["anti-pattern"]
           }
@@ -1131,26 +1160,26 @@
         options: [
           {
             text: "Let's read this claim laterally. What is the video's source? What evidence does it show? Let's check what the historical consensus and naval investigations actually found.",
-            feedback: "Correct! You teach them how to source and verify online claims, modeling Critical Thinking and Engagement under pressure. (+15 Discourse, +20 Rigor, +15 Trust)",
+            feedback: "Teaching students how to source and verify online claims models Critical Thinking and Engagement under pressure. (+15 Discourse, +20 Rigor, +15 Trust)",
             deltas: { discourse: 15, rigor: 20, trust: 15 },
             tags: ["C", "E"],
             best: true
           },
           {
             text: "I appreciate you sharing that. Why don't you do a quick write-up of that theory for extra credit?",
-            feedback: "Workable. Shows Empathy/Thoughtfulness, but fails to model verification in the room, potentially leaving a myth uncorrected. (+10 Discourse, +10 Rigor, +10 Trust)",
+            feedback: "This shows Empathy and Thoughtfulness, but fails to model verification in the room, potentially leaving a myth uncorrected. (+10 Discourse, +10 Rigor, +10 Trust)",
             deltas: { discourse: 10, rigor: 10, trust: 10 },
             tags: ["T"]
           },
           {
             text: "That is nonsense from social media. Our textbook explicitly says the cause of the explosion remains controversial. Ignore TikTok.",
-            feedback: "Sub-optimal. Dismissing them defensively cuts off a valuable lesson in media literacy and damages student trust in your openness. (-10 Discourse, -10 Rigor, -15 Trust)",
+            feedback: "Dismissing them defensively cuts off a valuable lesson in media literacy and damages student trust in your openness. (-10 Discourse, -10 Rigor, -15 Trust)",
             deltas: { discourse: -10, rigor: -10, trust: -15 },
             tags: ["anti-pattern"]
           },
           {
             text: "Well, history is written by the winners, so who's to say what really happened? Both versions are interesting.",
-            feedback: "Sub-optimal. Falling into lazy cynicism ('who's to say') destroys Academic Rigor and teaches students that evidence doesn't matter. (-5 Discourse, -20 Rigor, -10 Trust)",
+            feedback: "Falling into lazy cynicism ('who's to say') destroys Academic Rigor and teaches students that evidence doesn't matter. (-5 Discourse, -20 Rigor, -10 Trust)",
             deltas: { discourse: -5, rigor: -20, trust: -10 },
             tags: ["anti-pattern"]
           }
@@ -1164,26 +1193,26 @@
         options: [
           {
             text: "Pause the class. Let's enforce our protocol: each side must state the other side's strongest evidence before responding, and base arguments on the data packet.",
-            feedback: "Correct! You preserve safety and rigour by introducing structure. Models Respect and Engagement. (+25 Discourse, +15 Rigor, +20 Trust)",
+            feedback: "You preserve safety and rigor by introducing structure. Models Respect and Engagement. (+25 Discourse, +15 Rigor, +20 Trust)",
             deltas: { discourse: 25, rigor: 15, trust: 20 },
             tags: ["R", "E"],
             best: true
           },
           {
             text: "This is getting too heated. Everyone shut your notebooks. Turn to page 142 and read silently for the rest of the period.",
-            feedback: "Sub-optimal. You enforce order (Discourse) by shutting down learning entirely, leaving the conflict unresolved and teaching students to fear disagreement. (-5 Discourse, -15 Rigor, -10 Trust)",
+            feedback: "Enforcing order (Discourse) by shutting down learning entirely leaves the conflict unresolved and teaches students to fear disagreement. (-5 Discourse, -15 Rigor, -10 Trust)",
             deltas: { discourse: -5, rigor: -15, trust: -10 },
             tags: ["anti-pattern"]
           },
           {
             text: "Intervene by pointing out that the student arguing for immigration has the factual data, and explain why their opponent is incorrect.",
-            feedback: "Sub-optimal. By taking a side in a student dispute, you destroy your role as a neutral facilitator and ruin student trust in your fairness. (-20 Discourse, +5 Rigor, -25 Trust)",
+            feedback: "By taking a side in a student dispute, you destroy your role as a neutral facilitator and ruin student trust in your fairness. (-20 Discourse, +5 Rigor, -25 Trust)",
             deltas: { discourse: -20, rigor: 5, trust: -25 },
             tags: ["anti-pattern"]
           },
           {
             text: "Let them go for a minute. Conflict is natural, and they need to learn to resolve these arguments themselves.",
-            feedback: "Sub-optimal. Allowing unstructured shouting in a classroom environment damages safety and student trust that the teacher is in control. (-25 Discourse, -10 Rigor, -15 Trust)",
+            feedback: "Allowing unstructured shouting in a classroom environment damages safety and student trust that the teacher is in control. (-25 Discourse, -10 Rigor, -15 Trust)",
             deltas: { discourse: -25, rigor: -10, trust: -15 },
             tags: ["anti-pattern"]
           }
@@ -1209,6 +1238,9 @@
     let rigor = 55;
     let trust = 55;
     let selectedTags = []; // tallies of letters chosen in 'best' options
+    
+    // Seating chart snapshot variables
+    let moment1State = null;
 
     // --- DOM ELEMENTS ---
     const screenTitle = document.getElementById("screenTitle");
@@ -1223,6 +1255,62 @@
     const barRigor = document.getElementById("barRigor");
     const lblTrust = document.getElementById("lblTrust");
     const barTrust = document.getElementById("barTrust");
+
+    // Seating chart layout data
+    const desks = [];
+    const cols = [15, 40, 65, 115, 140, 165];
+    const rows = [15, 35, 55, 75];
+    rows.forEach(y => {
+      cols.forEach(x => {
+        desks.push({ x, y });
+      });
+    });
+
+    function drawClassroom(containerId, discVal, trustVal) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const polarization = Math.max(0, 100 - trustVal);
+      const silenceFactor = Math.max(0, 50 - discVal) / 50;
+      const polarizationFactor = Math.max(0, polarization - 40) / 60;
+
+      let dotColor = "rgba(100, 198, 189, 0.85)"; // Teal
+      if (silenceFactor > 0.2) {
+        dotColor = `rgba(146, 162, 166, ${0.4 + 0.6 * (1 - silenceFactor)})`; // Grayed out
+      } else if (polarizationFactor > 0.2) {
+        dotColor = `rgba(212, 104, 93, ${0.6 + 0.4 * polarizationFactor})`; // Reddened
+      } else if (trustVal >= 70 && discVal >= 70) {
+        dotColor = "rgba(125, 159, 214, 0.9)"; // Blue
+      }
+
+      let svgHtml = `<svg viewBox="0 0 180 90" style="width: 100%; height: auto; display: block; overflow: visible;">`;
+      svgHtml += `<line x1="90" y1="5" x2="90" y2="85" stroke="var(--line)" stroke-width="1" stroke-dasharray="3,3" />`;
+
+      desks.forEach(desk => {
+        const isLeft = desk.x < 90;
+        let lean = 0;
+        if (isLeft) {
+          lean = (90 - desk.x) * 0.22 * (trustVal / 100);
+        } else {
+          lean = -(desk.x - 90) * 0.22 * (trustVal / 100);
+        }
+
+        let drift = 0;
+        if (isLeft) {
+          drift = -12 * (polarization / 100);
+        } else {
+          drift = 12 * (polarization / 100);
+        }
+
+        const xActual = desk.x + lean + drift;
+
+        svgHtml += `<rect x="${desk.x - 6}" y="${desk.y - 4}" width="12" height="8" rx="1.5" fill="none" stroke="var(--line)" stroke-width="1" style="opacity: 0.6;" />`;
+        svgHtml += `<circle cx="${xActual}" cy="${desk.y}" r="3" fill="${dotColor}" class="student-dot" style="filter: drop-shadow(0 0 2px ${dotColor});" />`;
+      });
+
+      svgHtml += `</svg>`;
+      container.innerHTML = svgHtml;
+    }
 
     // Play Elements
     const momentTracker = document.getElementById("momentTracker");
@@ -1301,6 +1389,8 @@
 
       lblTrust.textContent = `${trust}%`;
       barTrust.style.width = `${trust}%`;
+
+      drawClassroom("classroom-seating-chart", discourse, trust);
     }
 
     // --- FLOW LOGIC ---
@@ -1318,6 +1408,8 @@
       rigor = 55;
       trust = 55;
       selectedTags = [];
+      
+      moment1State = { discourse: 55, trust: 55 };
 
       screenTitle.style.display = "none";
       screenPlay.style.display = "block";
@@ -1442,6 +1534,12 @@
       valTrust.innerHTML = `${trust}<span>%</span>`;
       dialTrust.style.background = `conic-gradient(var(--gold) ${trust}%, rgba(255, 255, 255, 0.06) ${trust}%)`;
 
+      // Draw the classroom seating chart comparison maps
+      if (moment1State) {
+        drawClassroom("debrief-room-m1", moment1State.discourse, moment1State.trust);
+      }
+      drawClassroom("debrief-room-m5", discourse, trust);
+
       // Build Leadership Profile Tally
       profileGrid.innerHTML = "";
       
@@ -1491,7 +1589,7 @@
         // Find title
         const meta = traitDescriptions[res.key] || { title: res.key === "E_H" ? "Empathy" : "Engagement" };
         const displayTitle = meta.title || res.key;
-        const displayDesc = res.count > 0 ? meta.desc : `You did not explicitly activate this letter's最佳 choice.`;
+        const displayDesc = res.count > 0 ? meta.desc : `You did not explicitly activate this letter's template choice.`;
 
         item.innerHTML = `
           <div class="profile-item-header">
@@ -1521,7 +1619,7 @@
         verdictDescText = "You have mostly kept the classroom climate balanced. Disagreements remain manageable, and sources are checked, but you can build higher trust and academic rigor by introducing structured Socratic protocols and absolute transparency with families.";
       }
 
-      const verdictTitleEl = verdictBox.querySelector("h4");
+      const verdictTitleEl = document.querySelector(".verdict-box h4");
       const verdictTextEl = document.getElementById("verdictDesc");
       verdictTitleEl.textContent = verdictTitle;
       verdictTextEl.textContent = verdictDescText;

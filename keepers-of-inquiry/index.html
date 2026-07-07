@@ -594,6 +594,55 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Constellation Gold Pulse and Seating Ring Styles */
+    @keyframes goldPulse {
+      0% { stroke-dashoffset: 120; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    .pulse-gold {
+      stroke: var(--gold) !important;
+      stroke-dasharray: 24 96;
+      animation: goldPulse 1.8s linear infinite;
+      stroke-width: 10px !important;
+      filter: drop-shadow(0 0 6px var(--gold));
+    }
+
+    .node.unlocked {
+      position: relative;
+      border-color: rgba(215, 161, 61, 0.8) !important;
+      box-shadow: 0 0 20px rgba(215, 161, 61, 0.25) !important;
+    }
+
+    .node.unlocked::before {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border: 2px solid var(--gold);
+      border-radius: calc(var(--radius) + 4px);
+      animation: nodeLockRingPulse 2s ease-out infinite;
+      pointer-events: none;
+      box-shadow: 0 0 12px var(--gold);
+    }
+
+    @keyframes nodeLockRingPulse {
+      0% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.04); opacity: 0.35; }
+      100% { transform: scale(1); opacity: 0.85; }
+    }
+
+    .constellation-link {
+      transition: stroke 1.2s ease, stroke-width 1.2s ease, opacity 1.2s ease;
+      opacity: 0;
+    }
+
+    .victory-active .constellation-link {
+      stroke: rgba(215, 161, 61, 0.65) !important;
+      stroke-width: 5px !important;
+      opacity: 1 !important;
+      filter: drop-shadow(0 0 5px var(--gold));
+    }
   </style>
 </head>
 <body>
@@ -651,6 +700,12 @@
             <path id="lineContext" d="M815 145 C670 180 610 245 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
             <path id="lineAgency" d="M210 520 C330 455 390 390 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
             <path id="lineAccess" d="M790 520 C670 455 610 390 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
+            
+            <!-- Victory Constellation Lines (revealed when all nodes are protected) -->
+            <line x1="185" y1="145" x2="815" y2="145" stroke="rgba(215,161,61,0)" stroke-width="4" stroke-dasharray="6,6" class="constellation-link" />
+            <line x1="185" y1="145" x2="210" y2="520" stroke="rgba(215,161,61,0)" stroke-width="4" stroke-dasharray="6,6" class="constellation-link" />
+            <line x1="815" y1="145" x2="790" y2="520" stroke="rgba(215,161,61,0)" stroke-width="4" stroke-dasharray="6,6" class="constellation-link" />
+            <line x1="210" y1="520" x2="790" y2="520" stroke="rgba(215,161,61,0)" stroke-width="4" stroke-dasharray="6,6" class="constellation-link" />
           </svg>
           <div class="node n-source" data-node="sourcing"><b>Sourcing</b><span>Who made the claim, why, and from what evidence?</span></div>
           <div class="node n-context" data-node="context"><b>Context</b><span>What conditions shaped the event and the source?</span></div>
@@ -915,6 +970,29 @@
         node.classList.toggle("unlocked", state.metrics[key] >= 45);
         node.classList.toggle("warning", state.metrics[key] < 30);
       });
+
+      // Toggle gold pulse along SVG paths when nodes are unlocked (metric >= 45)
+      const lineSource = document.getElementById("lineSource");
+      const lineContext = document.getElementById("lineContext");
+      const lineAgency = document.getElementById("lineAgency");
+      const lineAccess = document.getElementById("lineAccess");
+
+      if (lineSource) lineSource.classList.toggle("pulse-gold", state.metrics.sourcing >= 45);
+      if (lineContext) lineContext.classList.toggle("pulse-gold", state.metrics.context >= 45);
+      if (lineAgency) lineAgency.classList.toggle("pulse-gold", state.metrics.agency >= 45);
+      if (lineAccess) lineAccess.classList.toggle("pulse-gold", state.metrics.access >= 45);
+
+      // Check overall victory (all 5 nodes unlocked)
+      const isVictory = state.metrics.sourcing >= 45 &&
+                        state.metrics.context >= 45 &&
+                        state.metrics.corroboration >= 45 &&
+                        state.metrics.agency >= 45 &&
+                        state.metrics.access >= 45;
+
+      const mapEl = document.querySelector(".map");
+      if (mapEl) {
+        mapEl.classList.toggle("victory-active", isVictory);
+      }
     }
 
     function renderLog() {
