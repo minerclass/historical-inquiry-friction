@@ -1501,6 +1501,8 @@
 
     // Lens State
     let lensActive = false;
+    let lensButtonToggled = false;
+    let lensKeyHeld = false;
     let lensIntervalId = null;
 
     // --- DOM ELEMENTS ---
@@ -1614,13 +1616,17 @@
     
     // Key listeners for H key press-and-hold
     window.addEventListener("keydown", (e) => {
-      if ((e.key === "h" || e.key === "H") && !lensActive && screenPlay.style.display === "block" && !btnLensToggle.disabled) {
-        startLens();
+      if ((e.key === "h" || e.key === "H") && screenPlay.style.display === "block" && !btnLensToggle.disabled) {
+        if (!lensKeyHeld) {
+          lensKeyHeld = true;
+          refreshLensState();
+        }
       }
     });
     window.addEventListener("keyup", (e) => {
       if (e.key === "h" || e.key === "H") {
-        stopLens();
+        lensKeyHeld = false;
+        refreshLensState();
       }
     });
 
@@ -1648,7 +1654,9 @@
       screenPlay.style.display = "block";
       hudMeters.style.display = "flex";
 
-      stopLens();
+      lensButtonToggled = false;
+      lensKeyHeld = false;
+      refreshLensState();
 
       updateMeters();
       loadScene(currentSceneIdx);
@@ -1673,7 +1681,9 @@
       mentorHeader.setAttribute("aria-expanded", "false");
       mentorToggleIcon.textContent = "▼";
 
-      stopLens();
+      lensButtonToggled = false;
+      lensKeyHeld = false;
+      refreshLensState();
       btnLensToggle.disabled = false;
 
       // Context board loading
@@ -1714,15 +1724,11 @@
 
     // --- HINDSIGHT LENS HELPER FUNCTIONS ---
     function toggleLensButton() {
-      if (lensActive) {
-        stopLens();
-      } else {
-        startLens();
-      }
+      lensButtonToggled = !lensButtonToggled;
+      refreshLensState();
     }
 
-    function startLens() {
-      if (lensActive) return;
+    function startLensVisuals() {
       lensActive = true;
       btnLensToggle.classList.add("active");
       btnLensToggle.setAttribute("aria-pressed", "true");
@@ -1747,8 +1753,7 @@
       announce("Hindsight Lens activated. Hold H or drag/hover over tiles. Watch out: presentist drift is rising.");
     }
 
-    function stopLens() {
-      if (!lensActive) return;
+    function stopLensVisuals() {
       lensActive = false;
       btnLensToggle.classList.remove("active");
       btnLensToggle.setAttribute("aria-pressed", "false");
@@ -1766,6 +1771,12 @@
         lensIntervalId = null;
       }
       announce("Hindsight Lens deactivated.");
+    }
+
+    function refreshLensState() {
+      const shouldBeActive = lensButtonToggled || lensKeyHeld;
+      if (shouldBeActive && !lensActive) startLensVisuals();
+      if (!shouldBeActive && lensActive) stopLensVisuals();
     }
 
     function handleLensMouseMove(e) {
@@ -1874,7 +1885,9 @@
       const scene = activeScenes[currentSceneIdx];
       
       // Stop and disable lens
-      stopLens();
+      lensButtonToggled = false;
+      lensKeyHeld = false;
+      refreshLensState();
       btnLensToggle.disabled = true;
 
       // Disable further tile picking
