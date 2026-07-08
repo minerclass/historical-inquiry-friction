@@ -1217,6 +1217,171 @@
             tags: ["anti-pattern"]
           }
         ]
+      },
+      {
+        kicker: "The ChatGPT Shortcut",
+        topic: "Students outsourcing thinking via AI summaries",
+        situation: "A student admits they used ChatGPT to summarize a primary source packet on the Nullification Crisis. Other students complain this is unfair and 'cheating.'",
+        hint: "Use this to discuss how AI can bypass cognitive struggle (unproductive success) versus how it can be used to interrogate primary evidence when audited.",
+        options: [
+          {
+            text: "Let's compare the AI's summary with the actual document. What did the AI omit or oversimplify about Calhoun's arguments? Let's audit the AI output.",
+            feedback: "Auditing AI output preserves student ownership and academic rigor, converting a bypass bypass into an inquiry moment. (+15 Discourse, +25 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 25, trust: 15 },
+            tags: ["C", "T", "E"],
+            best: true
+          },
+          {
+            text: "Let's have a class discussion about when AI is a helpful scaffold and when it prevents us from developing our own reading skills.",
+            feedback: "A helpful discussion about media ecology that builds trust, though it lacks direct document analysis. (+15 Discourse, +10 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 10, trust: 15 },
+            tags: ["E"]
+          },
+          {
+            text: "AI use is strictly prohibited. You receive a zero on this assignment and must redo it by hand.",
+            feedback: "A compliance-focused ban creates exclusionary friction, damaging trust without improving learning design. (-10 Discourse, -5 Rigor, -20 Trust)",
+            deltas: { discourse: -10, rigor: -5, trust: -20 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "If it helped you understand the text, that's fine. Anyone else who wants to use ChatGPT can do so.",
+            feedback: "Enabling complete cognitive bypass removes productive struggle entirely, sacrificing rigor for student convenience. (+10 Discourse, -25 Rigor, -10 Trust)",
+            deltas: { discourse: 10, rigor: -25, trust: -10 },
+            tags: ["anti-pattern"]
+          }
+        ]
+      },
+      {
+        kicker: "The Silence of the Disengaged",
+        topic: "Inviting quiet students into discussion",
+        situation: "During a discussion on the Reconstruction Amendments, you notice a quiet group of students in the back row who have not spoken or made eye contact all period.",
+        hint: "Avoid putting them on the spot with cold calling, but create low-stakes entry points or structured pair-shares to invite them in.",
+        options: [
+          {
+            text: "Let's do a two-minute write-to-think on the 14th Amendment's wording, then do a quick pair-share before we open it to the room.",
+            feedback: "Structured protocols provide low-stakes scaffolds, increasing trust and active participation for quiet students. (+20 Discourse, +15 Rigor, +20 Trust)",
+            deltas: { discourse: 20, rigor: 15, trust: 20 },
+            tags: ["R", "E", "T"],
+            best: true
+          },
+          {
+            text: "Circulate to their desks during individual work time to check in privately and ask if they want to share their thoughts on the next prompt.",
+            feedback: "Private check-ins build trust and preserve classroom discourse safety, though they do not engage the group as a whole. (+15 Discourse, +10 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 10, trust: 15 },
+            tags: ["R"]
+          },
+          {
+            text: "Let's hear from the back row. Alex, what did you write for question 3? Share it with the whole class right now.",
+            feedback: "Cold calling quiet students puts them under public threat, damaging trust and discourse safety. (-15 Discourse, +5 Rigor, -20 Trust)",
+            deltas: { discourse: -15, rigor: 5, trust: -20 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "Let's just keep going with the students who are raising their hands. They're carrying the discussion well anyway.",
+            feedback: "Letting active students dominate excludes other voices, slowly creating a polarized and disengaged classroom. (+5 Discourse, -15 Rigor, -10 Trust)",
+            deltas: { discourse: 5, rigor: -15, trust: -10 },
+            tags: ["anti-pattern"]
+          }
+        ]
+      },
+      {
+        kicker: "The Offensive Term",
+        topic: "Managing sensitive language in historic text",
+        situation: "While reading an antebellum document, a student accidentally reads aloud a term that is highly offensive today, causing immediate discomfort and tension in the room.",
+        hint: "Address the tension directly by explaining the historical context and the distinction between quoting period language and using it in modern speech.",
+        options: [
+          {
+            text: "Pause for a moment. It's important to recognize that period documents contain offensive language. We read them to understand the past, but we don't use those terms in our own discourse.",
+            feedback: "Addressing the issue with clarity and transparency models honesty, respect, and keeps focus on the evidence. (+20 Discourse, +20 Rigor, +20 Trust)",
+            deltas: { discourse: 20, rigor: 20, trust: 20 },
+            tags: ["H", "R", "C"],
+            best: true
+          },
+          {
+            text: "Acknowledge the term's history briefly, thank the student for reading, and pivot back to analyzing the document's central argument.",
+            feedback: "A safe and workable path, though a deeper conversation on historical literacy vs. modern speech is highly productive. (+15 Discourse, +10 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 10, trust: 15 },
+            tags: ["H"]
+          },
+          {
+            text: "That term is completely unacceptable in this school. You need to apologize to the class immediately.",
+            feedback: "Punishing a student for quoting a historical text creates a compliance barrier that shuts down future reading. (-15 Discourse, -10 Rigor, -20 Trust)",
+            deltas: { discourse: -15, rigor: -10, trust: -20 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "Let's just ignore it and keep reading. It's just old writing and doesn't mean anything.",
+            feedback: "Ignoring student discomfort erodes trust and misses an opportunity to teach critical historical framing. (+5 Discourse, -20 Rigor, -15 Trust)",
+            deltas: { discourse: 5, rigor: -20, trust: -15 },
+            tags: ["anti-pattern"]
+          }
+        ]
+      },
+      {
+        kicker: "The Presentist Judgment",
+        topic: "Navigating historical contradictions",
+        situation: "Discussing Thomas Jefferson, a student declares: 'Jefferson wrote the Declaration of Independence but owned slaves. He was just a hypocrite, so we can ignore his ideas on liberty.'",
+        hint: "Encourage students to hold historical actors accountable to their context without dismissing their ideas or ignoring their contradictions.",
+        options: [
+          {
+            text: "Let's analyze that tension. How did Jefferson and his contemporaries justify this contradiction at the time, and how did later reformers use his own words to fight slavery?",
+            feedback: "Guiding students to analyze tension and historical legacy models critical thinking and empathy. (+20 Discourse, +20 Rigor, +15 Trust)",
+            deltas: { discourse: 20, rigor: 20, trust: 15 },
+            tags: ["C", "E_H", "E"],
+            best: true
+          },
+          {
+            text: "That's a major contradiction. Let's look at the draft of the Declaration where he actually criticized the slave trade, and see why it was removed.",
+            feedback: "Focusing on document edits models sourcing and inquiry, though it does not fully address the modern hypocrisy claim. (+15 Discourse, +15 Rigor, +10 Trust)",
+            deltas: { discourse: 15, rigor: 15, trust: 10 },
+            tags: ["E_H"]
+          },
+          {
+            text: "Jefferson was a great man and a product of his time. We shouldn't judge him by today's standards.",
+            feedback: "Defending historical actors by dismissing student concerns sacrifices critical thinking and damages trust in your neutrality. (-10 Discourse, -10 Rigor, -15 Trust)",
+            deltas: { discourse: -10, rigor: -10, trust: -15 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "You're right. The founders were all hypocrites, and their documents are just tools of oppression.",
+            feedback: "Validating sweeping dismissals destroys academic rigor and models unstructured cynicism rather than analysis. (+5 Discourse, -25 Rigor, -15 Trust)",
+            deltas: { discourse: 5, rigor: -25, trust: -15 },
+            tags: ["anti-pattern"]
+          }
+        ]
+      },
+      {
+        kicker: "The Distrustful Parent",
+        topic: "Managing parent concerns on hard history",
+        situation: "A parent complains that your socratic seminars are 'indoctrinating' students by having them discuss controversial topics like state-sanctioned violence in the Jim Crow South.",
+        hint: "Respond by highlighting that Socratic inquiry does not teach what to think, but how to analyze evidence from historical sources.",
+        options: [
+          {
+            text: "Provide the lesson plans, the primary documents (newspapers, pamphlets), and explain that students are learning to cross-reference evidence rather than adopt a single viewpoint.",
+            feedback: "Transparency about sources and inquiry protocols builds massive stakeholder trust while protecting rigorous content. (+20 Discourse, +15 Rigor, +25 Trust)",
+            deltas: { discourse: 20, rigor: 15, trust: 25 },
+            tags: ["A", "H", "R"],
+            best: true
+          },
+          {
+            text: "Offer to let the parent sit in on a seminar session so they can see the student-led inquiry and focus on source analysis firsthand.",
+            feedback: "Inviting participation is respectful, though sharing documentation upfront is a stronger first step in transparency. (+15 Discourse, +10 Rigor, +15 Trust)",
+            deltas: { discourse: 15, rigor: 10, trust: 15 },
+            tags: ["A"]
+          },
+          {
+            text: "We are required by state standards to teach Jim Crow. I cannot change the curriculum for individual parent complaints.",
+            feedback: "A defensive, bureaucratic response damages trust and reinforces the parent's concern about teacher opacity. (-15 Discourse, +10 Rigor, -15 Trust)",
+            deltas: { discourse: -15, rigor: 10, trust: -15 },
+            tags: ["anti-pattern"]
+          },
+          {
+            text: "To avoid further issues, we'll swap out Jim Crow primary sources for a standard textbook summary page.",
+            feedback: "Sanitizing curriculum to evade stakeholder complaints sacrifices academic rigor and students' right to analyze history. (+10 Discourse, -25 Rigor, -20 Trust)",
+            deltas: { discourse: 10, rigor: -25, trust: -20 },
+            tags: ["anti-pattern"]
+          }
+        ]
       }
     ];
 
@@ -1232,7 +1397,17 @@
       T: { title: "Thoughtfulness", desc: "You encouraged metacognition, reflective writing, and deliberate pacing rather than fast, reactionary media comments." }
     };
 
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
     // --- GAME STATE VARIABLES ---
+    let activeMoments = [];
     let currentMomentIdx = 0;
     let discourse = 55;
     let rigor = 55;
@@ -1403,6 +1578,7 @@
     }
 
     function startGame() {
+      activeMoments = shuffleArray(momentsData).slice(0, 5);
       currentMomentIdx = 0;
       discourse = 55;
       rigor = 55;
@@ -1421,7 +1597,7 @@
     }
 
     function loadMoment(idx) {
-      const moment = momentsData[idx];
+      const moment = activeMoments[idx];
 
       momentTracker.textContent = `Moment ${idx + 1} of 5`;
       momentKicker.textContent = moment.kicker;
@@ -1512,7 +1688,7 @@
 
     function advanceMoment() {
       currentMomentIdx++;
-      if (currentMomentIdx < 5) {
+      if (currentMomentIdx < activeMoments.length) {
         loadMoment(currentMomentIdx);
       } else {
         showDebrief();

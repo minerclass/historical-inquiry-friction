@@ -1386,7 +1386,7 @@
               },
               {
                 text: "Start a Change.org petition for school safety and launch a hashtag campaign on Instagram to raise community awareness.",
-                feedback: "Performative action. Hashtags raise awareness but have zero policy authority. City Council does not vote on Change.org counts. (+15 Feasibility, -5 Evidence)",
+                feedback: "Indirect Action. Awareness campaigns and online petitions are valuable complements for building community support, but they do not substitute for formal requests to policy-making bodies with direct legislative or budgetary authority. (+15 Feasibility, -5 Evidence)",
                 deltas: { ev: -5, st: 0, fe: 15, own: 0 }
               },
               {
@@ -1825,17 +1825,17 @@
       if (opt.best) {
         feedbackBox.classList.add("correct");
         feedbackBox.innerHTML = `
-          <strong>🎯 Optimal Path Chosen</strong>
+          <strong>⚖️ Balanced Civic Strategy</strong>
           ${opt.feedback}
         `;
-        announce("Optimal path selected. Plan stats increased.");
+        announce("Balanced civic strategy selected. Plan stats increased.");
       } else {
         feedbackBox.classList.add("incorrect");
         feedbackBox.innerHTML = `
-          <strong>⚠️ Sub-optimal Decision</strong>
+          <strong>⚠️ Skewed Civic Strategy</strong>
           ${opt.feedback}
         `;
-        announce("Sub-optimal path selected. Plan stats decreased.");
+        announce("Skewed civic strategy selected. Plan stats decreased.");
       }
     }
 
@@ -1872,7 +1872,7 @@
       } else if (opt.deltas.ev > 0) {
         feedbackBox.classList.add("correct");
         feedbackBox.innerHTML = `
-          <strong>🎯 AI Output Interrogated &amp; Verified</strong>
+          <strong>⚖️ AI Output Interrogated &amp; Verified</strong>
           ${opt.feedback}
         `;
         announce("AI Output verified against local surveys. Rigor and Ownership preserved.");
@@ -1944,7 +1944,7 @@
         selectedBtn.classList.add("correct-flaw");
         feedbackBox.classList.add("correct");
         feedbackBox.innerHTML = `
-          <strong>🎯 Flaws Corrected Successfully</strong>
+          <strong>⚖️ Balanced Audit (Design Flaws Resolved)</strong>
           ${flaw.feedback}
         `;
 
@@ -1961,7 +1961,7 @@
         selectedBtn.classList.add("selected");
         feedbackBox.classList.add("incorrect");
         feedbackBox.innerHTML = `
-          <strong>❌ Unidentified Flaws</strong>
+          <strong>⚠️ Unresolved Flaws (Outsourced Design)</strong>
           ${flaw.feedback}
         `;
         ownership = "outsourced";

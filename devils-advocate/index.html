@@ -277,6 +277,24 @@
             { move:"counter", txt:"“Non-importation agreements and crowd actions pulled in artisans and farmers.”", reb:9, evid:8, ans:0 },
             { move:"concede", txt:"“True — it was really just the elites.”", reb:-9, evid:-2, ans:-12 }
           ]
+        },
+        {
+          adv:"But the British taxes were actually quite small, and the tea tax was lower than what consumers paid in England. The colonists were just complaining about a bargain.",
+          cards:[
+            { move:"context", txt:"“It wasn't the cost; it was the parliamentary claim of right to bind the colonies ‘in all cases whatsoever’ under the Declaratory Act.”", reb:16, evid:12, ans:4, best:true },
+            { move:"source", txt:"“Parliamentary debates show they knew they were testing sovereignty, not just raising revenue.”", reb:10, evid:12, ans:2 },
+            { move:"counter", txt:"“Small tax or not, paying it meant acknowledging Parliament's absolute right to tax them without consent.”", reb:8, evid:10, ans:0 },
+            { move:"concede", txt:"“True — the colonists were overreacting to a tiny tax.”", reb:-2, evid:-10, ans:-14 }
+          ]
+        },
+        {
+          adv:"Even if they wanted representation, it was physically impossible to send MPs across the Atlantic in the 18th century. Virtual representation in Parliament was the only practical way.",
+          cards:[
+            { move:"counter", txt:"“The colonies had their own local assemblies for decades; they wanted actual representation in those bodies, not a few seats in London.”", reb:16, evid:13, ans:4, best:true },
+            { move:"source", txt:"“Pamphlets by Daniel Dulany and others rejected ‘virtual’ representation as a legal fiction.”", reb:11, evid:13, ans:2 },
+            { move:"context", txt:"“Sovereignty was divided: they accepted local assembly taxation but resisted external parliamentary taxes.”", reb:8, evid:9, ans:0 },
+            { move:"concede", txt:"“Indeed — virtual representation was the only sensible choice at the time.”", reb:-2, evid:-10, ans:-12 }
+          ]
         }
       ]
     },
@@ -302,6 +320,24 @@
             { move:"source", txt:"“That's just Madison's personal view, though.”", reb:4, evid:0, ans:-2 },
             { move:"context", txt:"“He's balancing majority rule against minority rights — both at once.”", reb:8, evid:7, ans:2 }
           ]
+        },
+        {
+          adv:"Federalist No. 51 says ambition must counteract ambition. This shows they designed a cynical government that rewards gridlock and serves elite power rather than the common good.",
+          cards:[
+            { move:"context", txt:"“Madison designed checks and balances to prevent any single faction—including an elite one—from seizing absolute control.”", reb:17, evid:13, ans:4, best:true },
+            { move:"source", txt:"“Madison's notes show they feared executive tyranny and state-level instability equally.”", reb:11, evid:13, ans:2 },
+            { move:"counter", txt:"“Gridlock was meant to force compromise and consensus, not to block the common good.”", reb:8, evid:9, ans:0 },
+            { move:"concede", txt:"“Right — it was designed to make progress impossible.”", reb:-2, evid:-10, ans:-14 }
+          ]
+        },
+        {
+          adv:"Hamilton in Federalist No. 78 argues the judiciary is the 'least dangerous branch' because it has no power of purse or sword. But today's courts are all-powerful, proving his arguments were naive or deceptive.",
+          cards:[
+            { move:"context", txt:"“Hamilton was describing the constitutional design, not predicting how political parties would later weaponize appointments.”", reb:16, evid:12, ans:4, best:true },
+            { move:"source", txt:"“No. 78 shows he assumed the court depended entirely on the executive to enforce its judgments.”", reb:10, evid:12, ans:2 },
+            { move:"counter", txt:"“Courts still lack enforcement powers; they rely on public trust and executive compliance to function.”", reb:8, evid:10, ans:0 },
+            { move:"concede", txt:"“True — Hamilton's analysis was completely wrong.”", reb:-2, evid:-10, ans:-12 }
+          ]
         }
       ]
     },
@@ -326,15 +362,61 @@
             { move:"source", txt:"“That statistic gets recycled out of context to launder the cause.”", reb:9, evid:8, ans:0 },
             { move:"concede", txt:"“Right — not about slavery for them.”", reb:-10, evid:-2, ans:-12 }
           ]
+        },
+        {
+          adv:"Lincoln's primary goal was preserving the Union, not ending slavery. He even said if he could save the Union without freeing any slave he would do it. Therefore, slavery wasn't the core issue of the war.",
+          cards:[
+            { move:"context", txt:"“Lincoln's executive goal was union, but the *cause* of the secession that broke the union was explicitly the defense of slavery.”", reb:18, evid:14, ans:4, best:true },
+            { move:"source", txt:"“His 1862 letter to Greeley is about executive duty; his Second Inaugural clearly names slavery as the cause of the war.”", reb:12, evid:14, ans:2 },
+            { move:"counter", txt:"“The Union went to war to save itself, but it was the slavery issue that threatened its existence in the first place.”", reb:8, evid:10, ans:0 },
+            { move:"concede", txt:"“Indeed — Lincoln's quote shows slavery was irrelevant to the conflict.”", reb:-2, evid:-11, ans:-14 }
+          ]
+        },
+        {
+          adv:"The economic divide between the industrial North and the agrarian South was the real driver. The tariff dispute of 1860, not slavery, pushed the South to secede.",
+          cards:[
+            { move:"counter", txt:"“The secession declarations do not complain about tariffs; they list Northern interference with slavery as their primary grievance.”", reb:18, evid:15, ans:4, best:true },
+            { move:"source", txt:"“The Confederate Constitution actually banned the slave trade but kept protective tariff clauses identical to the US Constitution.”", reb:12, evid:14, ans:2 },
+            { move:"context", txt:"“Tariff tensions peaked in 1832; by 1860, Southern tariffs were at historical lows. Secession was triggered by Lincoln's election, not tariffs.”", reb:8, evid:10, ans:0 },
+            { move:"concede", txt:"“True — it was tariff policy that caused the split.”", reb:-3, evid:-12, ans:-15 }
+          ]
         }
       ]
     }
   ];
 
+  function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
   var state = {};
   var pendingPickIdx = null;
 
-  function reset(){ state = { ci:0, ei:0, reb:40, evid:50, ans:72, picked:false, moveCounts:{} }; }
+  function reset(){
+    var sampledCases = CASES.map(function(c) {
+      var shuffled = shuffleArray(c.exchanges);
+      return {
+        title: c.title,
+        verdict: c.verdict,
+        exchanges: shuffled.slice(0, 2)
+      };
+    });
+    state = {
+      cases: sampledCases,
+      ci:0,
+      ei:0,
+      reb:40,
+      evid:50,
+      ans:72,
+      picked:false,
+      moveCounts:{}
+    };
+  }
 
   var $ = function(id){ return document.getElementById(id); };
   function clamp(v){ return Math.max(0, Math.min(100, v)); }
@@ -356,7 +438,7 @@
   }
 
   function renderExchange(){
-    var c = CASES[state.ci];
+    var c = state.cases[state.ci];
     var ex = c.exchanges[state.ei];
     
     // Reset cracks when starting a new case
@@ -370,7 +452,7 @@
     $("rationaleWarning").style.visibility = "hidden";
     pendingPickIdx = null;
 
-    $("roundLabel").textContent = "Case " + (state.ci+1) + " of " + CASES.length + "  ·  Exchange " + (state.ei+1) + "/2";
+    $("roundLabel").textContent = "Case " + (state.ci+1) + " of " + state.cases.length + "  ·  Exchange " + (state.ei+1) + "/2";
     $("caseTitle").textContent = c.title;
     $("advText").textContent = ex.adv;
     $("promptLine").textContent = "Choose your rebuttal — press 1–4 or click.";
@@ -424,7 +506,7 @@
 
   function revealFeedback(i, rationale){
     state.picked = true;
-    var ex = CASES[state.ci].exchanges[state.ei];
+    var ex = state.cases[state.ci].exchanges[state.ei];
     var card = ex.cards[i];
     
     state.reb = clamp(state.reb + card.reb);
@@ -461,8 +543,8 @@
     $("feedback").style.display = "block";
     
     // last exchange of case -> show verdict
-    if(state.ei === CASES[state.ci].exchanges.length - 1){
-      $("fbVerdict").textContent = CASES[state.ci].verdict;
+    if(state.ei === state.cases[state.ci].exchanges.length - 1){
+      $("fbVerdict").textContent = state.cases[state.ci].verdict;
       $("fbVerdict").style.display = "block";
     }
     $("continueBtn").style.display = "inline-flex";
@@ -474,7 +556,7 @@
     if(state.ei < c.exchanges.length - 1){
       state.ei++;
       renderExchange();
-    } else if(state.ci < CASES.length - 1){
+    } else if(state.ci < state.cases.length - 1){
       state.ci++; state.ei = 0;
       renderExchange();
     } else {

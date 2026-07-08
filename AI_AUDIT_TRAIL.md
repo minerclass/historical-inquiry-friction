@@ -87,3 +87,17 @@
 2.  **No CDNs**: Confirm zero external resource queries or style links are introduced in the edits.
 3.  **Keyboard trap tests**: Verify that any showing/hiding overlays do not block standard keyboard tab indexes.
 4.  **Disclaimer presence**: Ensure all final screens in the 3 repositories contain the required disclaimer text.
+
+## 4. Phase 3 Audit Log (2026-07-08)
+
+### Entry 7: Keepers of Inquiry (Inline Validation)
+*   **Files Edited**: `historical-inquiry-friction/keepers-of-inquiry/index.html`
+*   **Key Implementations**: Replaced browser `alert()` with inline `#rationaleValidation` container having `aria-live="polite"` and auto-clearing on textarea input.
+
+### Entry 8: Informed Action (Verdict Voice and Civic Softening)
+*   **Files Edited**: `historical-inquiry-friction/informed-action/index.html`
+*   **Key Implementations**: Rewrote "Optimal Path Chosen" -> "Balanced Civic Strategy", "Sub-optimal Decision" -> "Skewed Civic Strategy", and softened Change.org petition feedback to focus on trade-offs.
+
+### Entry 9: Devil's Advocate & Common Ground (Content Pools and Sampling)
+*   **Files Edited**: `historical-inquiry-friction/devils-advocate/index.html`, `historical-inquiry-friction/common-ground/index.html`
+*   **Key Implementations**: Expanded Devil's Advocate to 4 exchanges per case (sampling 2 per run) and Common Ground to 10 moments total (sampling 5 per run) using a linear congruential shuffle helper `shuffleArray`.
