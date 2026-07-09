@@ -399,11 +399,23 @@
 
   function reset(){
     var sampledCases = CASES.map(function(c) {
-      var shuffled = shuffleArray(c.exchanges);
+      // Sample 2 exchanges for freshness, but PIN any exchange flagged fair:true.
+      // That flag marks the "knowing when to concede" beat — the case verdict text
+      // references it explicitly, so dropping it would leave the verdict describing a
+      // moment the player never saw (and lose the strongest teaching point).
+      var fair = c.exchanges.filter(function(e){ return e.fair; });
+      var rest = shuffleArray(c.exchanges.filter(function(e){ return !e.fair; }));
+      var chosen;
+      if (fair.length) {
+        // one non-fair opener, then the fair concession as the second beat
+        chosen = [rest[0], fair[0]];
+      } else {
+        chosen = rest.slice(0, 2);
+      }
       return {
         title: c.title,
         verdict: c.verdict,
-        exchanges: shuffled.slice(0, 2)
+        exchanges: chosen
       };
     });
     state = {
@@ -452,7 +464,7 @@
     $("rationaleWarning").style.visibility = "hidden";
     pendingPickIdx = null;
 
-    $("roundLabel").textContent = "Case " + (state.ci+1) + " of " + state.cases.length + "  ·  Exchange " + (state.ei+1) + "/2";
+    $("roundLabel").textContent = "Case " + (state.ci+1) + " of " + state.cases.length + "  ·  Exchange " + (state.ei+1) + "/" + state.cases[state.ci].exchanges.length;
     $("caseTitle").textContent = c.title;
     $("advText").textContent = ex.adv;
     $("promptLine").textContent = "Choose your rebuttal — press 1–4 or click.";
@@ -552,7 +564,9 @@
   }
 
   function next(){
-    var c = CASES[state.ci];
+    // Must read the SAMPLED case (2 exchanges), not the global CASES pool (4).
+    // Using CASES here walked state.ei past the sampled exchanges into undefined.
+    var c = state.cases[state.ci];
     if(state.ei < c.exchanges.length - 1){
       state.ei++;
       renderExchange();
