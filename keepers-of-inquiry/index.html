@@ -643,6 +643,10 @@
       opacity: 1 !important;
       filter: drop-shadow(0 0 5px var(--gold));
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
