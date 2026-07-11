@@ -1123,7 +1123,7 @@
             <span>Contextual Fidelity</span>
             <span id="labelFidelity">50%</span>
           </div>
-          <div class="hud-bar hud-fidelity" aria-hidden="true">
+          <div class="hud-bar hud-fidelity" id="fidelityMeter" role="progressbar" aria-label="Contextual Fidelity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="Contextual Fidelity: 50 percent">
             <span id="barFidelity" style="width: 50%;"></span>
           </div>
         </div>
@@ -1132,7 +1132,7 @@
             <span>Presentist Drift</span>
             <span id="labelDrift">0%</span>
           </div>
-          <div class="hud-bar hud-drift" id="barDriftContainer" aria-hidden="true">
+          <div class="hud-bar hud-drift" id="barDriftContainer" role="progressbar" aria-label="Presentist Drift" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Presentist Drift: 0 percent; lower is better">
             <span id="barDrift" style="width: 0%;"></span>
           </div>
         </div>
@@ -1278,7 +1278,7 @@
             <div class="stat-card">
               <h3>Contextual Fidelity</h3>
               <div class="stat-dial-container">
-                <div class="circular-progress" id="fidelityDial">
+                <div class="circular-progress" id="fidelityDial" role="progressbar" aria-label="Final Contextual Fidelity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="Final Contextual Fidelity: 50 percent">
                   <span class="dial-val" id="fidelityVal">50<span>%</span></span>
                 </div>
               </div>
@@ -1288,12 +1288,12 @@
             <div class="stat-card">
               <h3>Presentist Drift</h3>
               <div class="stat-dial-container">
-                <div class="circular-progress" id="driftDial" style="background: conic-gradient(var(--gold) 0%, rgba(255,255,255,0.06) 0%);">
+                <div class="circular-progress" id="driftDial" role="progressbar" aria-label="Final Presentist Drift" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Final Presentist Drift: 0 percent; lower is better" style="background: conic-gradient(var(--gold) 0%, rgba(255,255,255,0.06) 0%);">
                   <span class="dial-val" id="driftVal">0<span>%</span></span>
                 </div>
               </div>
               <div class="drift-bar-container">
-                <div class="hud-bar hud-drift" id="debriefDriftBar" style="height: 10px;">
+                <div class="hud-bar hud-drift" id="debriefDriftBar" role="progressbar" aria-label="Final Presentist Drift scale" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Final Presentist Drift: 0 percent; lower is better" style="height: 10px;">
                   <span id="debriefDriftFill" style="width: 0%;"></span>
                 </div>
                 <div class="drift-scale-labels">
@@ -1346,7 +1346,7 @@
             </div>
           </div>
 
-          <p style="font-size: 0.78rem; color: var(--muted, #8a8478); font-style: italic; text-align: center; margin: 22px auto 0; max-width: 60ch;">*Note: All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
+          <p style="font-size: 0.78rem; color: var(--muted, #8a8478); font-style: italic; text-align: center; margin: 22px auto 0; max-width: 60ch;"><strong>Note:</strong> All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
 
           <div class="replay-area" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
             <button class="btn-action" id="btnReplay">Investigate Again</button>
@@ -1605,9 +1605,13 @@
       // Update HUD
       labelFidelity.textContent = `${contextualFidelity}%`;
       barFidelity.style.width = `${contextualFidelity}%`;
+      document.getElementById("fidelityMeter").setAttribute("aria-valuenow", contextualFidelity);
+      document.getElementById("fidelityMeter").setAttribute("aria-valuetext", "Contextual Fidelity: " + contextualFidelity + " percent");
 
       labelDrift.textContent = `${presentistDrift}%`;
       barDrift.style.width = `${presentistDrift}%`;
+      barDriftContainer.setAttribute("aria-valuenow", presentistDrift);
+      barDriftContainer.setAttribute("aria-valuetext", "Presentist Drift: " + presentistDrift + " percent; lower is better");
 
       if (presentistDrift >= 50) {
         barDriftContainer.classList.add("warning");
@@ -1932,7 +1936,7 @@
 
         if (tile.type === "period") {
           correctPeriodTilesPicked++;
-          contextualFidelity += 15;
+          contextualFidelity += 3;
           
           tileElement.style.borderColor = "var(--teal)";
           tileElement.style.background = "rgba(100, 198, 189, 0.08)";
@@ -2006,7 +2010,7 @@
       judgmentFeedback.className = "judgment-feedback"; // reset classes
 
       if (selectedJud.type === "correct") {
-        contextualFidelity += 10;
+        contextualFidelity += 4;
         selectedBtn.classList.add("correct");
         judgmentFeedback.classList.add("correct");
         judgmentFeedback.innerHTML = `
@@ -2062,11 +2066,17 @@
       // Formula: conic-gradient(color percentage%, transparent percentage%)
       fidelityVal.innerHTML = `${contextualFidelity}<span>%</span>`;
       fidelityDial.style.background = `conic-gradient(var(--teal) ${contextualFidelity}%, rgba(255, 255, 255, 0.06) ${contextualFidelity}%)`;
+      fidelityDial.setAttribute("aria-valuenow", contextualFidelity);
+      fidelityDial.setAttribute("aria-valuetext", "Final Contextual Fidelity: " + contextualFidelity + " percent");
 
       driftVal.innerHTML = `${presentistDrift}<span>%</span>`;
       const driftColor = presentistDrift >= 50 ? "var(--rose)" : "var(--gold)";
       driftDial.style.background = `conic-gradient(${driftColor} ${presentistDrift}%, rgba(255, 255, 255, 0.06) ${presentistDrift}%)`;
+      driftDial.setAttribute("aria-valuenow", presentistDrift);
+      driftDial.setAttribute("aria-valuetext", "Final Presentist Drift: " + presentistDrift + " percent; lower is better");
       debriefDriftFill.style.width = `${presentistDrift}%`;
+      document.getElementById("debriefDriftBar").setAttribute("aria-valuenow", presentistDrift);
+      document.getElementById("debriefDriftBar").setAttribute("aria-valuetext", "Final Presentist Drift: " + presentistDrift + " percent; lower is better");
       if (presentistDrift >= 50) {
         debriefDriftFill.style.background = "var(--rose)";
       } else {

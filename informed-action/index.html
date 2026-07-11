@@ -1043,7 +1043,7 @@
             <span>Evidence Base</span>
             <span id="lblEvidence">40%</span>
           </div>
-          <div class="hud-bar hud-evidence" aria-hidden="true">
+          <div class="hud-bar hud-evidence" id="meterEvidence" role="progressbar" aria-label="Evidence Base" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-valuetext="Evidence Base: 40 percent">
             <span id="barEvidence" style="width: 40%;"></span>
           </div>
         </div>
@@ -1052,7 +1052,7 @@
             <span>Stakeholders</span>
             <span id="lblStakeholder">40%</span>
           </div>
-          <div class="hud-bar hud-stakeholder" aria-hidden="true">
+          <div class="hud-bar hud-stakeholder" id="meterStakeholder" role="progressbar" aria-label="Stakeholder Breadth" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-valuetext="Stakeholder Breadth: 40 percent">
             <span id="barStakeholder" style="width: 40%;"></span>
           </div>
         </div>
@@ -1061,7 +1061,7 @@
             <span>Feasibility</span>
             <span id="lblFeasibility">50%</span>
           </div>
-          <div class="hud-bar hud-feasibility" aria-hidden="true">
+          <div class="hud-bar hud-feasibility" id="meterFeasibility" role="progressbar" aria-label="Feasibility" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="Feasibility: 50 percent">
             <span id="barFeasibility" style="width: 50%;"></span>
           </div>
         </div>
@@ -1095,6 +1095,8 @@
           <select class="issue-selector" id="selectIssue">
             <option value="crossing">The Dangerous Crossing (Street Safety Upgrade)</option>
             <option value="phones">Classroom Connections (School Cell Phone Policy)</option>
+            <option value="startTime">The Later Bell (School Start-Time Policy)</option>
+            <option value="libraryAccess">Open Doors (Public Library Access)</option>
           </select>
         </div>
 
@@ -1235,7 +1237,7 @@
             <div class="stat-card">
               <h3>Evidence Base</h3>
               <div class="stat-dial-container">
-                <div class="circular-progress" id="dialEvidence">
+                <div class="circular-progress" id="dialEvidence" role="progressbar" aria-label="Final Evidence Base" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-valuetext="Final Evidence Base: 40 percent">
                   <span class="dial-val" id="valEvidence">40<span>%</span></span>
                 </div>
               </div>
@@ -1245,7 +1247,7 @@
             <div class="stat-card">
               <h3>Stakeholder Breadth</h3>
               <div class="stat-dial-container">
-                <div class="circular-progress" id="dialStakeholder" style="background: conic-gradient(var(--blue, #7d9fd6) 0%, rgba(255,255,255,0.06) 0%);">
+                <div class="circular-progress" id="dialStakeholder" role="progressbar" aria-label="Final Stakeholder Breadth" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-valuetext="Final Stakeholder Breadth: 40 percent" style="background: conic-gradient(var(--blue, #7d9fd6) 0%, rgba(255,255,255,0.06) 0%);">
                   <span class="dial-val" id="valStakeholder">40<span>%</span></span>
                 </div>
               </div>
@@ -1255,7 +1257,7 @@
             <div class="stat-card">
               <h3>Feasibility</h3>
               <div class="stat-dial-container">
-                <div class="circular-progress" id="dialFeasibility" style="background: conic-gradient(var(--gold) 0%, rgba(255,255,255,0.06) 0%);">
+                <div class="circular-progress" id="dialFeasibility" role="progressbar" aria-label="Final Feasibility" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="Final Feasibility: 50 percent" style="background: conic-gradient(var(--gold) 0%, rgba(255,255,255,0.06) 0%);">
                   <span class="dial-val" id="valFeasibility">50<span>%</span></span>
                 </div>
               </div>
@@ -1278,14 +1280,14 @@
           <div class="essay-grid">
             <div class="essay-card highlight">
               <h3>The Trap of the Frictionless Plan</h3>
-              <p>Generative AI is a powerful tool for drafting proposals, summarizing documents, and organizing tasks. However, in civics education, **the process is the product**.</p>
-              <p>When you let AI write the plan without interrogating its sources, mapping the local stakeholders yourself, or verifying the legal authorities, you ship a plan that is **fluent but hollow**. Real citizenship requires taking responsibility for the accuracy, equity, and viability of the claims you make.</p>
+              <p>Generative AI is a powerful tool for drafting proposals, summarizing documents, and organizing tasks. However, in civics education, <strong>the process is the product</strong>.</p>
+              <p>When you let AI write the plan without interrogating its sources, mapping the local stakeholders yourself, or verifying the legal authorities, you ship a plan that is <strong>fluent but hollow</strong>. Real citizenship requires taking responsibility for the accuracy, equity, and viability of the claims you make.</p>
             </div>
             
             <div class="essay-card">
               <h3>Interrogating vs. Banning</h3>
-              <p>This game models a balanced path. Banning AI hides its presence, but uncritical adoption surrenders cognitive labor. The ideal move is to **use AI as a sparring partner** &mdash; generating drafts and then subjecting them to intense human critique and local verification.</p>
-              <p>By forcing yourself to look for what the AI left out, you build the **pedagogical friction** necessary for real conceptual learning and ownership.</p>
+              <p>This game models a balanced path. Banning AI hides its presence, but uncritical adoption surrenders cognitive labor. The ideal move is to <strong>use AI as a sparring partner</strong> &mdash; generating drafts and then subjecting them to intense human critique and local verification.</p>
+              <p>By forcing yourself to look for what the AI left out, you build the <strong>pedagogical friction</strong> necessary for real conceptual learning and ownership.</p>
             </div>
           </div>
 
@@ -1304,7 +1306,7 @@
             </div>
           </div>
 
-          <p style="font-size: 0.78rem; color: var(--muted, #8a8478); font-style: italic; text-align: center; margin: 22px auto 0; max-width: 60ch;">*Note: All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
+          <p style="font-size: 0.78rem; color: var(--muted, #8a8478); font-style: italic; text-align: center; margin: 22px auto 0; max-width: 60ch;"><strong>Note:</strong> All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
 
           <div class="replay-area" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
             <button class="btn-action" id="btnReplay">Plan Another Issue</button>
@@ -1566,7 +1568,371 @@
             ]
           }
         ]
-      }
+      },
+      "startTime": {
+          "title": "The Later Bell",
+          "brief": "Your district is considering a later high school start time. You want a schedule proposal that weighs student sleep, transportation, family responsibilities, and after-school commitments.",
+          "phases": [
+            {
+              "kind": "normal",
+              "question": "How do you frame the start-time investigation?",
+              "hint": "Frame a question that identifies the district decision-makers and invites evidence about both learning and implementation trade-offs.",
+              "options": [
+                {
+                  "text": "What later start-time options should the district board consider, and how would each affect student well-being, attendance, transportation, families, and after-school programs?",
+                  "feedback": "Well scoped. The question identifies the governing body and makes the implementation trade-offs part of the inquiry. (+15 Feasibility, +15 Stakeholders)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": 15,
+                    "fe": 15,
+                    "own": 0
+                  },
+                  "best": true
+                },
+                {
+                  "text": "Why does the district force exhausted teenagers to learn before their brains work?",
+                  "feedback": "Loaded framing. The concern is legitimate, but the wording presumes one cause and discourages stakeholders from examining alternatives. (-5 Evidence, -10 Stakeholders, -10 Feasibility)",
+                  "deltas": {
+                    "ev": -5,
+                    "st": -10,
+                    "fe": -10,
+                    "own": 0
+                  }
+                },
+                {
+                  "text": "How can every school schedule be redesigned so nobody is ever tired?",
+                  "feedback": "The goal is too broad to guide a district decision or evaluation plan. (-15 Feasibility)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": 0,
+                    "fe": -15,
+                    "own": 0
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "assist",
+              "question": "What evidence will ground the schedule proposal?",
+              "hint": "National sleep research matters, but a district schedule also depends on local attendance patterns, bus routes, staffing, and family responsibilities.",
+              "aiPrompt": "AI can summarize the case for later start times and draft a recommendation immediately. Do you want to use the summary as your evidence base?",
+              "options": [
+                {
+                  "text": "Use the AI summary to identify claims to investigate, then verify the research and compare it with district attendance, transportation, activity, and family-survey data.",
+                  "feedback": "The tool speeds initial orientation while local verification preserves evidence quality and ownership. (+25 Evidence, +10 Stakeholders, +10 Feasibility, preserves Owned status)",
+                  "deltas": {
+                    "ev": 25,
+                    "st": 10,
+                    "fe": 10,
+                    "own_change": "keep"
+                  }
+                },
+                {
+                  "text": "Import the AI summary directly because national research should settle the local schedule decision.",
+                  "feedback": "The summary may be useful, but it cannot account for local bus capacity, family schedules, or implementation costs. Ownership shifts to Borrowed. (+5 Feasibility, Ownership shifts to Borrowed)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": 0,
+                    "fe": 5,
+                    "own_change": "borrowed"
+                  }
+                },
+                {
+                  "text": "Use only a student social-media poll showing that most respondents want to sleep later.",
+                  "feedback": "The poll captures one perspective but not a representative sample or the operational consequences of a schedule change. (-15 Evidence, -5 Stakeholders)",
+                  "deltas": {
+                    "ev": -15,
+                    "st": -5,
+                    "fe": 0,
+                    "own_change": "keep"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "normal",
+              "question": "Whose interests must be mapped before recommending a schedule?",
+              "hint": "Look beyond the average student. Transportation, employment, caregiving, athletics, special education, and staff contracts can distribute benefits and burdens unevenly.",
+              "options": [
+                {
+                  "text": "Map students, families, teachers, transportation staff, support-service teams, coaches, employers, and students with jobs or caregiving responsibilities.",
+                  "feedback": "Broad mapping reveals who benefits, who carries new burdens, and which supports a feasible transition would require. (+25 Stakeholders, +10 Evidence, +10 Feasibility)",
+                  "deltas": {
+                    "ev": 10,
+                    "st": 25,
+                    "fe": 10,
+                    "own": 0
+                  },
+                  "best": true
+                },
+                {
+                  "text": "Consult only students and sleep researchers because the question is primarily about adolescent biology.",
+                  "feedback": "That evidence matters, but omitting transportation, family, and staffing perspectives makes implementation fragile. (-15 Stakeholders, -10 Feasibility)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": -15,
+                    "fe": -10,
+                    "own": 0
+                  }
+                },
+                {
+                  "text": "Ask coaches whether athletics can adapt and assume every other group will adjust.",
+                  "feedback": "One operational perspective cannot represent families, workers, transportation systems, or students who provide care. (-10 Stakeholders)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": -10,
+                    "fe": 0,
+                    "own": 0
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "normal",
+              "question": "What action best moves the district toward an evidence-informed decision?",
+              "hint": "A bounded pilot with public criteria can create evidence without pretending the trade-offs have already been resolved.",
+              "options": [
+                {
+                  "text": "Present the board with two costed schedule options and request a one-semester pilot with attendance, transportation, well-being, and participation measures.",
+                  "feedback": "A bounded pilot directs the proposal to the governing body and creates a transparent way to learn before making a permanent change. (+25 Feasibility, +15 Stakeholders, +10 Evidence)",
+                  "deltas": {
+                    "ev": 10,
+                    "st": 15,
+                    "fe": 25,
+                    "own": 0
+                  },
+                  "best": true
+                },
+                {
+                  "text": "Launch a student petition demanding an immediate permanent change next month.",
+                  "feedback": "The petition can demonstrate concern, but it does not solve transportation, staffing, or evaluation questions on its own. (+5 Stakeholders, -10 Feasibility)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": 5,
+                    "fe": -10,
+                    "own": 0
+                  }
+                },
+                {
+                  "text": "Ask individual teachers to start first period later whenever their classes seem tired.",
+                  "feedback": "Individual workarounds cannot change transportation or contractual schedules and would produce inconsistent access. (-20 Feasibility, -10 Stakeholders)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": -10,
+                    "fe": -20,
+                    "own": 0
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "climactic",
+              "question": "Review the final schedule proposal draft:",
+              "hint": "Check whether the proposal reaches the body with schedule authority and whether its implementation plan accounts for the groups most affected.",
+              "aiPrompt": "AI has compiled a polished later-start proposal. You can submit it immediately or audit its institutional and equity assumptions first.",
+              "draftText": "LATER HIGH SCHOOL START PROPOSAL<br>Submitted to: High School Principal<br><br>Beginning next month, first period will start at 9:00 a.m. Research proves this schedule will improve every student's achievement. Existing bus routes, elementary schedules, staff assignments, athletics, family work schedules, and student caregiving responsibilities can remain unchanged...",
+              "flaws": [
+                {
+                  "text": "The draft targets a principal rather than the district body controlling transportation and schedules, and it assumes major operational and family impacts will disappear.",
+                  "correct": true,
+                  "feedback": "The audit catches both structural flaws. A defensible proposal must reach the district decision-makers and plan for transportation, staffing, activities, work, and caregiving trade-offs. (+15 Evidence, +15 Stakeholders, +15 Feasibility, preserves/restores Owned status)"
+                },
+                {
+                  "text": "The draft needs a stronger slogan explaining that sleep improves learning.",
+                  "correct": false,
+                  "feedback": "Messaging is secondary. The unresolved problems are decision-making authority and the unsupported assumption that implementation creates no new burdens. (Ownership drops)"
+                },
+                {
+                  "text": "The proposal should require every student to document eight hours of sleep.",
+                  "correct": false,
+                  "feedback": "That requirement shifts responsibility onto students and does not repair the proposal's authority or implementation gaps. (Ownership drops)"
+                }
+              ]
+            }
+          ]
+        },
+        "libraryAccess": {
+          "title": "Open Doors",
+          "brief": "Residents want more evening and weekend access to the public library. You are developing a pilot that considers staffing, safety, transportation, disability access, language access, and digital alternatives.",
+          "phases": [
+            {
+              "kind": "normal",
+              "question": "How do you frame the library-access investigation?",
+              "hint": "A useful question identifies the responsible public body and asks how access can expand without hiding staffing, budget, or equity trade-offs.",
+              "options": [
+                {
+                  "text": "What pilot should the Library Board consider to expand evening and weekend access, and what evidence would show whether the added hours serve residents equitably and sustainably?",
+                  "feedback": "The question is actionable, names the responsible body, and builds evaluation into the proposal. (+15 Feasibility, +15 Stakeholders)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": 15,
+                    "fe": 15,
+                    "own": 0
+                  },
+                  "best": true
+                },
+                {
+                  "text": "Why does the library lock knowledge away from people who work during the day?",
+                  "feedback": "The concern highlights an access problem, but the loaded framing discourages investigation of staffing, safety, and budget constraints. (-5 Evidence, -10 Stakeholders, -10 Feasibility)",
+                  "deltas": {
+                    "ev": -5,
+                    "st": -10,
+                    "fe": -10,
+                    "own": 0
+                  }
+                },
+                {
+                  "text": "How can the library remain open all day and night for everyone forever?",
+                  "feedback": "The goal is not bounded enough to support a realistic policy decision or pilot. (-20 Feasibility)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": 0,
+                    "fe": -20,
+                    "own": 0
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "assist",
+              "question": "What evidence will you gather about library access?",
+              "hint": "Usage counts are useful, but existing hours can suppress demand. Combine operational records with direct input from people currently underserved.",
+              "aiPrompt": "AI can write a national overview of library-access benefits and estimate demand for extended hours. Do you want to use it as the proposal's evidence?",
+              "options": [
+                {
+                  "text": "Use the AI overview to generate questions, then verify claims with library circulation and door-count data, staffing costs, transit schedules, and multilingual community surveys.",
+                  "feedback": "The overview becomes a starting point rather than a substitute for local evidence. (+25 Evidence, +15 Stakeholders, +10 Feasibility, preserves Owned status)",
+                  "deltas": {
+                    "ev": 25,
+                    "st": 15,
+                    "fe": 10,
+                    "own_change": "keep"
+                  }
+                },
+                {
+                  "text": "Accept the AI estimate because public libraries in similar communities probably have the same demand.",
+                  "feedback": "The estimate may sound plausible but cannot establish local demand, staffing capacity, or transportation access. Ownership shifts to Borrowed. (+5 Feasibility, Ownership shifts to Borrowed)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": 0,
+                    "fe": 5,
+                    "own_change": "borrowed"
+                  }
+                },
+                {
+                  "text": "Use only comments from current daytime library visitors.",
+                  "feedback": "Current users provide useful information, but the sample excludes many residents whom the proposed hours are meant to reach. (-10 Evidence, -15 Stakeholders)",
+                  "deltas": {
+                    "ev": -10,
+                    "st": -15,
+                    "fe": 0,
+                    "own_change": "keep"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "normal",
+              "question": "Whose experiences and constraints belong in the access plan?",
+              "hint": "Include people who face time, transportation, language, disability, caregiving, and digital-access barriers, as well as the staff responsible for safe operation.",
+              "options": [
+                {
+                  "text": "Map shift workers, students, caregivers, older adults, disabled patrons, multilingual families, library staff, transit providers, and the Library Board.",
+                  "feedback": "This map makes both public benefit and implementation burden visible, reducing the risk of an access plan that excludes the people it names. (+30 Stakeholders, +10 Evidence, +10 Feasibility)",
+                  "deltas": {
+                    "ev": 10,
+                    "st": 30,
+                    "fe": 10,
+                    "own": 0
+                  },
+                  "best": true
+                },
+                {
+                  "text": "Consult frequent library users and assume nonusers are uninterested.",
+                  "feedback": "Current use can reflect current barriers. Excluding nonusers makes the proposal unable to test unmet demand. (-15 Evidence, -20 Stakeholders)",
+                  "deltas": {
+                    "ev": -15,
+                    "st": -20,
+                    "fe": 0,
+                    "own": 0
+                  }
+                },
+                {
+                  "text": "Consult the Library Board and one student representative, then let staff resolve operational details later.",
+                  "feedback": "Token consultation does not surface staffing, safety, disability, transportation, or language-access requirements. (-15 Stakeholders, -10 Feasibility)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": -15,
+                    "fe": -10,
+                    "own": 0
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "normal",
+              "question": "What action offers a responsible test of expanded access?",
+              "hint": "A useful pilot names the decision-maker, limits the initial commitment, funds operations, and identifies evidence for continuation or revision.",
+              "options": [
+                {
+                  "text": "Ask the Library Board to fund a twelve-week pilot with two extended evenings and rotating Saturdays, accessible transportation information, multilingual outreach, and published evaluation criteria.",
+                  "feedback": "The pilot is bounded, directed to the proper authority, and designed to test both use and equitable access. (+25 Feasibility, +15 Stakeholders, +10 Evidence)",
+                  "deltas": {
+                    "ev": 10,
+                    "st": 15,
+                    "fe": 25,
+                    "own": 0
+                  },
+                  "best": true
+                },
+                {
+                  "text": "Run a social-media campaign asking volunteers to keep the building open after staff leave.",
+                  "feedback": "Awareness can build support, but unsupervised volunteer operation creates safety, labor, and liability problems. (+5 Stakeholders, -20 Feasibility)",
+                  "deltas": {
+                    "ev": 0,
+                    "st": 5,
+                    "fe": -20,
+                    "own": 0
+                  }
+                },
+                {
+                  "text": "Demand immediate 24-hour access and eliminate late fees to pay for the additional staffing.",
+                  "feedback": "The proposal combines unrelated policies and assumes a revenue source without checking whether it can fund safe round-the-clock service. (-15 Evidence, -25 Feasibility)",
+                  "deltas": {
+                    "ev": -15,
+                    "st": 0,
+                    "fe": -25,
+                    "own": 0
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "climactic",
+              "question": "Review the final extended-access proposal draft:",
+              "hint": "Check the receiving authority and whether the proposal funds the staffing, safety, and accessibility conditions it promises.",
+              "aiPrompt": "AI has compiled a polished library-access proposal. You can submit it immediately or audit its institutional and equity assumptions.",
+              "draftText": "EXTENDED LIBRARY ACCESS PLAN<br>Submitted to: Local School Board<br><br>The public library will remain open until 11:00 p.m. every weekday beginning next month. Existing staff can absorb the additional shifts without added funding. Because the building is already accessible during the day, no additional transportation, disability, language, or safety planning is necessary...",
+              "flaws": [
+                {
+                  "text": "The draft targets the School Board instead of the library's governing authority and expands hours without funded staffing, safety, transportation, disability, or language-access planning.",
+                  "correct": true,
+                  "feedback": "The audit identifies both structural failures. Expanded hours require the proper public authority and an operational plan that makes access real rather than merely extending the clock. (+15 Evidence, +15 Stakeholders, +15 Feasibility, preserves/restores Owned status)"
+                },
+                {
+                  "text": "The draft should promise that every resident will use the library at least once a week.",
+                  "correct": false,
+                  "feedback": "A universal participation promise is not an operational fix. The central flaws concern authority, staffing, safety, and equitable access. (Ownership drops)"
+                },
+                {
+                  "text": "The plan needs a more inspiring name for the extended hours.",
+                  "correct": false,
+                  "feedback": "Branding does not repair the wrong recipient or the unfunded accessibility and staffing assumptions. (Ownership drops)"
+                }
+              ]
+            }
+          ]
+        }
     };
 
     // --- GAME STATE VARIABLES ---
@@ -1674,12 +2040,18 @@
 
       lblEvidence.textContent = `${evidence}%`;
       barEvidence.style.width = `${evidence}%`;
+      document.getElementById("meterEvidence").setAttribute("aria-valuenow", evidence);
+      document.getElementById("meterEvidence").setAttribute("aria-valuetext", "Evidence Base: " + evidence + " percent");
 
       lblStakeholder.textContent = `${stakeholders}%`;
       barStakeholder.style.width = `${stakeholders}%`;
+      document.getElementById("meterStakeholder").setAttribute("aria-valuenow", stakeholders);
+      document.getElementById("meterStakeholder").setAttribute("aria-valuetext", "Stakeholder Breadth: " + stakeholders + " percent");
 
       lblFeasibility.textContent = `${feasibility}%`;
       barFeasibility.style.width = `${feasibility}%`;
+      document.getElementById("meterFeasibility").setAttribute("aria-valuenow", feasibility);
+      document.getElementById("meterFeasibility").setAttribute("aria-valuetext", "Feasibility: " + feasibility + " percent");
 
       // Update Ownership Chip
       badgeOwnership.className = "ownership-badge";
@@ -1783,7 +2155,7 @@
         phase.options.forEach(opt => {
           const btn = document.createElement("button");
           btn.type = "button";
-          if (opt.own_change === "borrowed") {
+          if ((opt.own_change || opt.deltas.own_change) === "borrowed") {
             btn.className = "btn-shortcut";
           } else {
             btn.className = "btn-interrogate";
@@ -1868,7 +2240,7 @@
       buttons.forEach(btn => btn.disabled = true);
 
       // Apply Ownership changes
-      if (opt.own_change === "borrowed") {
+      if ((opt.own_change || opt.deltas.own_change) === "borrowed") {
         if (ownership === "owned") {
           ownership = "borrowed";
         }
@@ -1885,7 +2257,7 @@
       feedbackContent.style.display = "flex";
 
       feedbackBox.className = "feedback-box";
-      if (opt.own_change === "borrowed") {
+      if ((opt.own_change || opt.deltas.own_change) === "borrowed") {
         feedbackBox.classList.add("assist");
         feedbackBox.innerHTML = `
           <strong>🤖 AI Summary Accepted</strong>
@@ -1898,14 +2270,14 @@
           <strong>⚖️ AI Output Interrogated &amp; Verified</strong>
           ${opt.feedback}
         `;
-        announce("AI Output verified against local surveys. Rigor and Ownership preserved.");
+        announce("AI output verified against relevant evidence. Rigor and Ownership preserved.");
       } else {
         feedbackBox.classList.add("incorrect");
         feedbackBox.innerHTML = `
           <strong>⚠️ Unverified Source Used</strong>
           ${opt.feedback}
         `;
-        announce("Unverified viral post used. Evidence base depleted.");
+        announce("Unverified source used. Evidence base depleted.");
       }
     }
 
@@ -2012,12 +2384,18 @@
       // Render Debrief Dials
       valEvidence.innerHTML = `${evidence}<span>%</span>`;
       dialEvidence.style.background = `conic-gradient(var(--teal) ${evidence}%, rgba(255, 255, 255, 0.06) ${evidence}%)`;
+      dialEvidence.setAttribute("aria-valuenow", evidence);
+      dialEvidence.setAttribute("aria-valuetext", "Final Evidence Base: " + evidence + " percent");
 
       valStakeholder.innerHTML = `${stakeholders}<span>%</span>`;
       dialStakeholder.style.background = `conic-gradient(var(--blue, #7d9fd6) ${stakeholders}%, rgba(255, 255, 255, 0.06) ${stakeholders}%)`;
+      dialStakeholder.setAttribute("aria-valuenow", stakeholders);
+      dialStakeholder.setAttribute("aria-valuetext", "Final Stakeholder Breadth: " + stakeholders + " percent");
 
       valFeasibility.innerHTML = `${feasibility}<span>%</span>`;
       dialFeasibility.style.background = `conic-gradient(var(--gold) ${feasibility}%, rgba(255, 255, 255, 0.06) ${feasibility}%)`;
+      dialFeasibility.setAttribute("aria-valuenow", feasibility);
+      dialFeasibility.setAttribute("aria-valuetext", "Final Feasibility: " + feasibility + " percent");
 
       // Ownership badge
       valOwnership.className = "ownership-badge";
@@ -2038,7 +2416,7 @@
 
       if (ownership === "outsourced") {
         title = "❌ Outsourced / Flawed Action Plan";
-        desc = "Your plan was submitted directly from the raw AI draft. Because you bypassed the interrogation phase, your plan targeted the wrong institutional authority (e.g. School Board for streets) and omitted crucial medical or ADA accessibility accommodations. It faces high legal and structural failure risks.";
+        desc = "Your plan was submitted directly from the raw AI draft. Because you bypassed the interrogation phase, it relies on unsupported authority assumptions and omits important implementation, access, and stakeholder constraints. It faces high structural and equity risks.";
         verdictBox.style.background = "var(--rose-light)";
         verdictBox.style.borderColor = "var(--rose)";
       } else if (ownership === "borrowed") {
@@ -2048,7 +2426,13 @@
         verdictBox.style.borderColor = "var(--gold)";
       } else {
         title = "🎯 Defensible Civic Action Plan";
-        desc = "Excellent work! You successfully navigated the inquiry arc. Your plan is grounded in local survey statistics and crash databases, maps inclusive stakeholder interests, and targets the principal or city commission who actually holds policy authority. You audited the AI draft, caught its flaws, and own the plan completely.";
+        const ownedDescriptions = {
+          crossing: "Excellent work! Your plan combines local traffic records and community evidence, maps pedestrian, driver, neighborhood, technical, and disability-access interests, and targets the city authority responsible for the intersection. You audited the AI draft and can defend the resulting proposal.",
+          phones: "Excellent work! Your plan combines school evidence with student, family, educator, health, and accessibility perspectives. You audited the AI draft for medical and language-access exceptions and can defend the resulting school policy.",
+          startTime: "Excellent work! Your plan combines research with local attendance, transportation, activity, and family evidence; maps the groups who would carry the benefits and burdens; and targets district decision-makers. You audited the AI draft and can defend the pilot proposal.",
+          libraryAccess: "Excellent work! Your plan combines usage and community evidence, maps staffing, safety, transportation, disability, language, and digital-access needs, and targets the Library Board. You audited the AI draft and can defend the access pilot."
+        };
+        desc = ownedDescriptions[activeScenarioKey] || "Excellent work! You completed the inquiry arc, verified the evidence, mapped affected stakeholders, targeted the responsible institution, and audited the AI draft. You can defend the resulting civic plan.";
         verdictBox.style.background = "var(--teal-light)";
         verdictBox.style.borderColor = "var(--teal)";
       }

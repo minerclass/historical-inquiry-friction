@@ -183,11 +183,11 @@
     <div class="hud">
       <div class="meter">
         <div class="top"><span>Rebuttal Strength</span><span id="rebNum">40</span></div>
-        <div class="bar reb"><span id="rebBar" style="width:40%"></span></div>
+        <div class="bar reb" id="rebMeter" role="progressbar" aria-label="Rebuttal Strength" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-valuetext="Rebuttal Strength: 40 percent"><span id="rebBar" style="width:40%"></span></div>
       </div>
       <div class="meter">
         <div class="top"><span>Evidence Integrity</span><span id="evidNum">50</span></div>
-        <div class="bar evid"><span id="evidBar" style="width:50%"></span></div>
+        <div class="bar evid" id="evidMeter" role="progressbar" aria-label="Evidence Integrity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="Evidence Integrity: 50 percent"><span id="evidBar" style="width:50%"></span></div>
       </div>
       <div class="chip owned" id="ansChip"><span class="lbl">Answerability</span><span class="val" id="ansVal">Owned</span></div>
     </div>
@@ -226,13 +226,13 @@
     <p class="kicker">Debrief</p>
     <h2>How you held the line</h2>
     <div class="hud" style="grid-template-columns:1fr 1fr auto;">
-      <div class="meter"><div class="top"><span>Rebuttal</span><span id="dReb">0</span></div><div class="bar reb"><span id="dRebBar"></span></div></div>
-      <div class="meter"><div class="top"><span>Evidence</span><span id="dEvid">0</span></div><div class="bar evid"><span id="dEvidBar"></span></div></div>
+      <div class="meter"><div class="top"><span>Rebuttal</span><span id="dReb">0</span></div><div class="bar reb" id="dRebMeter" role="progressbar" aria-label="Final Rebuttal Strength" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Final Rebuttal Strength: 0 percent"><span id="dRebBar"></span></div></div>
+      <div class="meter"><div class="top"><span>Evidence</span><span id="dEvid">0</span></div><div class="bar evid" id="dEvidMeter" role="progressbar" aria-label="Final Evidence Integrity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Final Evidence Integrity: 0 percent"><span id="dEvidBar"></span></div></div>
       <div class="chip" id="dAnsChip"><span class="lbl">Answerability</span><span class="val" id="dAns"></span></div>
     </div>
     <p class="standing" id="standing"></p>
     <p id="standingSub" style="color:#e8e2d2;"></p>
-    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 10px; font-style: italic;">*Note: All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
+    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 10px; font-style: italic;"><strong>Note:</strong> All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
 
     <h2 style="margin-top:22px; font-size:1.4rem;">The moves you reached for</h2>
     <table><thead><tr><th>Move</th><th>Times used</th><th>What it is</th></tr></thead><tbody id="moveTable"></tbody></table>
@@ -445,10 +445,16 @@
   }
 
   function updateHud(){
-    $("rebNum").textContent = Math.round(state.reb);
-    $("evidNum").textContent = Math.round(state.evid);
-    $("rebBar").style.width = clamp(state.reb)+"%";
-    $("evidBar").style.width = clamp(state.evid)+"%";
+    var rebValue = Math.round(clamp(state.reb));
+    var evidValue = Math.round(clamp(state.evid));
+    $("rebNum").textContent = rebValue;
+    $("evidNum").textContent = evidValue;
+    $("rebBar").style.width = rebValue+"%";
+    $("evidBar").style.width = evidValue+"%";
+    $("rebMeter").setAttribute("aria-valuenow", rebValue);
+    $("rebMeter").setAttribute("aria-valuetext", "Rebuttal Strength: " + rebValue + " percent");
+    $("evidMeter").setAttribute("aria-valuenow", evidValue);
+    $("evidMeter").setAttribute("aria-valuetext", "Evidence Integrity: " + evidValue + " percent");
     var st = ansState(state.ans);
     $("ansVal").textContent = st;
     $("ansChip").className = "chip " + st.toLowerCase();
@@ -591,6 +597,10 @@
     $("dEvid").textContent = Math.round(state.evid);
     $("dRebBar").style.width = clamp(state.reb)+"%";
     $("dEvidBar").style.width = clamp(state.evid)+"%";
+    $("dRebMeter").setAttribute("aria-valuenow", Math.round(clamp(state.reb)));
+    $("dRebMeter").setAttribute("aria-valuetext", "Final Rebuttal Strength: " + Math.round(clamp(state.reb)) + " percent");
+    $("dEvidMeter").setAttribute("aria-valuenow", Math.round(clamp(state.evid)));
+    $("dEvidMeter").setAttribute("aria-valuetext", "Final Evidence Integrity: " + Math.round(clamp(state.evid)) + " percent");
     $("dAns").textContent = st;
     $("dAnsChip").className = "chip " + st.toLowerCase();
     var band, sub;

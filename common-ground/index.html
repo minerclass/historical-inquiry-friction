@@ -842,7 +842,7 @@
             <span>Civil Discourse</span>
             <span id="lblDiscourse">55%</span>
           </div>
-          <div class="hud-bar hud-discourse" aria-hidden="true">
+          <div class="hud-bar hud-discourse" id="meterDiscourse" role="progressbar" aria-label="Civil Discourse" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55" aria-valuetext="Civil Discourse: 55 percent">
             <span id="barDiscourse" style="width: 55%;"></span>
           </div>
         </div>
@@ -851,7 +851,7 @@
             <span>Academic Rigor</span>
             <span id="lblRigor">55%</span>
           </div>
-          <div class="hud-bar hud-rigor" aria-hidden="true">
+          <div class="hud-bar hud-rigor" id="meterRigor" role="progressbar" aria-label="Academic Rigor" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55" aria-valuetext="Academic Rigor: 55 percent">
             <span id="barRigor" style="width: 55%;"></span>
           </div>
         </div>
@@ -860,7 +860,7 @@
             <span>Student Trust</span>
             <span id="lblTrust">55%</span>
           </div>
-          <div class="hud-bar hud-trust" aria-hidden="true">
+          <div class="hud-bar hud-trust" id="meterTrust" role="progressbar" aria-label="Student Trust" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55" aria-valuetext="Student Trust: 55 percent">
             <span id="barTrust" style="width: 55%;"></span>
           </div>
         </div>
@@ -1008,7 +1008,7 @@
               <p class="stat-desc">Measures if students feel their basic human dignity and diverse identities are safe in your room, protecting them from hostility or silencing.</p>
             </div>
           </div>
-          <p style="font-size: 0.82rem; color: var(--muted); text-align: center; margin-top: 15px; font-style: italic;">*Note: All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
+          <p style="font-size: 0.82rem; color: var(--muted); text-align: center; margin-top: 15px; font-style: italic;"><strong>Note:</strong> All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
 
           <!-- Leadership Profile Tally -->
           <div class="profile-card">
@@ -1578,13 +1578,19 @@
       trust = clamp(trust, 0, 100);
 
       lblDiscourse.textContent = `${discourse}%`;
-      barDiscourse.style.width = `${discourse}%`;
+      barDiscourse.style.width = discourse + "%";
+      document.getElementById("meterDiscourse").setAttribute("aria-valuenow", discourse);
+      document.getElementById("meterDiscourse").setAttribute("aria-valuetext", "Civil Discourse: " + discourse + " percent");
 
       lblRigor.textContent = `${rigor}%`;
-      barRigor.style.width = `${rigor}%`;
+      barRigor.style.width = rigor + "%";
+      document.getElementById("meterRigor").setAttribute("aria-valuenow", rigor);
+      document.getElementById("meterRigor").setAttribute("aria-valuetext", "Academic Rigor: " + rigor + " percent");
 
       lblTrust.textContent = `${trust}%`;
-      barTrust.style.width = `${trust}%`;
+      barTrust.style.width = trust + "%";
+      document.getElementById("meterTrust").setAttribute("aria-valuenow", trust);
+      document.getElementById("meterTrust").setAttribute("aria-valuetext", "Student Trust: " + trust + " percent");
 
       drawClassroom("classroom-seating-chart", discourse, trust);
     }
