@@ -101,3 +101,12 @@
 ### Entry 9: Devil's Advocate & Common Ground (Content Pools and Sampling)
 *   **Files Edited**: `historical-inquiry-friction/devils-advocate/index.html`, `historical-inquiry-friction/common-ground/index.html`
 *   **Key Implementations**: Expanded Devil's Advocate to 4 exchanges per case (sampling 2 per run) and Common Ground to 10 moments total (sampling 5 per run) using a linear congruential shuffle helper `shuffleArray`.
+
+## 5. Dissertation Bridge Audit Log (2026-07-12)
+
+### Entry 10: Informed Action and Out of Time
+*   **Files Edited**: `informed-action/index.html`, `out-of-time/index.html`
+*   **Key Implementations**: Added debrief cards with one game-specific prompt for each current research-question domain and a link to the Dissertation Proposal Dashboard.
+*   **Source-of-Truth Decision**: Full research-question wording was not copied into either game, preventing public wording drift when the proposal changes.
+*   **Proposal-Stage Guardrail**: The cards invite reflection on the current study; they do not describe participant evidence or findings.
+*   **Verification**: Each page contains one bridge, three prompts, the correct dashboard link, unique IDs, no horizontal overflow, and zero console errors in local browser checks.
