@@ -5,17 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="The Devil's Advocate — a social studies game: rebut a fluent AI's one-sided historical claims with sourcing, context, corroboration, and evidence. Part of Micah Miner's learning games.">
   <title>The Devil's Advocate | Historical Inquiry Game</title>
+  <link rel="stylesheet" href="https://minerclass.github.io/tokens.css">
   <style>
     :root {
+      /* --ink, --paper and --forest are unreferenced in this file: the ground
+         is the hardcoded gradient on body below and the text colours were
+         hardcoded too. Left in place rather than removed, but they name nothing. */
       --ink:#171914; --paper:#f4f0e6; --forest:#183c32; --moss:#49735f;
-      --ember:#b84f32; --gold:#d5ae58; --blue:#315d7a; --muted:#6b6b62;
-      --line:rgba(255,255,255,.16); --serif:Georgia,"Times New Roman",serif;
+      --ember:#b84f32; --gold:#d5ae58; --blue:#315d7a;
+      /* --muted was #6b6b62, a LIGHT-ground value sitting on this dark green
+         ground at 2.92. The shared dark muted restores it to 6.98. */
+      --muted:var(--mjm-muted,#6b6b62);
+      --line:var(--mjm-line,rgba(255,255,255,.16));
+      --mjm-accent:var(--mjm-gold,#d5ae58); --serif:Georgia,"Times New Roman",serif;
       --sans:"Segoe UI",Arial,sans-serif; --mono:Consolas,"Courier New",monospace;
     }
     * { box-sizing:border-box; }
     html,body { margin:0; height:100%; }
     body {
-      font-family:var(--sans); color:#f6f0df; min-height:100vh;
+      font-family:var(--sans); color:var(--mjm-ink,#f6f0df); min-height:100vh;
       background:
         radial-gradient(circle at 88% 6%, rgba(184,79,50,.22), transparent 30%),
         linear-gradient(150deg, #12271f, #10160f 70%);

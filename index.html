@@ -1,22 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-mjm-ground="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="When AI Does the Thinking: an interactive secondary-level session on preserving historical inquiry through pedagogical friction. Micah Miner, Beach Park District 3.">
   <title>When AI Does the Thinking | Preserving Historical Inquiry</title>
+  <link rel="stylesheet" href="https://minerclass.github.io/tokens.css">
   <style>
     :root {
-      --ink: #171914;
-      --paper: #f4f0e6;
+      /* Ground, ink, and rules come from the shared ecosystem tokens at
+         https://minerclass.github.io/tokens.css, each fallback set to this
+         page's pre-adoption value so a failed load changes nothing. */
+      --ink: var(--mjm-ink, #171914);
+      --paper: var(--mjm-surface, #f4f0e6);
       --paper-2: #e8e0d0;
       --forest: #183c32;
       --moss: #49735f;
       --ember: #b84f32;
       --gold: #d5ae58;
       --blue: #315d7a;
-      --muted: #6b6b62;
-      --line: rgba(23, 25, 20, .18);
+      --muted: var(--mjm-muted, #6b6b62);
+      --line: var(--mjm-line, rgba(23, 25, 20, .18));
+      /* Text-safe ember. --ember measures 4.39 on the light sheet and fails AA
+         as text; it stays correct as a border, as a fill, and on dark slides. */
+      --ember-text: var(--mjm-rust-ink, #a9542b);
+      --mjm-accent: var(--mjm-rust, #b84f32);
       --shadow: 0 24px 70px rgba(0, 0, 0, .28);
       --controls-safe-area: clamp(220px, 18vw, 360px);
       --serif: Georgia, "Times New Roman", serif;
@@ -99,7 +107,7 @@
       text-transform: uppercase;
     }
 
-    .kicker { color: var(--ember); font-weight: 700; }
+    .kicker { color: var(--ember-text); font-weight: 700; }
     .dark .kicker, .blue .kicker { color: var(--gold); }
     .slide-number { color: var(--muted); }
     .dark .slide-number, .blue .slide-number { color: rgba(255,255,255,.58); }
@@ -1201,7 +1209,7 @@
           <article class="card"><span class="tag">Feedback on drafts</span><p>Low-stakes questioning and revision between conferences with the teacher.</p></article>
         </div>
         <p class="quote" style="margin-top:26px;">Amplify the weighing. Never outsource it.</p>
-        <div class="tool-launch" style="margin-top:20px; border-left-color:var(--teal); background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.15);">
+        <div class="tool-launch" style="margin-top:20px; border-left-color:var(--mjm-teal, #67b9aa); background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.15);">
           <p><strong>Civic reasoning in practice:</strong> test ownership, map stakeholders, and weigh trade-offs under pressure in the Informed Action game.</p>
           <div class="tool-actions">
             <a class="link-btn" href="informed-action/" target="_blank" rel="noopener" style="color:#fff; background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2);">Play Informed Action ↗</a>

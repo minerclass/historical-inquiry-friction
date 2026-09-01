@@ -4,13 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Informed Action | Civic Reasoning Decision Game</title>
+  <link rel="stylesheet" href="https://minerclass.github.io/tokens.css">
   <style>
     :root {
       --ink: #080d14;
       --ink-2: #111a26;
-      --paper: #f4ead7;
+      /* Note the INVERTED names here: --ink is a panel colour and --paper is
+         the TEXT. The per-level ground gradient on html,body stays local
+         because it carries this level's atmosphere. Only the text and rules
+         join the shared tokens. --paper-2 is dual-role (a light panel
+         background AND bright text) so it is deliberately left local. */
+      --paper: var(--mjm-ink, #f4ead7);
       --paper-2: #fffdf9;
-      --line: rgba(244, 234, 215, 0.16);
+      --line: var(--mjm-line, rgba(244, 234, 215, 0.16));
+      --mjm-accent: var(--mjm-teal, #64c6bd);
       --line-dark: rgba(8, 13, 20, 0.16);
       --gold: #d7a13d;
       --rose: #d4685d;
@@ -18,7 +25,7 @@
       --teal: #64c6bd;
       --teal-dark: #22756f;
       --teal-light: rgba(100, 198, 189, 0.12);
-      --muted: #92a2a6;
+      --muted: var(--mjm-muted, #92a2a6);
       --radius: 12px;
       --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
       --transition-speed: 0.2s;

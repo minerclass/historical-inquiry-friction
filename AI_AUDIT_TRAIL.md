@@ -2,7 +2,7 @@
 
 **Date of Log**: 2026-07-07
 **Researcher / Author**: Micah J. Miner (assisted by Antigravity)
-**Project Context**: Qualitative-dominant convergent mixed-methods case study on *Pedagogical Friction* in generative AI age.
+**Project Context**: Qualitative-dominant convergent mixed-methods study on *Pedagogical Friction* in the generative AI age. (Corrected 2026-09-01: this header previously read "case study". The controlling proposal is not a case study; the inherited label was wrong and is not used in this repository.)
 **Audit Purpose**: Hand-off review, reconciliation, and audit logs for Codex / Claude Code / Antigravity agents.
 
 ---
@@ -110,3 +110,92 @@
 *   **Source-of-Truth Decision**: Full research-question wording was not copied into either game, preventing public wording drift when the proposal changes.
 *   **Proposal-Stage Guardrail**: The cards invite reflection on the current study; they do not describe participant evidence or findings.
 *   **Verification**: Each page contains one bridge, three prompts, the correct dashboard link, unique IDs, no horizontal overflow, and zero console errors in local browser checks.
+
+## 6. Shared Token Adoption and Contrast Repair (2026-09-01)
+
+Agent: Claude Code (Opus 5). This repository was the last of 31 in the
+dissertation ecosystem to adopt the shared token layer at
+`https://minerclass.github.io/tokens.css`, and was deliberately deferred from
+the earlier batches because its seven pages use three different naming
+conventions and would have been guessed at rather than verified in a batch.
+
+### Entry 11: Token adoption across all seven pages
+
+*   **Files Edited**: `index.html`, `devils-advocate/index.html`,
+    `informed-action/index.html`, `out-of-time/index.html`,
+    `common-ground/index.html`, `keepers-of-inquiry/index.html`,
+    `ncss-historical-inquiry/index.html`
+*   **What was adopted**: ground, ink, muted, and rule colours only. Every
+    reference carries the page's pre-adoption value as a `var()` fallback, so a
+    failed stylesheet load changes nothing.
+*   **What was deliberately kept local, and why**:
+    *   The four level games (`informed-action`, `out-of-time`, `common-ground`,
+        `keepers-of-inquiry`) each paint a hardcoded per-level gradient on
+        `html, body`. That gradient carries the level's atmosphere and is signal,
+        not decoration, so only the text and rules were adopted.
+    *   `--paper-2` in three of those games is **dual-role**: a light panel
+        background in some rules and bright text on dark in others. A single
+        shared mapping would be wrong for one of the two roles, so it was left
+        alone.
+    *   `--panel2` and `--paper-ink` in `ncss-historical-inquiry` are the
+        light-slide surface pair. Leaving them local is what preserves the
+        deck's 13-light / 13-dark alternation, which was verified after the
+        change.
+
+### Entry 12: Naming conventions recorded for future work
+
+These traps cost real time and are recorded so the next pass does not repeat them:
+
+*   **Inverted names.** In `informed-action`, `out-of-time`, `common-ground`,
+    and `keepers-of-inquiry`, `--ink` is a dark **panel** colour and `--paper`
+    is the **text**. Reading these names the usual way inverts the page.
+*   **Dead tokens.** In `devils-advocate`, `--ink`, `--paper`, and `--forest`
+    have zero references. They name nothing; the ground is the gradient on
+    `body` and the text colours were hardcoded. They were left in place but
+    should not be trusted as a description of the page.
+*   **Undefined token.** `index.html` used `border-left-color:var(--teal)` while
+    defining no `--teal`, so that accent stripe rendered as nothing. It now uses
+    the shared teal.
+
+### Entry 13: Pre-existing contrast failures repaired (32 total)
+
+All were present before this change; none were introduced by it. Each was
+confirmed by eye before being touched.
+
+| Page | Element | Before | After | Cause |
+| :--- | :--- | :--- | :--- | :--- |
+| `index.html` | `.kicker` x12 | 4.39 | 5.06 | `--ember` as text on the light sheet |
+| `devils-advocate` | body copy x4 | 2.92 | 6.98 | `--muted` was a **light-ground** value (`#6b6b62`) sitting on a dark green ground |
+| `ncss-historical-inquiry` | `.big`, `.rail .n`, `.timeline-item strong`, `.tab-pane h3`, `.artifact .label` x16 | 1.85-2.18 | 4.73-5.42 | `--gold` as text on the parchment `--panel2` |
+
+Accent tokens were not globally repointed. Vivid accents remain correct as
+borders, fills, and on dark grounds; only the **text** usages were moved to
+lifted variants (`--ember-text`, `--gold-text`), which is why the visual
+identity of each page is unchanged.
+
+`--gold-text` in `ncss-historical-inquiry` is `#836010`, two points darker than
+the shared `--mjm-gold-ink` (`#8a6412`). This is deliberate: the rail's active
+item lays `rgba(217,164,65,.12)` over the parchment, and the shared value clears
+the plain slide (4.77) but not that tint (4.41). `#836010` clears both.
+
+### Entry 14: Verification method
+
+A before/after measurement was taken for every text-bearing element on every
+pane of all seven pages, with each pane activated in turn so hidden game screens
+and slides were measured too, not just the opening state.
+
+*   **Result**: 1,306 elements compared. 32 crossed from fail to pass. **Zero**
+    crossed from pass to fail on any page.
+*   Remaining drops are all sub-1.1 movements far above threshold (for example
+    17.6 to 16.6) caused by the ground and ink shifting to the shared values.
+*   The 13-light / 13-dark slide alternation in `ncss-historical-inquiry` was
+    confirmed intact after the change, with light slides unchanged at `#f6f1e7`.
+
+**Measurement caveat, recorded honestly.** The instrument used has two known
+blind spots: it cannot see `::before` / `::after` overlays, and it cannot
+resolve which part of a partial-coverage gradient sits behind a given glyph.
+One reported failure in `keepers-of-inquiry` (`.dial`, 1.70) is a **false
+positive** of the first kind: the numeral sits on the dark hole of a donut drawn
+by a pseudo-element, not on the teal arc, and was confirmed readable by eye. It
+was correctly left alone. Absolute readings from any such tool should be
+confirmed visually before code is changed on their authority.

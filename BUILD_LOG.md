@@ -21,3 +21,27 @@
 ## Pending content approval
 
 - Keeper of the Source Level 1 remains unchanged pending approval of the chronology/citation packet.
+
+## Phase 5 - 2026-09-01 - Shared token adoption
+
+- All seven pages now link the shared ecosystem token layer at
+  `https://minerclass.github.io/tokens.css`. Ground, ink, muted, and rule
+  colours are adopted; every reference carries its pre-adoption value as a
+  fallback so a failed load changes nothing.
+- Per-level ground gradients, `--paper-2`, `--panel2`, and `--paper-ink` stay
+  local. Those carry each level's atmosphere and the light-slide surface pair.
+- 32 pre-existing contrast failures repaired: 12 kickers on the hub, 4 muted
+  passages in Devil's Advocate, and 16 gold-on-parchment items in the NCSS deck.
+  All were present beforehand and each was confirmed by eye before being changed.
+
+## Validation
+
+- Before/after contrast measured for every text-bearing element on every pane of
+  all seven pages, with each pane activated in turn so hidden screens and slides
+  were included: 1,306 elements compared, 32 fixed, zero regressions past
+  threshold.
+- NCSS deck still alternates 13 light and 13 dark slides; light slides unchanged
+  at `#f6f1e7`.
+- One reported failure in Keepers of Inquiry (`.dial`, 1.70) is a false positive:
+  the numeral sits on the dark centre of a pseudo-element donut, not the teal
+  arc. Verified readable and left unchanged.

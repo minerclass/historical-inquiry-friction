@@ -4,16 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>When AI Does the Thinking | Historical Inquiry Through Pedagogical Friction</title>
+  <link rel="stylesheet" href="https://minerclass.github.io/tokens.css">
   <style>
     :root {
-      --bg: #111820;
-      --bg2: #18222d;
-      --panel: #202b36;
+      /* Ground, ink, and rules come from the shared ecosystem tokens at
+         https://minerclass.github.io/tokens.css, each fallback set to this
+         page's pre-adoption value so a failed load changes nothing. */
+      --bg: var(--mjm-bg, #111820);
+      --bg2: var(--mjm-surface, #18222d);
+      --panel: var(--mjm-surface-2, #202b36);
       --panel2: #f6f1e7;
-      --ink: #f8f2e8;
+      --ink: var(--mjm-ink, #f8f2e8);
       --paper-ink: #17212b;
-      --muted: #aeb8bd;
-      --line: rgba(248, 242, 232, 0.18);
+      --muted: var(--mjm-muted, #aeb8bd);
+      --line: var(--mjm-line, rgba(248, 242, 232, 0.18));
+      /* Text-safe gold for the 13 .light slides, where --gold measures 2.00 on
+         the parchment --panel2 and is a real barrier. --gold itself is correct
+         on the dark slides (7.94) and as borders and fills, so it is unchanged.
+         This is two points darker than the shared --mjm-gold-ink (#8a6412) on
+         purpose: the rail's active item lays rgba(217,164,65,.12) over the
+         parchment, and the shared value clears the plain slide (4.77) but not
+         that tint (4.41). #836010 clears both, at 5.12 and 4.73. */
+      --gold-text: #836010;
+      --mjm-accent: var(--mjm-gold, #d9a441);
       --line2: rgba(23, 33, 43, 0.18);
       --teal: #68c6c3;
       --gold: #d9a441;
@@ -92,6 +105,14 @@
     }
 
     .slide.light::before { border-color: var(--line2); }
+
+    /* Gold-as-text only where the slide is light. Follows this file's own
+       `.light X` scoping convention used just above. */
+    .light .big,
+    .light .timeline-item strong,
+    .light .rail .n,
+    .light .tab-pane h3,
+    .light .artifact .label { color: var(--gold-text); }
 
     .content {
       position: relative;
