@@ -11,7 +11,8 @@ This repository hosts interactive presentation versions for the session **When A
 | Version | Local path | GitHub Pages URL |
 | --- | --- | --- |
 | Full interactive deck | `index.html` | `https://minerclass.github.io/historical-inquiry-friction/` |
-| NCSS historical inquiry version | `ncss-historical-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/ncss-historical-inquiry/` |
+| NCSS 2026 session deck: Teaching History Among Algorithms (Dec 4) | `ncss-historical-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/ncss-historical-inquiry/` |
+| NSSLA 2026 leadership clinic: Leading with Technoskepticism (Dec 3) | `nssla-leading-with-technoskepticism/index.html` | `https://minerclass.github.io/historical-inquiry-friction/nssla-leading-with-technoskepticism/` |
 | The Devil's Advocate game | `devils-advocate/index.html` | `https://minerclass.github.io/historical-inquiry-friction/devils-advocate/` |
 | Keepers of Inquiry game | `keepers-of-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/keepers-of-inquiry/` |
 | Out of Time game | `out-of-time/index.html` | `https://minerclass.github.io/historical-inquiry-friction/out-of-time/` |
@@ -20,11 +21,12 @@ This repository hosts interactive presentation versions for the session **When A
 
 ## Video clips
 
-Two 18-second silent clips play inside the decks from a **Play scene** button. They are illustrations, not real documents or student work.
+Three 18-second silent clips play inside the decks from a **Play scene** button. They are illustrations, not real documents or student work.
 
 | Clip | What it shows | Where it plays |
 | --- | --- | --- |
-| `assets/how-a-student-meets-the-past.mp4` | One question, "Where did this come from?", asked of print, broadcast, an algorithmic feed, and a generated "primary source" | Full deck slide 9 (The Medium Shapes Knowing); NCSS title slide |
+| `assets/how-a-student-meets-the-past.mp4` | One question, "Where did this come from?", asked of print, broadcast, an algorithmic feed, and a generated "primary source" | Full deck slide 9 (The Medium Shapes Knowing); NCSS title slide; NSSLA slide 4 (Media Ecology) |
+| `assets/twenty-eight-essays.mp4` | A teacher redesigns a task, and the principal and pacing guide make room for it (first made for the Fall 2026 doctoral colloquium; footer updated) | NSSLA slide 8 (Infrastructure Friction) |
 | `assets/same-artifact-different-learning.mp4` | A nine-second AI answer, two students with the same essay and grade but only one sourcing trail, then a redesign around noetic, rhetorical, and existential friction | Full deck slide 4 (Two Students, One Artifact); NCSS slide 5 (Same Artifact) |
 
 Each clip has a scene page beside it (`assets/*.html`; open one with `#seconds`, such as `#12.8`, to preview a moment). Re-render a clip with:
@@ -36,9 +38,13 @@ swiftc -O tools/render-video.swift -o /tmp/render-video
 
 The player captures keys while it is open, so a clicker does not advance the deck underneath it. Esc closes it.
 
+## NSSLA leadership clinic
+
+The NSSLA deck (19 slides, about 90 minutes) follows the NSSLA 2026 proposal: media ecology and tertiary algorithmicity, a four-question leadership diagnostic, infrastructure friction across four domains (policy and purpose, professional learning, assessment, communication), a design sprint for a one-page Social Studies + GenAI Leadership Brief, a gallery walk, and action planning. The proposal's agenda totals 100 minutes, so the sprint, feedback, and action segments are trimmed to fit 90. The proposal described preliminary dissertation findings; because data collection is still underway, slide 14 presents the research questions only. Speaker notes mark the facilitation prompts that are drafts for Micah to revise.
+
 ## Survey invitation slide
 
-Both decks end with a survey invitation slide, after Closing: slide 26 of the full deck and slide 27 of the NCSS version. It shows the approved survey notice (B) for NLU IRB protocol ER01884 word for word, with the survey link and a QR code for it (`assets/er01884-survey-qr.svg`, with a PNG copy for other slide tools). The QR code opens `https://forms.cloud.microsoft/r/UbTcf4EHKn`. It was decoded and checked against the link on November 5, 2026, including from 1280x720 and 1920x1080 renders of both slides.
+Each deck ends with a survey invitation slide after Closing: slide 26 of the full deck, slide 27 of the NCSS version, and slide 18 of the NSSLA deck (before its references). It shows the approved survey notice (B) for NLU IRB protocol ER01884 word for word, with the survey link and a QR code for it (`assets/er01884-survey-qr.svg`, with a PNG copy for other slide tools). The QR code opens `https://forms.cloud.microsoft/r/UbTcf4EHKn`. It was decoded and checked against the link on November 5, 2026, including from 1280x720 and 1920x1080 renders of both slides.
 
 ## Source base
 

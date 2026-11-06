@@ -1,0 +1,1074 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Leading with Technoskepticism | NSSLA 2026</title>
+  <link rel="stylesheet" href="https://minerclass.github.io/tokens.css">
+  <style>
+    :root {
+      /* Ground, ink, and rules come from the shared ecosystem tokens at
+         https://minerclass.github.io/tokens.css, each fallback set to this
+         page's pre-adoption value so a failed load changes nothing. */
+      --bg: var(--mjm-bg, #111820);
+      --bg2: var(--mjm-surface, #18222d);
+      --panel: var(--mjm-surface-2, #202b36);
+      --panel2: #f6f1e7;
+      --ink: var(--mjm-ink, #f8f2e8);
+      --paper-ink: #17212b;
+      --muted: var(--mjm-muted, #aeb8bd);
+      --line: var(--mjm-line, rgba(248, 242, 232, 0.18));
+      /* Text-safe gold for the 13 .light slides, where --gold measures 2.00 on
+         the parchment --panel2 and is a real barrier. --gold itself is correct
+         on the dark slides (7.94) and as borders and fills, so it is unchanged.
+         This is two points darker than the shared --mjm-gold-ink (#8a6412) on
+         purpose: the rail's active item lays rgba(217,164,65,.12) over the
+         parchment, and the shared value clears the plain slide (4.77) but not
+         that tint (4.41). #836010 clears both, at 5.12 and 4.73. */
+      --gold-text: #836010;
+      --mjm-accent: var(--mjm-gold, #d9a441);
+      --line2: rgba(23, 33, 43, 0.18);
+      --teal: #68c6c3;
+      --gold: #d9a441;
+      --rose: #d86b63;
+      --green: #7fa37a;
+      --blue: #6b8fc6;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(104, 198, 195, 0.08), transparent 32%),
+        radial-gradient(circle at 95% 4%, rgba(217, 164, 65, 0.12), transparent 20%),
+        var(--bg);
+    }
+
+    .progress {
+      position: fixed;
+      z-index: 30;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 4%;
+      background: linear-gradient(90deg, var(--teal), var(--gold), var(--rose));
+      transition: width 0.25s ease;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: clamp(34px, 5vw, 70px);
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 24px;
+    }
+
+    .slide.light {
+      background: var(--panel2);
+      color: var(--paper-ink);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border: 1px solid var(--line);
+      pointer-events: none;
+    }
+
+    .slide.light::before { border-color: var(--line2); }
+
+    /* Gold-as-text only where the slide is light. Follows this file's own
+       `.light X` scoping convention used just above. */
+    .light .big,
+    .light .timeline-item strong,
+    .light .rail .n,
+    .light .tab-pane h3,
+    .light .artifact .label { color: var(--gold-text); }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      align-content: start;
+      gap: 24px;
+      min-height: 0;
+    }
+
+    .kicker {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--teal);
+      font-size: clamp(0.72rem, 1vw, 0.9rem);
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .light .kicker { color: #174a7c; }
+
+    .kicker::before {
+      content: "";
+      width: 32px;
+      height: 3px;
+      background: var(--gold);
+      display: inline-block;
+    }
+
+    h1, h2 {
+      margin: 0;
+      line-height: 0.98;
+      letter-spacing: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      color: inherit;
+    }
+
+    h1 { font-size: clamp(3rem, 7.4vw, 6.9rem); max-width: 1160px; }
+    h2 { font-size: clamp(2.2rem, 5.5vw, 5.2rem); max-width: 1160px; }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1.08rem, 1.6vw, 1.55rem);
+      line-height: 1.34;
+      max-width: 1060px;
+    }
+
+    .light p { color: #526170; }
+
+    .lead {
+      color: inherit;
+      font-size: clamp(1.36rem, 2.2vw, 2.12rem);
+      line-height: 1.25;
+    }
+
+    .claim {
+      font-family: Georgia, "Times New Roman", serif;
+      color: inherit;
+      font-size: clamp(1.85rem, 3.8vw, 3.85rem);
+      line-height: 1.05;
+    }
+
+    .big {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3rem, 8vw, 7.4rem);
+      line-height: 0.95;
+      color: var(--gold);
+    }
+
+    .grid2, .grid3, .grid4 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card, .choice, .lab-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+      padding: clamp(18px, 2.5vw, 28px);
+      box-shadow: var(--shadow);
+    }
+
+    .light .card, .light .choice, .light .lab-card {
+      border-color: var(--line2);
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 18px 60px rgba(23, 33, 43, 0.12);
+    }
+
+    .card h3, .choice h3, .lab-card h3 {
+      margin: 0 0 12px;
+      font-size: clamp(1.24rem, 1.8vw, 1.72rem);
+      line-height: 1.12;
+      color: inherit;
+    }
+
+    .card p, .choice p, .lab-card p, li {
+      font-size: clamp(0.98rem, 1.28vw, 1.24rem);
+      line-height: 1.35;
+    }
+
+    .choice p, .interactive-card p, .prompt-card p { color: #cbd6d8; }
+    .light .choice p, .light .interactive-card p, .light .prompt-card p { color: #526170; }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.07);
+      color: inherit;
+      font-weight: 800;
+      font-size: clamp(0.86rem, 1.1vw, 1.05rem);
+    }
+
+    a.badge {
+      text-decoration: none;
+      transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+    }
+
+    a.badge:hover,
+    a.badge:focus-visible {
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.18);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    .light .badge {
+      border-color: var(--line2);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .takeaway {
+      border-left: 6px solid var(--gold);
+      padding: 18px 22px;
+      background: rgba(217, 164, 65, 0.09);
+      color: inherit;
+      font-weight: 800;
+      font-size: clamp(1.12rem, 1.7vw, 1.58rem);
+      line-height: 1.25;
+    }
+
+    .choice {
+      appearance: none;
+      cursor: pointer;
+      color: var(--ink);
+      font: inherit;
+      text-align: center;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+      min-height: 170px;
+    }
+
+    .light .choice { color: var(--paper-ink); }
+
+    .choice:hover, .choice.active {
+      transform: translateY(-4px);
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.18);
+      box-shadow: 0 24px 80px rgba(217, 164, 65, 0.14);
+    }
+
+    .choice:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    .result-box {
+      min-height: 82px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      color: inherit;
+      background: rgba(104, 198, 195, 0.08);
+      font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+      line-height: 1.27;
+    }
+
+    .light .result-box { border-color: var(--line2); }
+
+    .interactive-card, .prompt-card {
+      appearance: none;
+      cursor: pointer;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .interactive-card:hover, .interactive-card.active,
+    .prompt-card:hover, .prompt-card.active {
+      transform: translateY(-3px);
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.13);
+    }
+
+    .interactive-card:focus-visible, .prompt-card:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    .audit-choices {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .audit-choices .choice {
+      min-height: 112px;
+      padding: 16px;
+    }
+
+    .audit-choices .choice h3 {
+      font-size: clamp(1.05rem, 1.35vw, 1.28rem);
+    }
+
+    .path {
+      display: grid;
+      grid-template-columns: 1fr 78px 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .path-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--rose);
+      font-size: clamp(2.4rem, 4vw, 4rem);
+      font-weight: 900;
+    }
+
+    .mini-steps {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-step {
+      border-left: 4px solid var(--teal);
+      padding: 10px 12px;
+      background: rgba(104, 198, 195, 0.06);
+      font-size: clamp(0.95rem, 1.2vw, 1.13rem);
+      color: inherit;
+    }
+
+    .mini-step.skip {
+      border-color: var(--rose);
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .light .mini-step.skip { color: #6d7781; }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: minmax(150px, 210px) 1fr;
+      gap: 18px;
+      align-items: start;
+      border-top: 1px solid var(--line);
+      padding: 14px 0;
+    }
+
+    .light .timeline-item { border-color: var(--line2); }
+
+    .timeline-item strong {
+      color: var(--gold);
+      font-size: clamp(0.95rem, 1.3vw, 1.2rem);
+    }
+
+    .timeline-item span {
+      color: inherit;
+      font-size: clamp(1rem, 1.38vw, 1.28rem);
+      line-height: 1.3;
+    }
+
+    .rail {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .rail button, .tab-button {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: inherit;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 14px;
+      min-height: 86px;
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+    }
+
+    .rail button.active, .tab-button.active {
+      border-color: var(--gold);
+      background: rgba(217, 164, 65, 0.12);
+    }
+
+    .rail button:focus-visible, .tab-button:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .rail .n {
+      display: block;
+      color: var(--gold);
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .tab-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .tab-pane {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+      padding: clamp(20px, 3vw, 34px);
+      min-height: 310px;
+    }
+
+    .light .tab-pane, .light .tab-button {
+      border-color: var(--line2);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .tab-pane h3 {
+      margin: 0 0 14px;
+      font-size: clamp(1.6rem, 2.5vw, 2.45rem);
+      color: var(--gold);
+    }
+
+    .source-audit {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .artifact {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .light .artifact {
+      border-color: var(--line2);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .artifact .label {
+      color: var(--gold);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .checklist li {
+      padding: 12px 14px;
+      border-left: 4px solid var(--teal);
+      background: rgba(104, 198, 195, 0.07);
+      color: inherit;
+    }
+
+    .footer {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .light .footer { color: #526170; }
+
+    .controls {
+      position: fixed;
+      z-index: 40;
+      right: 20px;
+      bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17, 24, 32, 0.82);
+      box-shadow: var(--shadow);
+    }
+
+    .controls button {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .controls button:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .counter {
+      min-width: 76px;
+      text-align: center;
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .speaker-notes { display: none; }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .deck { min-height: 100svh; height: 100svh; }
+      .slide { padding: 30px; }
+      .slide::before { inset: 12px; }
+      .grid2, .grid3, .grid4, .path, .source-audit, .tabs, .rail { grid-template-columns: 1fr; }
+      .path-arrow { display: none; }
+      .timeline-item { grid-template-columns: 1fr; gap: 6px; }
+      .controls { right: 12px; bottom: 12px; }
+    }
+
+    @media print {
+      @page { size: landscape; margin: 0; }
+      html, body {
+        background: var(--bg) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        overflow: visible !important;
+        height: auto !important;
+      }
+      .deck { height: auto !important; }
+      .slide {
+        position: relative !important;
+        display: grid !important;
+        page-break-after: always;
+        break-after: page;
+        width: 100vw !important;
+        height: 100vh !important;
+      }
+      .controls, .speaker-notes, .progress { display: none !important; }
+    }
+  
+    /* Survey invitation (approved notice B, verbatim) */
+    .survey-layout { display: grid; grid-template-columns: minmax(0, 1fr) clamp(220px, 36vh, 410px); gap: clamp(24px, 4vw, 64px); align-items: center; }
+    h2.survey-title { font-size: clamp(1.8rem, 3.2vw, 3.3rem); margin-bottom: 18px; }
+    .survey-notice { font-size: clamp(1rem, 1.38vw, 1.38rem); line-height: 1.5; }
+    .survey-notice a { color: var(--teal); font-weight: 700; overflow-wrap: anywhere; }
+    .survey-qr { display: block; padding: 14px; background: #fff; border-radius: var(--radius); text-align: center; color: #17212b; text-decoration: none; }
+    .survey-qr img { display: block; width: 100%; height: auto; }
+    .survey-qr strong { display: block; margin-top: 10px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: clamp(.62rem, .82vw, .95rem); overflow-wrap: anywhere; }
+    @media (max-width: 820px) { .survey-layout { grid-template-columns: 1fr; } .survey-qr { width: min(260px, 78vw); } }
+  
+    /* In-slide video clips: launch buttons and a modal player */
+    .clip-launch { display: inline-flex; align-items: center; gap: .6em; padding: .5em 1.05em; border-radius: 999px; border: 1px solid currentColor; background: transparent; color: inherit; font: inherit; font-size: clamp(.8rem, 1.05vw, 1.02rem); font-weight: 700; line-height: 1.2; cursor: pointer; opacity: .9; white-space: nowrap; }
+    .clip-launch::before { content: ""; border-left: .78em solid currentColor; border-top: .46em solid transparent; border-bottom: .46em solid transparent; }
+    .clip-launch span { font-weight: 400; opacity: .78; }
+    .clip-launch:hover, .clip-launch:focus-visible { opacity: 1; }
+    .clip-player { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; background: rgba(10, 16, 21, .96); }
+    .clip-player[hidden] { display: none; }
+    .clip-inner { display: flex; flex-direction: column; gap: 14px; width: min(92vw, calc((100vh - 140px) * 16 / 9)); }
+    .clip-inner video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; }
+    .clip-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font: 15px/1.4 -apple-system, "Segoe UI", system-ui, sans-serif; }
+    .clip-bar p { margin: 0; flex: 1; min-width: 220px; max-width: none; color: rgba(255, 253, 248, .86); font: inherit; }
+    .clip-bar strong { color: #fffdf8; }
+    .clip-bar a, .clip-bar button { color: #fffdf8; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .22); border-radius: 999px; padding: 8px 14px; text-decoration: none; cursor: pointer; font: 14px -apple-system, "Segoe UI", system-ui, sans-serif; }
+    @media print { .clip-launch, .clip-player { display: none !important; } }
+      .clip-row { margin-top: 6px; color: var(--teal); }
+    .slide > .clip-corner { position: absolute; top: clamp(30px, 4.4vw, 62px); right: clamp(34px, 5vw, 70px); z-index: 2; color: var(--teal); }
+  
+    /* NSSLA deck additions */
+    .rail.rail7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .refs p { padding-left: 2em; text-indent: -2em; max-width: 1100px; margin-bottom: 14px; }
+    a.card { text-decoration: none; color: inherit; display: block; }
+    a.card:hover, a.card:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .slide.light > .clip-corner { color: #1d5f5c; }
+    .slide.tight .content { gap: 14px; }
+    .slide.tight h2 { font-size: clamp(1.7rem, 3.7vw, 3.8rem); }
+    .slide.tight .timeline { gap: 4px; }
+    .slide.tight .timeline-item { padding: 8px 0; }
+    .slide.tight .card { padding: 14px 18px; }
+    .slide.tight .card h3 { margin-bottom: 4px; }
+    .slide.tight .card p, .slide.tight .tab-pane p, .slide.tight .timeline-item span { font-size: clamp(.92rem, 1.25vw, 1.3rem); }
+    .slide.tight .takeaway { padding-top: 10px; padding-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <main class="deck" aria-live="polite">
+    <section class="slide active" data-title="Title">
+      <div class="kicker">NSSLA 2026 &middot; Chicago &middot; December 3, 2026</div>
+      <div class="content">
+        <h1>Leading with Technoskepticism</h1>
+        <p class="lead">Media ecology and infrastructure friction.</p>
+        <div class="badge-row">
+          <span class="badge">Micah Miner</span>
+          <span class="badge">Beach Park District 3</span>
+          <span class="badge">Leadership clinic</span>
+          <a class="badge" href="../ncss-historical-inquiry/">NCSS session deck</a>
+        </div>
+      </div>
+      <div class="footer"><span>NSSLA 2026 leadership clinic</span><span>1</span></div>
+      <aside class="speaker-notes">Open with the leadership problem, not the technology. This is a working session: tables of four to six, about 90 minutes, and every group leaves with a draft.</aside>
+    </section>
+    <section class="slide light" data-title="The Leadership Problem">
+      <div class="kicker">The leadership problem</div>
+      <div class="content">
+        <h2>Everyone wants us to do something about AI.</h2>
+        <div class="grid3">
+          <div class="card"><h3>Boards and superintendents</h3><p>Ask for a plan, often before anyone has said what AI is for.</p></div>
+          <div class="card"><h3>Teachers</h3><p>Ask whether students can use AI for this assignment, this week.</p></div>
+          <div class="card"><h3>Our discipline</h3><p>Source analysis, historical empathy, and deliberation need intellectual friction that generative AI can remove.</p></div>
+        </div>
+        <div class="takeaway">This session moves past reactive bans and uncritical adoption toward strategic, research-based leadership.</div>
+      </div>
+      <div class="footer"><span>Session overview</span><span>2</span></div>
+      <aside class="speaker-notes">Name the pressure everyone in the room feels. The rest of the session gives them a way to answer it that protects the discipline.</aside>
+    </section>
+    <section class="slide" data-title="Session Map">
+      <div class="kicker">Session arc &middot; 90 minutes</div>
+      <div class="content">
+        <h2>A leadership clinic, not a lecture</h2>
+        <div class="rail rail7">
+          <button type="button" class="active" data-result="Media ecology in ten minutes, and the idea of tertiary algorithmicity."><span class="n">01</span>Foundation &middot; 15</button>
+          <button type="button" data-result="A four-question self-assessment, then paired sharing."><span class="n">02</span>Diagnostic &middot; 10</button>
+          <button type="button" data-result="Infrastructure friction across four domains: policy, professional learning, assessment, and communication."><span class="n">03</span>Framework &middot; 20</button>
+          <button type="button" data-result="Tables draft a one-page Social Studies + GenAI Leadership Brief."><span class="n">04</span>Sprint &middot; 25</button>
+          <button type="button" data-result="A gallery walk with a three-question protocol."><span class="n">05</span>Feedback &middot; 8</button>
+          <button type="button" data-result="What my study is asking, then three commitments to take home."><span class="n">06</span>Action &middot; 8</button>
+          <button type="button" data-result="Links and tools to take back to your district."><span class="n">07</span>Resources &middot; 4</button>
+        </div>
+        <div class="result-box" id="railResult">Media ecology in ten minutes, and the idea of tertiary algorithmicity.</div>
+      </div>
+      <div class="footer"><span>Times in minutes. Tables of four to six.</span><span>3</span></div>
+      <aside class="speaker-notes">The submitted agenda adds up to 100 minutes. These times trim the sprint to 25 and the feedback and action segments to 8 so the session fits 90. Adjust if the slot is 60 or 120.</aside>
+    </section>
+    <section class="slide light tight" data-title="Media Ecology">
+      <div class="kicker">Part 1 &middot; Media ecology in ten minutes</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/how-a-student-meets-the-past.mp4" data-clip-title="How a student meets the past" data-clip-desc="18 seconds, no audio. Print, broadcast, feed, generated: where did this come from? An illustration, not a real document.">Play scene <span>How a student meets the past &middot; 0:18</span></button>
+      <div class="content">
+        <h2>AI changes the information environment, not just the toolbox.</h2>
+        <div class="timeline">
+          <div class="timeline-item"><strong>Printing press &middot; 1440s</strong><span>Democratized access and created new literacy demands.</span></div>
+          <div class="timeline-item"><strong>Broadcast &middot; 1950s</strong><span>Centralized narratives and made collective memory possible.</span></div>
+          <div class="timeline-item"><strong>Social platforms &middot; 2000s</strong><span>Algorithmic curation and filter bubbles.</span></div>
+          <div class="timeline-item"><strong>Generative AI &middot; 2020s</strong><span>Algorithmic generation and uncertain provenance.</span></div>
+        </div>
+        <div class="takeaway">The shift is from machines that curate symbolic content to machines that also create it.</div>
+      </div>
+      <div class="footer"><span>Part 1 &middot; Foundation</span><span>4</span></div>
+      <aside class="speaker-notes">Keep this brisk. The point for leaders is that each disruption changed what schools had to teach and protect. Optional: Play scene runs 18 seconds with no audio; Esc returns to the deck.</aside>
+    </section>
+    <section class="slide" data-title="Tertiary Algorithmicity">
+      <div class="kicker">Dissertation framework</div>
+      <div class="content">
+        <h2>Why &ldquo;tertiary algorithmicity&rdquo;</h2>
+        <div class="grid3">
+          <div class="card"><h3>Ong (1982/2002)</h3><p><strong>Orality, literacy, secondary orality.</strong> Media change how people think and communicate.</p></div>
+          <div class="card"><h3>Stalder (2016/2018)</h3><p><strong>Algorithmicity.</strong> Algorithms select, organize, and give form to cultural material.</p></div>
+          <div class="card"><h3>This study</h3><p><strong>Tertiary algorithmicity.</strong> Algorithmic systems both curate and generate symbolic content, making human authorship optional at scale.</p></div>
+        </div>
+        <div class="takeaway">A qualitative shift calls for new leadership frameworks, not only new classroom rules.</div>
+      </div>
+      <div class="footer"><span>Dissertation proposal, Chapter Two</span><span>5</span></div>
+      <aside class="speaker-notes">One theory beat. The definitions match the defended proposal. Move on once leaders can say the difference between curating and generating.</aside>
+    </section>
+    <section class="slide light tight" data-title="The Technoskeptical Stance">
+      <div class="kicker">Part 1 &middot; The stance</div>
+      <div class="content">
+        <h2>Technoskeptical leadership refuses both technophobia and techno-utopianism.</h2>
+        <div class="grid3">
+          <div class="card"><h3>Demand proof</h3><p>Ask what evidence shows a tool supports the learning social studies is for.</p></div>
+          <div class="card"><h3>Build safeguards</h3><p>Set boundaries for data privacy, authorship, and evidence before adoption, not after.</p></div>
+          <div class="card"><h3>Keep coherence</h3><p>Make policy, professional learning, assessment, and communication point the same direction.</p></div>
+        </div>
+        <div class="takeaway">Not a ban and not a rollout. A stance that asks better questions first.</div>
+      </div>
+      <div class="footer"><span>Part 1 &middot; Foundation</span><span>6</span></div>
+      <aside class="speaker-notes">This is the stance the rest of the session puts into practice. Innovation is welcome; it has to earn its place in a discipline built on evidence.</aside>
+    </section>
+    <section class="slide" data-title="Leadership Diagnostic">
+      <div class="kicker">Part 2 &middot; Technoskeptical leadership diagnostic</div>
+      <div class="content">
+        <h2>Where does your system stand today?</h2>
+        <div class="grid4" data-choice-group="diag">
+          <button class="choice active" type="button" data-result="Look at pacing guides, grading windows, and dashboard metrics. Name one place where finishing counts more than thinking."><h3>Speed</h3><p>Where does your system currently reward speed over understanding?</p></button>
+          <button class="choice" type="button" data-result="If the answer is a general district policy, ask what it says about sourcing, evidence, and authorship in our discipline."><h3>Guidance</h3><p>What guidance have you provided teachers about AI in social studies?</p></button>
+          <button class="choice" type="button" data-result="Pick one common assessment. Could a student complete it well without doing the historical thinking it is meant to show?"><h3>Assessment</h3><p>How do your assessments and assignments account for AI capabilities?</p></button>
+          <button class="choice" type="button" data-result="Write your honest default in one sentence. Then ask whether the answer should depend on the purpose of the task."><h3>Default answer</h3><p>What is your default response when teachers ask, &ldquo;Can students use AI for X?&rdquo;</p></button>
+        </div>
+        <div class="result-box" id="diagResult">Look at pacing guides, grading windows, and dashboard metrics. Name one place where finishing counts more than thinking.</div>
+      </div>
+      <div class="footer"><span>Answer alone for 5 minutes, then pair and share for 5</span><span>7</span></div>
+      <aside class="speaker-notes">The four questions come from the proposal. [Draft: the follow-up prompts under each question are suggestions; rewrite them in your own words.] Paired sharing usually surfaces the same two or three challenges across districts.</aside>
+    </section>
+    <section class="slide light" data-title="Infrastructure Friction">
+      <div class="kicker">Part 3 &middot; The central concept</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/twenty-eight-essays.mp4" data-clip-title="Twenty-eight essays" data-clip-desc="18 seconds, no audio. A teacher redesigns a task, and the system makes room for it. An illustration, not study data.">Play scene <span>Twenty-eight essays &middot; 0:18</span></button>
+      <div class="content">
+        <h2>Infrastructure friction</h2>
+        <p class="lead">Intentional system design, through policy, professional learning, and assessment, that maintains productive struggle at the organizational level, not just in one classroom.</p>
+        <div class="grid2">
+          <div class="card"><h3>Classroom friction</h3><p>One teacher protects the struggle in one task, often against the pacing guide.</p></div>
+          <div class="card"><h3>Infrastructure friction</h3><p>The system makes room for that struggle in every classroom: time, guidance, assessment, and permission.</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Part 3 &middot; Framework</span><span>8</span></div>
+      <aside class="speaker-notes">The scene shows the idea in 18 seconds: a teacher redesigns a task, and the principal and the pacing guide make room for it. Optional: Play scene runs 18 seconds with no audio; Esc returns to the deck.</aside>
+    </section>
+    <section class="slide tight" data-title="Four Domains">
+      <div class="kicker">Part 3 &middot; Four domains</div>
+      <div class="content">
+        <h2>Where leaders can build infrastructure friction</h2>
+        <div class="tabs" data-tabs="domains">
+          <div class="tab-list">
+            <button type="button" class="tab-button active" data-tab="policy">Policy and purpose</button>
+            <button type="button" class="tab-button" data-tab="learning">Professional learning</button>
+            <button type="button" class="tab-button" data-tab="assessment">Assessment</button>
+            <button type="button" class="tab-button" data-tab="communication">Communication</button>
+          </div>
+          <div class="tab-pane" id="frictionPane">
+            <h3>Policy and purpose</h3>
+            <p>Purpose statements that say what AI is and is not for in social studies. Tool boundaries: approved, not approved, and the data privacy basics. Minimum expectations: credibility routines, evidence requirements, and student voice.</p>
+            <div class="takeaway">Example: policy language that requires human-authored primary sources for historical inquiry, with its rationale.</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>Click each domain</span><span>9</span></div>
+      <aside class="speaker-notes">Twenty minutes across the four domains. Before naming Beach Park, confirm which district examples are current and shareable; the proposal promised participants adaptable policy documents, PD agendas, rubrics, and communication samples.</aside>
+    </section>
+    <section class="slide light" data-title="Coherence Check">
+      <div class="kicker">Part 3 &middot; Four domains, one direction</div>
+      <div class="content">
+        <h2>Do your four domains point the same way?</h2>
+        <div class="grid4">
+          <div class="card"><h3>Policy</h3><p>Does it say what AI is for in our discipline, not only what is banned?</p></div>
+          <div class="card"><h3>Professional learning</h3><p>Does it build judgment about sources and evidence, not just tool skill?</p></div>
+          <div class="card"><h3>Assessment</h3><p>Does it see the reasoning process, or only the finished product?</p></div>
+          <div class="card"><h3>Communication</h3><p>Could a parent or board member explain why this friction matters?</p></div>
+        </div>
+        <div class="takeaway">Coherence is the friction. When one domain contradicts another, teachers default to speed.</div>
+      </div>
+      <div class="footer"><span>Part 3 &middot; Framework</span><span>10</span></div>
+      <aside class="speaker-notes">[Draft: these four questions condense the framework for the sprint; adjust as you like.] Use them as the bridge into the design sprint.</aside>
+    </section>
+    <section class="slide" data-title="Design Sprint">
+      <div class="kicker">Part 4 &middot; Guided design sprint</div>
+      <div class="content">
+        <h2>Draft your Social Studies + GenAI Leadership Brief</h2>
+        <div class="grid4">
+          <div class="card"><h3>1. Purpose statement</h3><p>Two or three sentences. What is AI for, and not for, in our social studies classrooms?</p></div>
+          <div class="card"><h3>2. Minimum expectations</h3><p>Three to five bullets. What must every teacher require of students when AI is involved?</p></div>
+          <div class="card"><h3>3. Tool boundaries</h3><p>A short list. What is approved and not approved? What is the data privacy floor?</p></div>
+          <div class="card"><h3>4. Implementation support</h3><p>Action steps. What professional learning, assessment guidance, and communication do teachers need from us?</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>25 minutes &middot; tables of four to six</span><span>11</span></div>
+      <aside class="speaker-notes">Circulate. Share examples and help tables work through their real constraints. The next slide holds the three that come up most.</aside>
+    </section>
+    <section class="slide light" data-title="Real Constraints">
+      <div class="kicker">Part 4 &middot; Plan for the constraints you actually face</div>
+      <div class="content">
+        <h2>Write the brief for your real context.</h2>
+        <div class="grid3">
+          <div class="card"><h3>Board mandates</h3><p>What has the board already asked for, and how does your brief answer it?</p></div>
+          <div class="card"><h3>Vendor contracts</h3><p>Which tools are already purchased, and what do their data terms allow?</p></div>
+          <div class="card"><h3>Union considerations</h3><p>Which expectations touch working conditions or evaluation, and who needs to be at the table?</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Keep drafting</span><span>12</span></div>
+      <aside class="speaker-notes">The three constraints come from the proposal. [Draft: the questions under each are suggestions.] Leave this up while tables work.</aside>
+    </section>
+    <section class="slide" data-title="Gallery Walk">
+      <div class="kicker">Part 5 &middot; Peer feedback and refinement</div>
+      <div class="content">
+        <h2>Gallery walk</h2>
+        <p class="lead">Post each draft brief. Visit at least two others and leave feedback on each.</p>
+        <div class="grid3">
+          <div class="card"><h3>Clear</h3><p>What is clearest about this guidance?</p></div>
+          <div class="card"><h3>Confusing</h3><p>What would a teacher still be confused about?</p></div>
+          <div class="card"><h3>Adaptable</h3><p>What would you adapt for your own context?</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>8 minutes &middot; wall space or shared document</span><span>13</span></div>
+      <aside class="speaker-notes">If wall space is short, tables can rotate drafts clockwise instead.</aside>
+    </section>
+    <section class="slide light" data-title="The Study">
+      <div class="kicker">Part 6 &middot; Research in progress &middot; No findings yet</div>
+      <div class="content">
+        <h2>What my dissertation study is asking</h2>
+        <div class="grid2">
+          <div class="card"><h3>RQ2 &middot; Conditions</h3><p>How do educators and school-system leaders make sense of and respond to the policy, professional-learning, assessment, access, and governance conditions surrounding generative AI?</p></div>
+          <div class="card"><h3>RQ3 &middot; Supports</h3><p>What language, assessment expectations, instructional practices, professional supports, and leadership approaches do educators and school-system leaders identify as important for preserving forms of friction that support learning while reducing unnecessary barriers?</p></div>
+        </div>
+        <div class="takeaway">The study is collecting data through February 2027. These are the questions, not findings.</div>
+      </div>
+      <div class="footer"><span>NLU IRB protocol ER01884 &middot; Research in progress</span><span>14</span></div>
+      <aside class="speaker-notes">The submitted proposal described preliminary findings. Data collection is still underway, so present the questions only and make no claims about results. RQ wording matches the defended proposal.</aside>
+    </section>
+    <section class="slide" data-title="Action Planning">
+      <div class="kicker">Part 6 &middot; Action planning</div>
+      <div class="content">
+        <h2>Leave with three commitments</h2>
+        <div class="grid3">
+          <div class="card"><h3>This month</h3><p>One immediate next step you will take.</p></div>
+          <div class="card"><h3>One document</h3><p>One policy or guidance document you will draft or revise.</p></div>
+          <div class="card"><h3>One friction point</h3><p>One place in your system where you will strengthen infrastructure friction.</p></div>
+        </div>
+      </div>
+      <div class="footer"><span>Write them on your brief before you leave</span><span>15</span></div>
+      <aside class="speaker-notes">Ask two or three leaders to share one commitment aloud.</aside>
+    </section>
+    <section class="slide light tight" data-title="Resources">
+      <div class="kicker">Part 7 &middot; Resources</div>
+      <div class="content">
+        <h2>Take these back to your district</h2>
+        <div class="grid3">
+          <a class="card" href="../ncss-historical-inquiry/"><h3>Teaching History Among Algorithms</h3><p>The NCSS session deck, December 4: media ecology, misinformation, and democratic learning.</p></a>
+          <a class="card" href="../"><h3>When AI Does the Thinking</h3><p>The full interactive deck on preserving historical inquiry.</p></a>
+          <a class="card" href="https://minerclass.github.io/technoskepticism-primer/" target="_blank" rel="noopener"><h3>Technoskepticism Primer</h3><p>The five technoskeptical questions and their Postman roots.</p></a>
+          <a class="card" href="https://minerclass.github.io/answerable/" target="_blank" rel="noopener"><h3>Answerable</h3><p>A game for practicing the five technoskeptical questions.</p></a>
+          <a class="card" href="https://minerclass.github.io/friction-game/" target="_blank" rel="noopener"><h3>Friction Lab</h3><p>Try the framework on one of your own assignments.</p></a>
+          <a class="card" href="https://digitalcommons.nl.edu/ie/vol18/iss1/4/" target="_blank" rel="noopener"><h3>When the Output Looks Like Learning</h3><p>The <em>i.e.: inquiry in education</em> article behind tertiary algorithmicity and pedagogical friction.</p></a>
+        </div>
+      </div>
+      <div class="footer"><span>Links to take home</span><span>16</span></div>
+      <aside class="speaker-notes">The proposal promised a digital resource packet with templates, a Friction Labs guide, rubrics, and communication samples. Add its link here when it is ready.</aside>
+    </section>
+    <section class="slide" data-title="Closing">
+      <div class="kicker">Closing</div>
+      <div class="content">
+        <h2>Infrastructure friction is what makes sustained, high-quality social studies possible every day.</h2>
+        <p class="lead">The schools that will be ready decide, on purpose, what to keep difficult.</p>
+      </div>
+      <div class="footer"><span>Thank you</span><span>17</span></div>
+      <aside class="speaker-notes">Close on the systems point, then invite questions.</aside>
+    </section>
+    <section class="slide light" data-title="Survey Invitation">
+      <div class="kicker">Survey invitation</div>
+      <div class="content">
+        <div class="survey-layout">
+          <div>
+            <h2 class="survey-title">Invitation: dissertation study on generative AI and K&ndash;12 teaching and learning</h2>
+            <p class="survey-notice">K&ndash;12 educators and school system leaders: I am a doctoral candidate at National Louis University studying how generative AI is affecting the effortful parts of learning, and what school and district conditions help educators respond. The survey is anonymous, takes 10 to 12 minutes, and asks about your own practice and your own institution. The survey will not ask for names or email addresses and will not require participants to sign in. The researcher will verify the final Microsoft Forms settings relevant to response anonymity and metadata before activation. You must be 18 or older and currently work in a K&ndash;12 school or district. Employees of Beach Park CCSD 3 are not eligible. <a href="https://forms.cloud.microsoft/r/UbTcf4EHKn" target="_blank" rel="noopener">https://forms.cloud.microsoft/r/UbTcf4EHKn</a> Questions: mminer1@my.nl.edu.</p>
+          </div>
+          <a class="survey-qr" href="https://forms.cloud.microsoft/r/UbTcf4EHKn" target="_blank" rel="noopener"><img src="../assets/er01884-survey-qr.svg" alt="QR code for the survey link, https://forms.cloud.microsoft/r/UbTcf4EHKn"><strong>forms.cloud.microsoft/r/UbTcf4EHKn</strong></a>
+        </div>
+      </div>
+      <div class="footer"><span>NLU IRB protocol ER01884 &middot; Approved notice text</span><span>18</span></div>
+      <aside class="speaker-notes">Optional. Show it at the end or leave it up after questions. The text is the approved survey notice (B), word for word, with the survey link and its QR code. Mention it in your own words if you like, but do not ask anyone to pass it on.</aside>
+    </section>
+    <section class="slide" data-title="References">
+      <div class="kicker">References</div>
+      <div class="content">
+        <div class="refs">
+          <p>Ong, W. J. (2002). <em>Orality and literacy: The technologizing of the word</em> (2nd ed.). Routledge. (Original work published 1982)</p>
+          <p>Stalder, F. (2018). <em>The digital condition</em> (V. A. Pakis, Trans.). Polity Press. (Original work published 2016)</p>
+        </div>
+      </div>
+      <div class="footer"><span>Not presented</span><span>19</span></div>
+      <aside class="speaker-notes">Not presented. Here for anyone following along on their own device.</aside>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Slide controls">
+    <button type="button" id="prev" aria-label="Previous slide">&lt;</button>
+    <span class="counter" id="counter">1 / 19</span>
+    <button type="button" id="next" aria-label="Next slide">&gt;</button>
+  </nav>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    const progressBar = document.getElementById("progressBar");
+    let current = 0;
+
+    const frictionContent = {
+      policy: {
+        title: "Policy and purpose",
+        body: "Purpose statements that say what AI is and is not for in social studies. Tool boundaries: approved, not approved, and the data privacy basics. Minimum expectations: credibility routines, evidence requirements, and student voice.",
+        move: "Example: policy language that requires human-authored primary sources for historical inquiry, with its rationale."
+      },
+      learning: {
+        title: "Professional learning design",
+        body: "Friction Labs that move teachers from tool users to tool interrogators. Discipline-specific AI literacy: what does source analysis mean now? Collaborative lesson redesign protocols.",
+        move: "Example: professional learning built around pedagogical questions, not technical training."
+      },
+      assessment: {
+        title: "Assessment coherence",
+        body: "Process-focused rubrics that evaluate reasoning, not just products. Oral defense protocols where students explain their thinking. Portfolios that show intellectual progression.",
+        move: "Example: a DBQ rubric redesigned to assess the sourcing process, not essay polish."
+      },
+      communication: {
+        title: "Communication strategy",
+        body: "Board presentations that frame technoskepticism as responsible innovation. Family communications that explain why friction matters. Talking points that help teachers defend disciplinary practices.",
+        move: "Example: a one-page family letter explaining social studies AI guidance."
+      }
+    };
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.title = `${slides[current].dataset.title} | Leading with Technoskepticism`;
+    }
+
+    function wireChoiceGroups() {
+      document.querySelectorAll("[data-choice-group]").forEach((group) => {
+        const resultId = `${group.dataset.choiceGroup}Result`;
+        const resultBox = document.getElementById(resultId);
+        const options = group.querySelectorAll(".choice, .interactive-card, .prompt-card");
+        options.forEach((choice) => {
+          choice.addEventListener("click", () => {
+            options.forEach((item) => item.classList.remove("active"));
+            choice.classList.add("active");
+            if (resultBox) resultBox.textContent = choice.dataset.result;
+          });
+        });
+      });
+    }
+
+    function wireRail() {
+      const rail = document.querySelector(".rail");
+      const result = document.getElementById("railResult");
+      if (!rail || !result) return;
+      rail.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          rail.querySelectorAll("button").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          result.textContent = button.dataset.result;
+        });
+      });
+    }
+
+    function wireTabs() {
+      const pane = document.getElementById("frictionPane");
+      document.querySelectorAll(".tab-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".tab-button").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          const item = frictionContent[button.dataset.tab];
+          pane.innerHTML = `<h3>${item.title}</h3><p>${item.body}</p><div class="takeaway">${item.move}</div>`;
+        });
+      });
+    }
+
+    document.getElementById("prev").addEventListener("click", () => showSlide(current - 1));
+    document.getElementById("next").addEventListener("click", () => showSlide(current + 1));
+
+    document.addEventListener("keydown", (event) => {
+      const onControl = event.target.closest("button, a, input, textarea, select");
+      if (["ArrowRight", "PageDown"].includes(event.key) || (event.key === " " && !onControl)) {
+        event.preventDefault();
+        showSlide(current + 1);
+      }
+      if (["ArrowLeft", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        showSlide(current - 1);
+      }
+      if (event.key === "Home") showSlide(0);
+      if (event.key === "End") showSlide(slides.length - 1);
+    });
+
+    wireChoiceGroups();
+    wireRail();
+    wireTabs();
+    showSlide(0);
+  </script>
+
+  <div class="clip-player" id="clipPlayer" hidden role="dialog" aria-modal="true" aria-labelledby="clipTitle">
+    <div class="clip-inner">
+      <video id="clipVideo" controls playsinline preload="none"></video>
+      <div class="clip-bar">
+        <p><strong id="clipTitle"></strong> &middot; <span id="clipDesc"></span></p>
+        <a id="clipDownload" href="#" download>Download video</a>
+        <button type="button" id="clipClose">Back to presentation (Esc)</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var player = document.getElementById("clipPlayer"), video = document.getElementById("clipVideo"), last = null;
+      function open(btn) {
+        last = btn;
+        document.getElementById("clipTitle").textContent = btn.dataset.clipTitle;
+        document.getElementById("clipDesc").textContent = btn.dataset.clipDesc;
+        document.getElementById("clipDownload").href = btn.dataset.clip;
+        if (video.getAttribute("src") !== btn.dataset.clip) video.src = btn.dataset.clip;
+        player.hidden = false;
+        try { video.currentTime = 0; } catch (e) {}
+        var p = video.play(); if (p && p.catch) p.catch(function () {});
+        video.focus();
+      }
+      function close() { video.pause(); player.hidden = true; if (last) last.focus(); }
+      document.querySelectorAll(".clip-launch").forEach(function (b) {
+        b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); open(b); });
+      });
+      document.getElementById("clipClose").addEventListener("click", close);
+      player.addEventListener("click", function (e) { if (e.target === player) close(); });
+      window.addEventListener("keydown", function (e) {
+        if (player.hidden) return;
+        if (e.key === "Escape") { e.preventDefault(); close(); }
+        e.stopPropagation();
+      }, true);
+    })();
+  </script>
+</body>
+</html>
