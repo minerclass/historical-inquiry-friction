@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How a student meets the past</title>
+<!-- 18-second silent scene for the social studies decks (NCSS and NSSLA, December 2026).
+     Open with #seconds (for example #12.8) to preview a moment.
+     Render: swiftc -O tools/render-video.swift -o /tmp/render-video
+             /tmp/render-video assets/how-a-student-meets-the-past.html assets/how-a-student-meets-the-past.mp4 18 30
+     The newspaper, its masthead, and the chat are illustrations, not real documents. -->
+<style>
+  html,body{margin:0;background:#101920;}
+  svg{display:block;width:1920px;height:1080px;}
+  text{font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;}
+  .mono{font-family:"SF Mono",Menlo,"DejaVu Sans Mono",monospace;}
+  .serif{font-family:Georgia,"Times New Roman",serif;}
+</style>
+</head>
+<body>
+<svg id="s" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glowGold" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#d9a441" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#d9a441" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowTeal" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#68c6c3" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#68c6c3" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowRose" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#d86b63" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#d86b63" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="phoneClip"><rect x="352" y="222" width="276" height="396" rx="18"/></clipPath>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#18232c"/>
+  <circle id="glow" cx="520" cy="480" r="420" fill="url(#glowGold)"/>
+
+  <!-- ===== A: PRINT. A newspaper and its copies ===== -->
+  <g id="shotA">
+    <g id="copies">
+      <rect id="copy3" x="300" y="240" width="440" height="560" rx="4" fill="#d8d0c0"/>
+      <rect id="copy2" x="285" y="225" width="440" height="560" rx="4" fill="#e3dccd"/>
+    </g>
+    <g id="paperA"></g>
+    <text id="copyCount" class="mono" x="270" y="850" font-size="20" letter-spacing="2" fill="#d9a441">COPY 1 OF 1</text>
+  </g>
+
+  <!-- ===== B and C: one screen, many homes, then many feeds ===== -->
+  <g id="shotB" opacity="0">
+    <line x1="470" y1="196" x2="420" y2="130" stroke="#5a6670" stroke-width="6" stroke-linecap="round"/>
+    <line x1="550" y1="196" x2="610" y2="124" stroke="#5a6670" stroke-width="6" stroke-linecap="round"/>
+    <rect x="310" y="196" width="400" height="300" rx="34" fill="#34434e"/>
+    <rect x="340" y="222" width="300" height="248" rx="18" fill="#2f6970"/>
+    <circle cx="490" cy="316" r="40" fill="#17232d"/>
+    <path d="M410 470 L410 430 Q410 382 460 378 L520 378 Q570 382 570 430 L570 470 Z" fill="#17232d"/>
+    <rect x="340" y="420" width="300" height="34" fill="#17232d" opacity="0.85"/>
+    <text class="mono" x="356" y="443" font-size="17" letter-spacing="2" fill="#f3efe6">EVENING NEWS · 6:30</text>
+    <circle cx="676" cy="250" r="9" fill="#5a6670"/><circle cx="676" cy="282" r="9" fill="#5a6670"/>
+  </g>
+  <g id="shotC" opacity="0">
+    <rect x="336" y="200" width="308" height="440" rx="34" fill="#0d1318" stroke="#4a5a66" stroke-width="4"/>
+    <g clip-path="url(#phoneClip)">
+      <rect x="352" y="222" width="276" height="396" fill="#1c2a35"/>
+      <g id="feed"></g>
+    </g>
+    <rect x="452" y="210" width="76" height="8" rx="4" fill="#4a5a66"/>
+  </g>
+  <g id="houses"></g>
+  <text id="houseNote" class="mono" x="110" y="850" font-size="20" letter-spacing="2" fill="#68c6c3">ONE CHANNEL · MANY HOMES</text>
+
+  <!-- ===== D: GENERATED. A prompt, then a newspaper no one printed ===== -->
+  <g id="shotD" opacity="0">
+    <g id="chat">
+      <rect x="336" y="200" width="308" height="440" rx="34" fill="#0d1318" stroke="#4a5a66" stroke-width="4"/>
+      <rect x="352" y="222" width="276" height="396" rx="18" fill="#1c2a35"/>
+      <rect id="bubble" x="384" y="262" width="220" height="104" rx="18" fill="#6b8fc6"/>
+      <text class="serif" x="402" y="300" font-size="21" fill="#f8f2e8">Find me a primary</text>
+      <text class="serif" x="402" y="328" font-size="21" fill="#f8f2e8">source from 1863</text>
+      <text class="serif" x="402" y="352" font-size="21" fill="#f8f2e8">about the draft.</text>
+      <g id="dots">
+        <circle cx="404" cy="420" r="8" fill="#aeb8bd"/><circle cx="430" cy="420" r="8" fill="#aeb8bd"/><circle cx="456" cy="420" r="8" fill="#aeb8bd"/>
+      </g>
+    </g>
+    <g id="paperD"></g>
+    <g id="genBadge" opacity="0">
+      <rect x="560" y="186" width="210" height="46" rx="23" fill="#d86b63"/>
+      <text class="mono" x="665" y="216" font-size="18" letter-spacing="2" font-weight="700" text-anchor="middle" fill="#17232d">GENERATED</text>
+    </g>
+  </g>
+
+  <!-- ===== RIGHT PANEL: where did this come from? ===== -->
+  <g id="panel">
+    <rect x="1016" y="136" width="818" height="664" rx="14" fill="#2a3742"/>
+    <rect x="1030" y="150" width="790" height="636" rx="6" fill="#f3efe6"/>
+    <rect x="1030" y="150" width="790" height="46" fill="#e3dccd"/>
+    <text class="mono" x="1052" y="180" font-size="17" letter-spacing="1.5" fill="#5a6670">WHERE DID THIS COME FROM?</text>
+    <text id="era" class="serif" x="1066" y="268" font-size="46" fill="#17232d">Print</text>
+    <g id="rows"></g>
+  </g>
+
+  <text id="caption" class="serif" x="1016" y="884" font-size="36" font-style="italic" fill="#f3efe6"></text>
+
+  <!-- ===== END CARD ===== -->
+  <g id="endCard" opacity="0">
+    <rect width="1920" height="1080" fill="#17232d"/>
+    <text class="mono" x="200" y="380" font-size="24" letter-spacing="5" font-weight="700" fill="#d9a441">MEDIA ECOLOGY · TERTIARY ALGORITHMICITY</text>
+    <text x="194" y="500" font-size="96" font-weight="800" letter-spacing="-2" fill="#f3efe6">The medium shapes the evidence.</text>
+    <text id="endLine" class="serif" x="198" y="606" font-size="68" font-style="italic" fill="#e8825f">So students learn to ask where it came from.</text>
+    <rect id="endRule" x="200" y="660" width="0" height="6" fill="#e8825f"/>
+    <text class="mono" x="200" y="732" font-size="22" letter-spacing="2" fill="#a9b3ba">MICAH J. MINER · PEDAGOGICAL FRICTION IN SOCIAL STUDIES</text>
+  </g>
+
+  <rect x="0" y="0" width="1920" height="60" fill="#101920"/>
+  <rect x="0" y="1020" width="1920" height="60" fill="#101920"/>
+  <g id="tagBox">
+    <rect x="88" y="90" width="560" height="44" fill="#101920"/>
+    <text id="tag" class="mono" x="108" y="121" font-size="24" letter-spacing="3" font-weight="700" fill="#68c6c3">PRINT · 1860s</text>
+  </g>
+  <rect id="fade" width="1920" height="1080" fill="#101920" opacity="1"/>
+</svg>
+
+<script>
+(function(){
+  var NS = 'http://www.w3.org/2000/svg';
+  var $ = function(id){ return document.getElementById(id); };
+  function el(tag, attrs, parent, text){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    parent.appendChild(e); return e;
+  }
+  var clamp = function(x,a,b){ return Math.max(a, Math.min(b, x)); };
+  var prog = function(t,a,b){ return clamp((t-a)/(b-a),0,1); };
+  var ease = function(x){ return x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2; };
+  var lerp = function(a,b,x){ return a+(b-a)*x; };
+
+  // ---- the newspaper (drawn twice: printed in A, generated in D) ----
+  function paper(parent){
+    var g = el('g', {}, parent);
+    el('rect',{x:270,y:210,width:440,height:560,rx:4,fill:'#f6f1e7',stroke:'#c9c1b1','stroke-width':2},g);
+    el('text',{x:490,y:266,'font-size':40,'text-anchor':'middle','class':'serif','font-weight':700,fill:'#17232d'},g,'The Town Gazette');
+    el('rect',{x:296,y:282,width:388,height:3,fill:'#17232d'},g);
+    el('text',{x:490,y:308,'font-size':15,'text-anchor':'middle','class':'mono','letter-spacing':2,fill:'#5a6670'},g,'JULY 1863 · VOL. XII');
+    el('rect',{x:296,y:320,width:388,height:1.5,fill:'#17232d'},g);
+    el('text',{x:490,y:366,'font-size':30,'text-anchor':'middle','class':'serif',fill:'#17232d'},g,'THE DRAFT COMES');
+    el('text',{x:490,y:402,'font-size':30,'text-anchor':'middle','class':'serif',fill:'#17232d'},g,'TO OUR COUNTY');
+    for (var col = 0; col < 3; col++) for (var i = 0; i < 14; i++) {
+      var w = (i % 5 === 4) ? 70 : 112;
+      el('rect',{x:296 + col*132, y:432 + i*22, width:w, height:7, rx:3, fill:'#cfc6b4'},g);
+    }
+    return g;
+  }
+  paper($('paperA'));
+  var paperD = paper($('paperD'));
+
+  // ---- houses: one shared glow, then many different ones ----
+  var houses = $('houses'), windows = [];
+  var feedColors = ['#d86b63','#d9a441','#6b8fc6','#7fa37a','#e8825f','#68c6c3','#b58bd1'];
+  for (var h = 0; h < 7; h++) {
+    var hx = 110 + h*118, g = el('g', {}, houses);
+    el('path',{d:'M'+hx+' 760 L'+hx+' 706 L'+(hx+48)+' 668 L'+(hx+96)+' 706 L'+(hx+96)+' 760 Z',fill:'#2a3742'},g);
+    windows.push(el('rect',{x:hx+30,y:712,width:36,height:30,rx:3,fill:'#68c6c3'},g));
+  }
+
+  // ---- the feed: cards ranked for you ----
+  var feed = $('feed');
+  for (var f = 0; f < 10; f++) {
+    var fy = 240 + f*112, fg = el('g', {}, feed);
+    el('rect',{x:368,y:fy,width:244,height:96,rx:12,fill:'#26353f'},fg);
+    el('rect',{x:382,y:fy+14,width:68,height:68,rx:10,fill:feedColors[f % 7]},fg);
+    el('rect',{x:462,y:fy+20,width:128,height:9,rx:4,fill:'#aeb8bd'},fg);
+    el('rect',{x:462,y:fy+40,width:96,height:9,rx:4,fill:'#5a6670'},fg);
+    el('text',{x:462,y:fy+76,'font-size':15,'class':'mono',fill:'#d9a441'},fg,(40 - f*3) + 'K SHARES');
+  }
+
+  // ---- the panel rows ----
+  var LABELS = ['WHO MADE IT', 'WHEN', 'WHERE TO CHECK IT'];
+  var VALUES = [
+    ['A named editor', 'Printed in July 1863', 'Bound copies in an archive'],
+    ['A network newsroom', 'Tonight, 6:30', 'Everyone saw the same story'],
+    ['Someone, reshared 40,000 times', 'Unclear', 'Ranked by what you clicked'],
+    ['No one', 'Two seconds ago', 'Nowhere. Fluent anyway.']
+  ];
+  var STATUS = ['ok','ok','ask','no'];
+  var ERAS = ['Print', 'Broadcast', 'Algorithmic feed', 'Generated'];
+  var TAGS = ['PRINT · 1860s', 'BROADCAST · 1960s', 'FEED · 2010s', 'GENERATED · NOW'];
+  var CAPTIONS = [
+    'The word becomes inspectable and sourceable.',
+    'Presence returns. A few own the channel.',
+    'Circulation is ranked and curated for you.',
+    'The source itself can be generated.'
+  ];
+  var rows = $('rows'), rowEls = [];
+  LABELS.forEach(function(lb, i){
+    var y = 330 + i*140, g = el('g',{opacity:0},rows);
+    el('text',{x:1066,y:y,'font-size':16,'letter-spacing':2.5,'class':'mono',fill:'#5a6670'},g,lb);
+    var val = el('text',{x:1066,y:y+48,'font-size':32,'class':'serif',fill:'#17232d'},g,'');
+    var icon = el('g',{},g);
+    var circ = el('circle',{cx:1756,cy:y+30,r:28,fill:'#2f6970'},icon);
+    var tick = el('path',{d:'M'+1742+' '+(y+31)+' L'+1752+' '+(y+42)+' L'+1771+' '+(y+18),fill:'none',stroke:'#fffdf8','stroke-width':6,'stroke-linecap':'round','stroke-linejoin':'round'},icon);
+    var ask = el('text',{x:1756,y:y+42,'font-size':34,'font-weight':800,'text-anchor':'middle',fill:'#17232d'},icon,'?');
+    var cross = el('path',{d:'M'+1744+' '+(y+18)+' L'+1768+' '+(y+42)+' M'+1768+' '+(y+18)+' L'+1744+' '+(y+42),stroke:'#fffdf8','stroke-width':6,'stroke-linecap':'round'},icon);
+    el('rect',{x:1066,y:y+74,width:720,height:1.5,fill:'#d8d0c0'},g);
+    rowEls.push({g:g, val:val, circ:circ, tick:tick, ask:ask, cross:cross});
+  });
+
+  // ---- timeline (seconds) ----
+  // A 0-4.2 print | B 4.2-8.0 broadcast | C 8.0-11.4 feed | D 11.4-14.4 generated | end 14.4-18
+  var STARTS = [0, 4.2, 8.0, 11.4];
+  window.render = function(t){
+    var shot = t < 4.2 ? 0 : t < 8.0 ? 1 : t < 11.4 ? 2 : 3;
+    var x = 0.3;
+    var sA = 1 - prog(t, 4.0, 4.0 + x);
+    var sB = prog(t, 4.0, 4.0 + x) * (1 - prog(t, 7.8, 7.8 + x));
+    var sC = prog(t, 7.8, 7.8 + x) * (1 - prog(t, 11.2, 11.2 + x));
+    var sD = prog(t, 11.2, 11.2 + x);
+    $('shotA').setAttribute('opacity', sA.toFixed(3));
+    $('shotB').setAttribute('opacity', sB.toFixed(3));
+    $('shotC').setAttribute('opacity', sC.toFixed(3));
+    $('shotD').setAttribute('opacity', sD.toFixed(3));
+    var housesOn = Math.max(sB, sC);
+    $('houses').setAttribute('opacity', housesOn.toFixed(3));
+    $('houseNote').setAttribute('opacity', housesOn.toFixed(3));
+    $('houseNote').textContent = t < 8.0 ? 'ONE CHANNEL · MANY HOMES' : 'MANY CHANNELS · ONE PER HOME';
+    $('houseNote').setAttribute('fill', t < 8.0 ? '#68c6c3' : '#d9a441');
+    $('glow').setAttribute('fill', shot === 0 ? 'url(#glowGold)' : shot === 3 ? 'url(#glowRose)' : 'url(#glowTeal)');
+
+    // A: copies multiply
+    var spread = ease(prog(t, 1.2, 2.4));
+    $('copy2').setAttribute('transform', 'translate(' + (lerp(-15, 0, spread)).toFixed(1) + ',' + (lerp(-15, 0, spread)).toFixed(1) + ')');
+    $('copies').setAttribute('opacity', spread.toFixed(3));
+    var n = Math.round(lerp(1, 1000, ease(prog(t, 1.2, 3.0))));
+    $('copyCount').textContent = 'COPY 1 OF ' + n.toLocaleString('en-US');
+
+    // B to C: windows go from one shared glow to one feed each
+    windows.forEach(function(w, i){
+      w.setAttribute('fill', t < 8.6 + i*0.12 ? '#68c6c3' : feedColors[i]);
+    });
+    $('feed').setAttribute('transform', 'translate(0,' + (-260 * ease(prog(t, 8.3, 11.0))).toFixed(1) + ')');
+
+    // D: prompt, dots, then a paper no one printed
+    var typing = t >= 11.8 && t < 12.5;
+    $('dots').setAttribute('opacity', typing ? (0.4 + 0.6 * Math.abs(Math.sin(t * 9))).toFixed(3) : 0);
+    $('bubble').parentNode.setAttribute('opacity', 1);
+    $('chat').setAttribute('opacity', (1 - prog(t, 12.4, 12.8)).toFixed(3));
+    var pd = prog(t, 12.4, 12.9);
+    paperD.setAttribute('opacity', pd.toFixed(3));
+    paperD.setAttribute('transform', 'translate(0,' + (lerp(18, 0, ease(pd))).toFixed(1) + ')');
+    $('genBadge').setAttribute('opacity', prog(t, 13.0, 13.3).toFixed(3));
+
+    // panel: era, rows, verdicts
+    $('era').textContent = ERAS[shot];
+    $('tag').textContent = TAGS[shot];
+    var s0 = STARTS[shot];
+    rowEls.forEach(function(r, i){
+      var appear = shot === 3 ? prog(t, 12.9 + i*0.35, 13.1 + i*0.35) : prog(t, s0 + 0.7 + i*0.55, s0 + 0.95 + i*0.55);
+      r.g.setAttribute('opacity', appear.toFixed(3));
+      r.val.textContent = VALUES[shot][i];
+      var st = STATUS[shot];
+      r.circ.setAttribute('fill', st === 'ok' ? '#2f6970' : st === 'ask' ? '#d9a441' : '#d86b63');
+      r.tick.setAttribute('opacity', st === 'ok' ? 1 : 0);
+      r.ask.setAttribute('opacity', st === 'ask' ? 1 : 0);
+      r.cross.setAttribute('opacity', st === 'no' ? 1 : 0);
+    });
+    var capIn = prog(t, s0 + 0.5, s0 + 0.9);
+    $('caption').textContent = CAPTIONS[shot];
+    $('caption').setAttribute('opacity', capIn.toFixed(3));
+
+    // end card
+    $('endCard').setAttribute('opacity', prog(t, 14.2, 14.6).toFixed(3));
+    $('tagBox').setAttribute('opacity', (1 - prog(t, 14.2, 14.5)).toFixed(3));
+    $('endLine').setAttribute('opacity', prog(t, 15.2, 15.6).toFixed(3));
+    $('endRule').setAttribute('width', (96 * ease(prog(t, 15.5, 16.0))).toFixed(1));
+    $('fade').setAttribute('opacity', Math.max(1 - t/0.4, prog(t, 17.6, 18)).toFixed(3));
+  };
+  render(location.hash ? parseFloat(location.hash.slice(1)) : 13.6);
+})();
+</script>
+</body>
+</html>

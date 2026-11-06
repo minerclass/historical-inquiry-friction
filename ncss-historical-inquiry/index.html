@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>When AI Does the Thinking | Historical Inquiry Through Pedagogical Friction</title>
+  <title>Teaching History Among Algorithms | NCSS 2026</title>
   <link rel="stylesheet" href="https://minerclass.github.io/tokens.css">
   <style>
     :root {
@@ -614,6 +614,23 @@
     .survey-qr img { display: block; width: 100%; height: auto; }
     .survey-qr strong { display: block; margin-top: 10px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: clamp(.62rem, .82vw, .95rem); overflow-wrap: anywhere; }
     @media (max-width: 820px) { .survey-layout { grid-template-columns: 1fr; } .survey-qr { width: min(260px, 78vw); } }
+  
+    /* In-slide video clips: launch buttons and a modal player */
+    .clip-launch { display: inline-flex; align-items: center; gap: .6em; padding: .5em 1.05em; border-radius: 999px; border: 1px solid currentColor; background: transparent; color: inherit; font: inherit; font-size: clamp(.8rem, 1.05vw, 1.02rem); font-weight: 700; line-height: 1.2; cursor: pointer; opacity: .9; white-space: nowrap; }
+    .clip-launch::before { content: ""; border-left: .78em solid currentColor; border-top: .46em solid transparent; border-bottom: .46em solid transparent; }
+    .clip-launch span { font-weight: 400; opacity: .78; }
+    .clip-launch:hover, .clip-launch:focus-visible { opacity: 1; }
+    .clip-player { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; background: rgba(10, 16, 21, .96); }
+    .clip-player[hidden] { display: none; }
+    .clip-inner { display: flex; flex-direction: column; gap: 14px; width: min(92vw, calc((100vh - 140px) * 16 / 9)); }
+    .clip-inner video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; }
+    .clip-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font: 15px/1.4 -apple-system, "Segoe UI", system-ui, sans-serif; }
+    .clip-bar p { margin: 0; flex: 1; min-width: 220px; max-width: none; color: rgba(255, 253, 248, .86); font: inherit; }
+    .clip-bar strong { color: #fffdf8; }
+    .clip-bar a, .clip-bar button { color: #fffdf8; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .22); border-radius: 999px; padding: 8px 14px; text-decoration: none; cursor: pointer; font: 14px -apple-system, "Segoe UI", system-ui, sans-serif; }
+    @media print { .clip-launch, .clip-player { display: none !important; } }
+      .clip-row { margin-top: 6px; color: var(--teal); }
+    .slide > .clip-corner { position: absolute; top: clamp(30px, 4.4vw, 62px); right: clamp(34px, 5vw, 70px); z-index: 2; color: var(--teal); }
   </style>
 </head>
 <body>
@@ -621,19 +638,20 @@
 
   <main class="deck" aria-live="polite">
     <section class="slide active" data-title="Title">
-      <div class="kicker">High School / Secondary Level | Pedagogy for the Present</div>
+      <div class="kicker">106th NCSS Annual Conference &middot; Chicago &middot; December 4, 2026</div>
       <div class="content">
-        <h1>When AI Does the Thinking</h1>
-        <p class="lead">Preserving historical inquiry through pedagogical friction.</p>
+        <h1>Teaching History Among Algorithms</h1>
+        <p class="lead">Media ecology, misinformation, and democratic learning.</p>
         <div class="badge-row">
           <span class="badge">Micah Miner</span>
           <span class="badge">Beach Park District 3</span>
           <span class="badge">Social studies inquiry</span>
           <a class="badge" href="../">Full interactive deck</a>
         </div>
+        <div class="clip-row"><button class="clip-launch" type="button" data-clip="../assets/how-a-student-meets-the-past.mp4" data-clip-title="How a student meets the past" data-clip-desc="18 seconds, no audio. Print, broadcast, feed, generated: where did this come from? An illustration, not a real document.">Play scene <span>How a student meets the past &middot; 0:18</span></button></div>
       </div>
-      <div class="footer"><span>Interactive session deck candidate</span><span>1</span></div>
-      <aside class="speaker-notes">Open by naming the central design problem: AI can help social studies teachers, but it can also remove the struggle that makes historical thinking educative.</aside>
+      <div class="footer"><span>NCSS 2026 session deck</span><span>1</span></div>
+      <aside class="speaker-notes">Open by naming the central design problem: AI can help social studies teachers, but it can also remove the struggle that makes historical thinking educative. Optional: Play scene runs 18 seconds with no audio; Esc returns to the deck.</aside>
     </section>
 
     <section class="slide light" data-title="Ten Seconds">
@@ -686,6 +704,7 @@
 
     <section class="slide" data-title="Same Artifact">
       <div class="kicker">Same artifact, different learning</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/same-artifact-different-learning.mp4" data-clip-title="Same artifact, different learning" data-clip-desc="18 seconds, no audio. Two students, one polished answer, and a redesigned task. An illustration, not real student work.">Play scene <span>Same artifact, different learning &middot; 0:18</span></button>
       <div class="content">
         <h2>Two students submit the same polished historical argument.</h2>
         <div class="path" data-choice-group="path">
@@ -712,7 +731,7 @@
         <div class="result-box" id="pathResult">AI as entry preserves the inquiry sequence: students encounter sources, form an initial interpretation, then use AI as a challenge or mirror.</div>
       </div>
       <div class="footer"><span>Assessment must recover the process.</span><span>5</span></div>
-      <aside class="speaker-notes">This draws from both candidate decks. It is the strongest recurring image: same output, different formation.</aside>
+      <aside class="speaker-notes">This draws from both candidate decks. It is the strongest recurring image: same output, different formation. Optional: Play scene runs 18 seconds with no audio; Esc returns to the deck.</aside>
     </section>
 
     <section class="slide light" data-title="Historical Inquiry">
@@ -1172,6 +1191,44 @@
     wireRail();
     wireTabs();
     showSlide(0);
+  </script>
+
+  <div class="clip-player" id="clipPlayer" hidden role="dialog" aria-modal="true" aria-labelledby="clipTitle">
+    <div class="clip-inner">
+      <video id="clipVideo" controls playsinline preload="none"></video>
+      <div class="clip-bar">
+        <p><strong id="clipTitle"></strong> &middot; <span id="clipDesc"></span></p>
+        <a id="clipDownload" href="#" download>Download video</a>
+        <button type="button" id="clipClose">Back to presentation (Esc)</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var player = document.getElementById("clipPlayer"), video = document.getElementById("clipVideo"), last = null;
+      function open(btn) {
+        last = btn;
+        document.getElementById("clipTitle").textContent = btn.dataset.clipTitle;
+        document.getElementById("clipDesc").textContent = btn.dataset.clipDesc;
+        document.getElementById("clipDownload").href = btn.dataset.clip;
+        if (video.getAttribute("src") !== btn.dataset.clip) video.src = btn.dataset.clip;
+        player.hidden = false;
+        try { video.currentTime = 0; } catch (e) {}
+        var p = video.play(); if (p && p.catch) p.catch(function () {});
+        video.focus();
+      }
+      function close() { video.pause(); player.hidden = true; if (last) last.focus(); }
+      document.querySelectorAll(".clip-launch").forEach(function (b) {
+        b.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); open(b); });
+      });
+      document.getElementById("clipClose").addEventListener("click", close);
+      player.addEventListener("click", function (e) { if (e.target === player) close(); });
+      window.addEventListener("keydown", function (e) {
+        if (player.hidden) return;
+        if (e.key === "Escape") { e.preventDefault(); close(); }
+        e.stopPropagation();
+      }, true);
+    })();
   </script>
 </body>
 </html>

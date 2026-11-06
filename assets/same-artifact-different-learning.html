@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Same artifact, different learning</title>
+<!-- 18-second silent scene for the social studies decks (NCSS and NSSLA, December 2026).
+     Open with #seconds (for example #8) to preview a moment.
+     Render: swiftc -O tools/render-video.swift -o /tmp/render-video
+             /tmp/render-video assets/same-artifact-different-learning.html assets/same-artifact-different-learning.mp4 18 30
+     The student, the answer, and the documents are illustrations, not real student work or sources. -->
+<style>
+  html,body{margin:0;background:#101920;}
+  svg{display:block;width:1920px;height:1080px;}
+  text{font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;}
+  .mono{font-family:"SF Mono",Menlo,"DejaVu Sans Mono",monospace;}
+  .serif{font-family:Georgia,"Times New Roman",serif;}
+</style>
+</head>
+<body>
+<svg id="s" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glowScreen" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#6b8fc6" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#6b8fc6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowDay" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#d9a441" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#d9a441" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ===== ROOM ===== -->
+  <g id="room">
+    <rect width="1920" height="1080" fill="#1f2c37"/>
+    <!-- window: night, then morning -->
+    <rect x="120" y="170" width="260" height="210" rx="6" fill="#34434e"/>
+    <rect id="sky" x="134" y="184" width="232" height="182" fill="#101920"/>
+    <circle id="moon" cx="320" cy="226" r="20" fill="#e8e0d2"/>
+    <circle id="sun" cx="320" cy="226" r="26" fill="#f5c86a" opacity="0"/>
+    <rect x="246" y="184" width="8" height="182" fill="#34434e"/>
+    <rect x="134" y="270" width="232" height="8" fill="#34434e"/>
+    <!-- shelf with three books -->
+    <rect x="680" y="250" width="230" height="10" fill="#34434e"/>
+    <rect x="700" y="182" width="28" height="68" fill="#91462f"/><rect x="732" y="194" width="24" height="56" fill="#2f6970"/><rect x="760" y="176" width="30" height="74" fill="#b58127"/>
+    <circle id="glow" cx="560" cy="560" r="330" fill="url(#glowScreen)"/>
+    <!-- student -->
+    <g id="student">
+      <ellipse cx="560" cy="560" rx="96" ry="40" fill="#24505a"/>
+      <path d="M462 720 L466 610 Q470 560 516 554 L604 554 Q650 560 654 610 L658 720 Z" fill="#2f6970"/>
+      <path d="M536 560 L560 600 L584 560" fill="none" stroke="#24505a" stroke-width="6" stroke-linecap="round"/>
+      <line x1="546" y1="598" x2="542" y2="640" stroke="#e8e0d2" stroke-width="4" stroke-linecap="round"/>
+      <line x1="574" y1="598" x2="578" y2="640" stroke="#e8e0d2" stroke-width="4" stroke-linecap="round"/>
+      <rect x="546" y="516" width="28" height="40" fill="#7a4a2e"/>
+      <circle cx="560" cy="472" r="60" fill="#8d5a3b"/>
+      <g fill="#1e140d">
+        <circle cx="512" cy="436" r="22"/><circle cx="540" cy="418" r="24"/><circle cx="572" cy="414" r="24"/><circle cx="604" cy="428" r="22"/><circle cx="618" cy="452" r="16"/><circle cx="502" cy="458" r="14"/>
+      </g>
+      <circle cx="500" cy="484" r="9" fill="#7a4a2e"/><circle cx="620" cy="484" r="9" fill="#7a4a2e"/>
+      <circle id="eyeL" cx="539" cy="482" r="5.5" fill="#17232d"/><circle id="eyeR" cx="581" cy="482" r="5.5" fill="#17232d"/>
+      <path id="browL" d="M526 464 L550 466" stroke="#1e140d" stroke-width="5" stroke-linecap="round"/>
+      <path id="browR" d="M594 464 L570 466" stroke="#1e140d" stroke-width="5" stroke-linecap="round"/>
+      <path id="mouth" d="M548 512 L572 512" stroke="#3a2414" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    </g>
+    <!-- desk -->
+    <rect x="262" y="750" width="730" height="24" fill="#2e3c48"/>
+    <rect x="288" y="774" width="678" height="306" fill="#24313c"/>
+    <!-- laptop, seen from behind -->
+    <g id="laptop">
+      <rect id="lid" x="450" y="610" width="220" height="140" rx="10" fill="#34434e" stroke="#4a5a66" stroke-width="3"/>
+      <circle cx="560" cy="680" r="9" fill="#4a5a66"/>
+    </g>
+    <!-- documents, the next morning -->
+    <g id="docs" opacity="0">
+      <g transform="rotate(-7 420 720)">
+        <rect x="350" y="640" width="150" height="104" rx="4" fill="#f6f1e7"/>
+        <rect x="362" y="652" width="126" height="54" fill="#8a8170"/>
+        <rect x="362" y="714" width="90" height="6" rx="3" fill="#cfc6b4"/><rect x="362" y="726" width="110" height="6" rx="3" fill="#cfc6b4"/>
+      </g>
+      <g transform="rotate(5 700 720)">
+        <rect x="620" y="636" width="150" height="110" rx="4" fill="#f6f1e7"/>
+        <rect x="632" y="652" width="120" height="6" rx="3" fill="#cfc6b4"/><rect x="632" y="666" width="100" height="6" rx="3" fill="#cfc6b4"/>
+        <rect id="hilite" x="630" y="678" width="0" height="12" fill="#f5c86a" opacity="0.85"/>
+        <rect x="632" y="680" width="112" height="6" rx="3" fill="#8a8170"/><rect x="632" y="696" width="96" height="6" rx="3" fill="#cfc6b4"/><rect x="632" y="710" width="118" height="6" rx="3" fill="#cfc6b4"/>
+      </g>
+      <rect x="520" y="716" width="80" height="14" rx="5" fill="#f5c86a" transform="rotate(-18 560 723)"/>
+    </g>
+  </g>
+
+  <!-- ===== PANEL A: the prompt and the instant answer ===== -->
+  <g id="panelA">
+    <rect x="1016" y="136" width="818" height="664" rx="14" fill="#2a3742"/>
+    <rect x="1030" y="150" width="790" height="636" rx="6" fill="#f3efe6"/>
+    <rect x="1030" y="150" width="790" height="46" fill="#e3dccd"/>
+    <text class="mono" x="1052" y="180" font-size="17" letter-spacing="1.5" fill="#5a6670">UNIT 6 · DOCUMENT-BASED QUESTION</text>
+    <rect x="1066" y="226" width="718" height="92" rx="12" fill="#fffdf8" stroke="#c9c1b1" stroke-width="2"/>
+    <text id="prompt" class="serif" x="1092" y="282" font-size="28" fill="#17232d"></text>
+    <rect id="caret" x="1092" y="258" width="3" height="32" fill="#17232d"/>
+    <g id="answer" opacity="0">
+      <text class="serif" x="1066" y="380" font-size="30" fill="#17232d">The Dust Bowl resulted from a combination</text>
+      <text class="serif" x="1066" y="420" font-size="30" fill="#17232d">of drought, overplowing, and economic…</text>
+      <g id="answerLines"></g>
+    </g>
+    <g id="ready" opacity="0">
+      <rect x="1066" y="700" width="420" height="50" rx="25" fill="#17232d"/>
+      <text class="mono" x="1276" y="732" font-size="18" letter-spacing="2" font-weight="700" text-anchor="middle" fill="#f5c86a">ANSWER READY · 9 SECONDS</text>
+    </g>
+  </g>
+
+  <!-- ===== PANEL B: two students, one artifact ===== -->
+  <g id="panelB" opacity="0">
+    <rect x="1016" y="136" width="818" height="664" rx="14" fill="#2a3742"/>
+    <rect x="1030" y="150" width="790" height="636" rx="6" fill="#f3efe6"/>
+    <rect x="1030" y="150" width="790" height="46" fill="#e3dccd"/>
+    <text class="mono" x="1052" y="180" font-size="17" letter-spacing="1.5" fill="#5a6670">TWO STUDENTS · ONE ARTIFACT</text>
+    <g id="cards"></g>
+    <text id="bNote" class="mono" x="1066" y="764" font-size="18" letter-spacing="2" font-weight="700" fill="#91462f">THE GRADE CAN'T SEE THE DIFFERENCE.</text>
+  </g>
+
+  <!-- ===== PANEL C: the task, redesigned ===== -->
+  <g id="panelC" opacity="0">
+    <rect x="1016" y="136" width="818" height="664" rx="14" fill="#2a3742"/>
+    <rect x="1030" y="150" width="790" height="636" rx="6" fill="#f3efe6"/>
+    <rect x="1030" y="150" width="790" height="46" fill="#e3dccd"/>
+    <text class="mono" x="1052" y="180" font-size="17" letter-spacing="1.5" fill="#5a6670">UNIT 6 · TASK, REDESIGNED</text>
+    <text class="serif" x="1066" y="262" font-size="40" fill="#17232d">Put the friction back</text>
+    <g id="planRows"></g>
+    <text class="mono" x="1066" y="740" font-size="17" letter-spacing="2" fill="#5a6670">AI COMES IN AFTER: A RIVAL READING TO ARGUE WITH.</text>
+  </g>
+
+  <!-- ===== END CARD ===== -->
+  <g id="endCard" opacity="0">
+    <rect width="1920" height="1080" fill="#17232d"/>
+    <text class="mono" x="200" y="380" font-size="24" letter-spacing="5" font-weight="700" fill="#d9a441">PEDAGOGICAL FRICTION · HISTORICAL INQUIRY</text>
+    <text x="194" y="500" font-size="96" font-weight="800" letter-spacing="-2" fill="#f3efe6">Same artifact. Different learning.</text>
+    <text id="endLine" class="serif" x="198" y="606" font-size="68" font-style="italic" fill="#e8825f">Put the friction back where the thinking happens.</text>
+    <rect id="endRule" x="200" y="660" width="0" height="6" fill="#e8825f"/>
+    <text class="mono" x="200" y="732" font-size="22" letter-spacing="2" fill="#a9b3ba">MICAH J. MINER · PEDAGOGICAL FRICTION IN SOCIAL STUDIES</text>
+  </g>
+
+  <rect x="0" y="0" width="1920" height="60" fill="#101920"/>
+  <rect x="0" y="1020" width="1920" height="60" fill="#101920"/>
+  <g id="tagBox">
+    <rect x="88" y="90" width="560" height="44" fill="#101920"/>
+    <text id="tag" class="mono" x="108" y="121" font-size="24" letter-spacing="3" font-weight="700" fill="#68c6c3">TUESDAY · 9:10 PM</text>
+  </g>
+  <rect id="fade" width="1920" height="1080" fill="#101920" opacity="1"/>
+</svg>
+
+<script>
+(function(){
+  var NS = 'http://www.w3.org/2000/svg';
+  var $ = function(id){ return document.getElementById(id); };
+  function el(tag, attrs, parent, text){
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    parent.appendChild(e); return e;
+  }
+  var clamp = function(x,a,b){ return Math.max(a, Math.min(b, x)); };
+  var prog = function(t,a,b){ return clamp((t-a)/(b-a),0,1); };
+  var ease = function(x){ return x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2; };
+
+  var PROMPT = 'Write my answer: What caused the Dust Bowl?';
+
+  // ---- the instant answer: a full paragraph in a blink ----
+  var answerLines = $('answerLines'), aLines = [];
+  [700, 650, 690, 610, 700, 560, 680, 640].forEach(function(w, i){
+    aLines.push(el('rect',{x:1066,y:452 + i*28,width:w,height:10,rx:5,fill:'#cfc6b4',opacity:0},answerLines));
+  });
+
+  // ---- two identical essays, two very different trails ----
+  var cards = $('cards'), trailA = [], trailB = [], cardEls = [];
+  var STEPS = ['Sourced three documents', 'Placed them in context', 'Corroborated the claim', 'Defended it aloud'];
+  ['STUDENT A', 'STUDENT B'].forEach(function(name, k){
+    var x = 1066 + k*370, g = el('g',{opacity:0},cards);
+    el('rect',{x:x,y:224,width:346,height:250,rx:10,fill:'#fffdf8',stroke:'#c9c1b1','stroke-width':2},g);
+    el('text',{x:x+20,y:256,'font-size':15,'letter-spacing':2,'class':'mono',fill:'#5a6670'},g,name);
+    el('circle',{cx:x+306,cy:262,r:26,fill:'#2f6970'},g);
+    el('text',{x:x+306,y:271,'font-size':24,'font-weight':800,'text-anchor':'middle',fill:'#fffdf8'},g,'A–');
+    el('text',{x:x+20,y:304,'font-size':19,'class':'serif',fill:'#17232d'},g,'The Dust Bowl resulted from');
+    el('text',{x:x+20,y:330,'font-size':19,'class':'serif',fill:'#17232d'},g,'a combination of drought…');
+    [290, 270, 300, 250, 286, 220].forEach(function(w, i){ el('rect',{x:x+20,y:350 + i*19,width:w,height:7,rx:3,fill:'#d8d0c0'},g); });
+    cardEls.push(g);
+    STEPS.forEach(function(s, i){
+      var y = 510 + i*52, sg = el('g',{opacity:0},cards);
+      if (k === 0) {
+        el('circle',{cx:x+14,cy:y-7,r:13,fill:'#2f6970'},sg);
+        el('path',{d:'M'+(x+8)+' '+(y-7)+' L'+(x+13)+' '+(y-1)+' L'+(x+21)+' '+(y-13),fill:'none',stroke:'#fffdf8','stroke-width':3.5,'stroke-linecap':'round','stroke-linejoin':'round'},sg);
+        el('text',{x:x+38,y:y,'font-size':20,fill:'#17232d'},sg,s);
+        trailA.push(sg);
+      } else {
+        el('circle',{cx:x+14,cy:y-7,r:13,fill:'none',stroke:'#c9c1b1','stroke-width':3},sg);
+        var gray = el('text',{x:x+38,y:y,'font-size':20,fill:'#b8b0a0'},sg,s);
+        el('rect',{x:x+38,y:y-9,width:gray.getComputedTextLength(),height:2.5,fill:'#b8b0a0'},sg);
+        trailB.push(sg);
+      }
+    });
+  });
+
+  // ---- the redesign: three frictions worth protecting ----
+  var ROWS = [
+    ['Source two documents before opening AI', 'NOETIC'],
+    ['Defend one claim to a partner', 'RHETORICAL'],
+    ['Sign it: what would change your mind?', 'EXISTENTIAL']
+  ];
+  var planRows = $('planRows'), ticks = [], rowEls = [];
+  ROWS.forEach(function(rw, i){
+    var y = 330 + i*124, g = el('g',{opacity:0},planRows);
+    el('rect',{x:1066,y:y,width:44,height:44,rx:6,fill:'#fffdf8',stroke:'#17232d','stroke-width':3},g);
+    ticks.push(el('path',{d:'M'+1075+' '+(y+23)+' L'+1086+' '+(y+35)+' L'+1103+' '+(y+10),fill:'none',stroke:'#91462f','stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round',opacity:0},g));
+    el('text',{x:1130,y:y+32,'font-size':28,fill:'#17232d'},g,rw[0]);
+    el('rect',{x:1130,y:y+48,width:rw[1].length*14+30,height:30,rx:15,fill:'#dbe7e5'},g);
+    el('text',{x:1145,y:y+69,'font-size':15,'font-weight':700,'letter-spacing':2,'class':'mono',fill:'#1f5057'},g,rw[1]);
+    rowEls.push(g);
+  });
+
+  // ---- timeline (seconds) ----
+  // A 0-5.2 the prompt and the answer | B 5.2-10.2 two students | C 10.2-14.4 the redesign | end 14.4-18
+  window.render = function(t){
+    var sA = 1 - prog(t, 5.0, 5.3), sB = prog(t, 5.0, 5.3) * (1 - prog(t, 10.0, 10.3)), sC = prog(t, 10.0, 10.3);
+    $('panelA').setAttribute('opacity', sA.toFixed(3));
+    $('panelB').setAttribute('opacity', sB.toFixed(3));
+    $('panelC').setAttribute('opacity', sC.toFixed(3));
+    var morning = t >= 10.2;
+    $('tag').textContent = morning ? 'WEDNESDAY · FIRST PERIOD' : 'TUESDAY · 9:10 PM';
+    $('sky').setAttribute('fill', morning ? '#9cc3d5' : '#101920');
+    $('moon').setAttribute('opacity', morning ? 0 : 1);
+    $('sun').setAttribute('opacity', morning ? 1 : 0);
+    $('glow').setAttribute('fill', morning ? 'url(#glowDay)' : 'url(#glowScreen)');
+
+    // A: typing, then a paragraph appears all at once
+    var ch = Math.floor(prog(t, 0.7, 2.4) * PROMPT.length);
+    $('prompt').textContent = PROMPT.slice(0, ch);
+    var caretX = 1092 + ($('prompt').getComputedTextLength ? $('prompt').getComputedTextLength() : 0) + 4;
+    $('caret').setAttribute('x', caretX.toFixed(1));
+    $('caret').setAttribute('opacity', t < 2.7 && Math.floor(t * 2.5) % 2 === 0 ? 1 : 0);
+    $('answer').setAttribute('opacity', prog(t, 2.7, 2.9).toFixed(3));
+    aLines.forEach(function(r, i){ r.setAttribute('opacity', prog(t, 2.8 + i*0.05, 2.9 + i*0.05).toFixed(3)); });
+    $('ready').setAttribute('opacity', prog(t, 3.4, 3.7).toFixed(3));
+
+    // B: same essay, same grade; only one trail
+    cardEls.forEach(function(g, k){ g.setAttribute('opacity', prog(t, 5.4 + k*0.35, 5.7 + k*0.35).toFixed(3)); });
+    trailA.forEach(function(g, i){ g.setAttribute('opacity', prog(t, 6.6 + i*0.4, 6.85 + i*0.4).toFixed(3)); });
+    trailB.forEach(function(g, i){ g.setAttribute('opacity', prog(t, 6.8 + i*0.4, 7.05 + i*0.4).toFixed(3)); });
+    $('bNote').setAttribute('opacity', prog(t, 8.8, 9.1).toFixed(3));
+
+    // student: neutral, flat at the instant answer, focused, then pleased
+    var flat = t >= 3.0 && t < 10.2, focused = t >= 10.2 && t < 12.6, pleased = t >= 12.6;
+    $('mouth').setAttribute('d', pleased ? 'M544 506 Q560 522 576 506' : flat ? 'M548 514 Q560 508 572 514' : 'M548 512 L572 512');
+    $('browL').setAttribute('d', focused ? 'M526 460 L550 468' : 'M526 464 L550 466');
+    $('browR').setAttribute('d', focused ? 'M594 460 L570 468' : 'M594 464 L570 466');
+    var look = morning ? 10 : 0;
+    $('eyeL').setAttribute('cy', 482 + look); $('eyeR').setAttribute('cy', 482 + look);
+
+    // C: the laptop closes, documents come out
+    var close = ease(prog(t, 10.4, 11.0));
+    $('lid').setAttribute('y', (610 + 120 * close).toFixed(1));
+    $('lid').setAttribute('height', (140 - 120 * close).toFixed(1));
+    $('laptop').setAttribute('opacity', (1 - prog(t, 10.9, 11.2)).toFixed(3));
+    $('docs').setAttribute('opacity', prog(t, 11.0, 11.4).toFixed(3));
+    $('hilite').setAttribute('width', (116 * ease(prog(t, 11.6, 12.4))).toFixed(1));
+    rowEls.forEach(function(g, i){ g.setAttribute('opacity', prog(t, 10.7 + i*0.6, 10.95 + i*0.6).toFixed(3)); });
+    ticks.forEach(function(p, i){ p.setAttribute('opacity', t >= 11.2 + i*0.6 ? 1 : 0); });
+
+    // end card
+    $('endCard').setAttribute('opacity', prog(t, 14.2, 14.6).toFixed(3));
+    $('tagBox').setAttribute('opacity', (1 - prog(t, 14.2, 14.5)).toFixed(3));
+    $('endLine').setAttribute('opacity', prog(t, 15.2, 15.6).toFixed(3));
+    $('endRule').setAttribute('width', (96 * ease(prog(t, 15.5, 16.0))).toFixed(1));
+    $('fade').setAttribute('opacity', Math.max(1 - t/0.4, prog(t, 17.6, 18)).toFixed(3));
+  };
+  render(location.hash ? parseFloat(location.hash.slice(1)) : 8.6);
+})();
+</script>
+</body>
+</html>

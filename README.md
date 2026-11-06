@@ -18,6 +18,24 @@ This repository hosts interactive presentation versions for the session **When A
 | Informed Action game | `informed-action/index.html` | `https://minerclass.github.io/historical-inquiry-friction/informed-action/` |
 | Common Ground game | `common-ground/index.html` | `https://minerclass.github.io/historical-inquiry-friction/common-ground/` |
 
+## Video clips
+
+Two 18-second silent clips play inside the decks from a **Play scene** button. They are illustrations, not real documents or student work.
+
+| Clip | What it shows | Where it plays |
+| --- | --- | --- |
+| `assets/how-a-student-meets-the-past.mp4` | One question, "Where did this come from?", asked of print, broadcast, an algorithmic feed, and a generated "primary source" | Full deck slide 9 (The Medium Shapes Knowing); NCSS title slide |
+| `assets/same-artifact-different-learning.mp4` | A nine-second AI answer, two students with the same essay and grade but only one sourcing trail, then a redesign around noetic, rhetorical, and existential friction | Full deck slide 4 (Two Students, One Artifact); NCSS slide 5 (Same Artifact) |
+
+Each clip has a scene page beside it (`assets/*.html`; open one with `#seconds`, such as `#12.8`, to preview a moment). Re-render a clip with:
+
+```bash
+swiftc -O tools/render-video.swift -o /tmp/render-video
+/tmp/render-video assets/how-a-student-meets-the-past.html assets/how-a-student-meets-the-past.mp4 18 30
+```
+
+The player captures keys while it is open, so a clicker does not advance the deck underneath it. Esc closes it.
+
 ## Survey invitation slide
 
 Both decks end with a survey invitation slide, after Closing: slide 26 of the full deck and slide 27 of the NCSS version. It shows the approved survey notice (B) for NLU IRB protocol ER01884 word for word, with the survey link and a QR code for it (`assets/er01884-survey-qr.svg`, with a PNG copy for other slide tools). The QR code opens `https://forms.cloud.microsoft/r/UbTcf4EHKn`. It was decoded and checked against the link on November 5, 2026, including from 1280x720 and 1920x1080 renders of both slides.
