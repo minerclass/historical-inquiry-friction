@@ -11,8 +11,8 @@ This repository hosts interactive presentation versions for the session **When A
 | Version | Local path | GitHub Pages URL |
 | --- | --- | --- |
 | Full interactive deck | `index.html` | `https://minerclass.github.io/historical-inquiry-friction/` |
-| NCSS 2026 session deck: Teaching History Among Algorithms (Dec 4) | `ncss-historical-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/ncss-historical-inquiry/` |
-| NSSLA 2026 leadership clinic: Leading with Technoskepticism (Dec 3) | `nssla-leading-with-technoskepticism/index.html` | `https://minerclass.github.io/historical-inquiry-friction/nssla-leading-with-technoskepticism/` |
+| NCSS 2026 session deck: Teaching History Among Algorithms (Dec 4, 50 minutes) | `ncss-historical-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/ncss-historical-inquiry/` |
+| NSSLA 2026 leadership clinic: Leading with Technoskepticism (Dec 3, 55 minutes) | `nssla-leading-with-technoskepticism/index.html` | `https://minerclass.github.io/historical-inquiry-friction/nssla-leading-with-technoskepticism/` |
 | The Devil's Advocate game | `devils-advocate/index.html` | `https://minerclass.github.io/historical-inquiry-friction/devils-advocate/` |
 | Keepers of Inquiry game | `keepers-of-inquiry/index.html` | `https://minerclass.github.io/historical-inquiry-friction/keepers-of-inquiry/` |
 | Out of Time game | `out-of-time/index.html` | `https://minerclass.github.io/historical-inquiry-friction/out-of-time/` |
@@ -40,7 +40,7 @@ The player captures keys while it is open, so a clicker does not advance the dec
 
 ## NSSLA leadership clinic
 
-The NSSLA deck (19 slides, about 90 minutes) follows the NSSLA 2026 proposal: media ecology and tertiary algorithmicity, a four-question leadership diagnostic, infrastructure friction across four domains (policy and purpose, professional learning, assessment, communication), a design sprint for a one-page Social Studies + GenAI Leadership Brief, a gallery walk, and action planning. The proposal's agenda totals 100 minutes, so the sprint, feedback, and action segments are trimmed to fit 90. The proposal described preliminary dissertation findings; because data collection is still underway, slide 14 presents the research questions only. Speaker notes mark the facilitation prompts that are drafts for Micah to revise.
+The NSSLA deck (19 slides, 55 minutes) follows the NSSLA 2026 proposal: media ecology and tertiary algorithmicity, a four-question leadership diagnostic, infrastructure friction across four domains (policy and purpose, professional learning, assessment, communication), a design sprint for a one-page Social Studies + GenAI Leadership Brief, a quick feedback swap, and action planning. The proposal planned a 90-minute clinic; the accepted slot is 55 minutes, so the segments run foundation 10, diagnostic 6, framework 12, sprint 15 (tables draft the purpose statement and minimum expectations), feedback swap 4 in place of the gallery walk, study and commitments 5, and close 3. The proposal described preliminary dissertation findings; because data collection is still underway, slide 14 presents the research questions only. Speaker notes mark the facilitation prompts that are drafts for Micah to revise.
 
 ## Survey invitation slide
 
