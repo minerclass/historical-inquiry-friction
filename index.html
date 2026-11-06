@@ -802,6 +802,16 @@
       }
       .controls, .progress, .resource-drawer, .notes-panel, .overview { display: none !important; }
     }
+  
+    /* Survey invitation (approved notice B, verbatim) */
+    .survey-layout { display: grid; grid-template-columns: minmax(0, 1fr) clamp(220px, 36vh, 410px); gap: clamp(24px, 4vw, 64px); align-items: center; }
+    .slide.compact h2.survey-title { font-size: clamp(1.9rem, 3.3vw, 3.5rem); max-width: 26ch; margin-bottom: .45em; }
+    .survey-notice { font-size: clamp(1rem, 1.42vw, 1.42rem); line-height: 1.5; max-width: 70ch; margin: 0; }
+    .survey-notice a { font-weight: 700; overflow-wrap: anywhere; color: inherit; }
+    .survey-qr { display: block; padding: 14px; background: #fff; border: 1px solid rgba(23, 25, 20, .18); border-radius: 14px; text-align: center; color: #171914; text-decoration: none; }
+    .survey-qr img { display: block; width: 100%; height: auto; }
+    .survey-qr strong { display: block; margin-top: 10px; font-family: var(--mono); font-size: clamp(.62rem, .82vw, .95rem); overflow-wrap: anywhere; }
+    @media (max-width: 820px) { .survey-layout { grid-template-columns: 1fr; } .survey-qr { width: min(260px, 78vw); } }
   </style>
 </head>
 <body>
@@ -1299,6 +1309,19 @@
       </div>
       <div class="footer"><span>Micah Miner &middot; Beach Park District 3</span><span>Thank you.</span></div>
       <aside class="speaker-notes">Close on conversation, not difficulty. Friction matters because historical understanding is built, argued, and owned &mdash; not delivered. Let the audience pick one of the three questions to carry out the door, and point them to the resources drawer (press R) for the C.O.R.E./H.E.A.R.T. articles, the lesson sources, and the companion sites.</aside>
+    </section>
+
+    <section class="slide compact" data-title="Survey Invitation">
+      <div class="topline"><span class="kicker">Survey invitation</span><span class="slide-number"></span></div>
+      <div class="content survey-layout">
+        <div>
+          <h2 class="survey-title">Invitation: dissertation study on generative AI and K&ndash;12 teaching and learning</h2>
+          <p class="survey-notice">K&ndash;12 educators and school system leaders: I am a doctoral candidate at National Louis University studying how generative AI is affecting the effortful parts of learning, and what school and district conditions help educators respond. The survey is anonymous, takes 10 to 12 minutes, and asks about your own practice and your own institution. The survey will not ask for names or email addresses and will not require participants to sign in. The researcher will verify the final Microsoft Forms settings relevant to response anonymity and metadata before activation. You must be 18 or older and currently work in a K&ndash;12 school or district. Employees of Beach Park CCSD 3 are not eligible. <a href="https://forms.cloud.microsoft/r/UbTcf4EHKn" target="_blank" rel="noopener">https://forms.cloud.microsoft/r/UbTcf4EHKn</a> Questions: mminer1@my.nl.edu.</p>
+        </div>
+        <a class="survey-qr" href="https://forms.cloud.microsoft/r/UbTcf4EHKn" target="_blank" rel="noopener"><img src="assets/er01884-survey-qr.svg" alt="QR code for the survey link, https://forms.cloud.microsoft/r/UbTcf4EHKn"><strong>forms.cloud.microsoft/r/UbTcf4EHKn</strong></a>
+      </div>
+      <div class="footer"><span>NLU IRB protocol ER01884</span><span>Approved notice text</span></div>
+      <aside class="speaker-notes">Optional. Show it at the end or leave it up after questions. The text is the approved survey notice (B), word for word, with the survey link and its QR code. Mention it in your own words if you like, but do not ask anyone to pass it on.</aside>
     </section>
 
   </main>

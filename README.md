@@ -18,6 +18,10 @@ This repository hosts interactive presentation versions for the session **When A
 | Informed Action game | `informed-action/index.html` | `https://minerclass.github.io/historical-inquiry-friction/informed-action/` |
 | Common Ground game | `common-ground/index.html` | `https://minerclass.github.io/historical-inquiry-friction/common-ground/` |
 
+## Survey invitation slide
+
+Both decks end with a survey invitation slide, after Closing: slide 26 of the full deck and slide 27 of the NCSS version. It shows the approved survey notice (B) for NLU IRB protocol ER01884 word for word, with the survey link and a QR code for it (`assets/er01884-survey-qr.svg`, with a PNG copy for other slide tools). The QR code opens `https://forms.cloud.microsoft/r/UbTcf4EHKn`. It was decoded and checked against the link on November 5, 2026, including from 1280x720 and 1920x1080 renders of both slides.
+
 ## Source base
 
 The decks are grounded in secondary social studies pedagogy, historical inquiry, and the author's practitioner-scholar work on pedagogical friction and AI:
