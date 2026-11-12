@@ -34,7 +34,7 @@
   }
   function step(id) {
     ["stepIntro", "stepRoom", "stepJudge", "stepDebrief"].forEach(function (s) { $(s).hidden = s !== id; });
-    const h = $(id).querySelector("h1,h2:not(#readLabel)");
+    const h = $(id).querySelector("h1,h2:not(#readLabel)") || $(id).querySelector("p");
     if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
   }
   function inRoom() { return S && !$("stepRoom").hidden; }
@@ -46,18 +46,18 @@
   }
   function showFocus(id) {
     $("readBtn").disabled = !id || !inRoom();
-    $("focusNote").textContent = id && S ? R.item(id).label + (R.onDesk(S, id) ? " (on the desk)" : "") : "Walk up to a paper to read it.";
+    $("focusNote").textContent = id && S ? R.item(S, id).label + (R.onDesk(S, id) ? " (on the table)" : "") : "Walk up to a paper to read it.";
   }
   function renderList() {
     const ul = $("itemList"); ul.textContent = "";
     if (!S) return;
     S.order.forEach(function (id) {
-      const it = R.item(id), li = el("li"), b = el("button", "", "Read: " + it.label);
+      const it = R.item(S, id), li = el("li"), b = el("button", "", "Read: " + it.label);
       b.type = "button";
       b.addEventListener("click", function () { if (!inRoom()) return; if (scene) scene.goTo(id); openReading(id); });
       li.appendChild(b);
       const bits = [];
-      if (R.onDesk(S, id)) bits.push("on the desk");
+      if (R.onDesk(S, id)) bits.push("on the table");
       else if (S.read[id]) bits.push("read");
       if (S.lantern[id]) bits.push(it.belongs ? "lantern: belongs here" : "lantern: does not belong here");
       li.appendChild(el("span", "state", bits.join(" · ")));
@@ -68,41 +68,41 @@
     hud(); renderList();
     const n = S.desk.length;
     $("roomPrompt").textContent = n === R.DESK
-      ? "Three papers are on the desk. Swap any you doubt, or sit down and judge."
-      : "Carry three papers this merchant could have held to the green cloth. " + n + " of 3 so far.";
+      ? "Three papers are on the table. Swap any you doubt, or sit down and judge."
+      : "Carry three papers that could have been held here in " + S.scene.when + " to the cloth on the table. " + n + " of 3 so far.";
     $("judgeBtn").disabled = !R.ready(S);
     if (scene) { scene.setDesk(S.desk); showFocus(scene.focus()); }
     if (open) paintReading();
   }
   function openReading(id) {
-    if (!inRoom() || !R.item(id)) return;
+    if (!inRoom() || !R.item(S, id)) return;
     open = id; R.read(S, id);
     paintReading(); renderList();
     $("reading").hidden = false;
     $("readLabel").tabIndex = -1; $("readLabel").focus({ preventScroll: false });
-    announce(R.item(id).label + ". " + R.item(id).text);
+    announce(R.item(S, id).label + ". " + R.item(S, id).text);
   }
   function paintReading() {
-    const it = R.item(open), on = R.onDesk(S, open), full = S.desk.length >= R.DESK;
+    const it = R.item(S, open), on = R.onDesk(S, open), full = S.desk.length >= R.DESK;
     $("readLabel").textContent = it.label;
     $("readText").textContent = it.text;
-    $("takeBtn").textContent = on ? "Take it off the desk" : (full ? "The desk is full" : "Carry it to the desk");
+    $("takeBtn").textContent = on ? "Take it off the table" : (full ? "The table is full" : "Carry it to the table");
     $("takeBtn").disabled = !on && full;
     const used = !!S.lantern[open];
     $("lanternBtn").textContent = used ? "Lantern already used here" : "Hold the lantern to it (+" + R.LANTERN_COST + " drift)";
     $("lanternBtn").disabled = used;
     $("lanternNote").hidden = !used;
     if (used) $("lanternNote").textContent = it.belongs
-      ? "In the lantern's cold light nothing about this paper changes. It belongs to June 1774."
-      : "In the lantern's cold light this paper does not belong to June 1774.";
+      ? "In the lantern's cold light nothing about this paper changes. It belongs to " + S.scene.when + "."
+      : "In the lantern's cold light this paper does not belong to " + S.scene.when + ".";
   }
   function closeReading() { open = null; $("reading").hidden = true; if (scene) $("scene").focus({ preventScroll: true }); }
 
   $("takeBtn").addEventListener("click", function () {
     if (!open) return;
-    const label = R.item(open).label;
+    const label = R.item(S, open).label;
     if (R.onDesk(S, open)) { R.putBack(S, open); announce(label + " put back."); }
-    else if (R.take(S, open)) announce(label + " carried to the desk. " + S.desk.length + " of 3.");
+    else if (R.take(S, open)) announce(label + " carried to the table. " + S.desk.length + " of 3.");
     renderRoom();
   });
   $("lanternBtn").addEventListener("click", function () {
@@ -119,17 +119,18 @@
   $("judgeBtn").addEventListener("click", function () {
     if (!R.ready(S)) return;
     closeReading();
-    $("deskRecap").textContent = "On the desk: " + S.desk.map(function (id) { return R.item(id).label; }).join("; ") + ".";
+    $("question").textContent = S.scene.question;
+    $("deskRecap").textContent = "On the table: " + S.desk.map(function (id) { return R.item(S, id).label; }).join("; ") + ".";
     const wrap = $("options"); wrap.textContent = "";
     S.judgments.forEach(function (jid, i) {
       const b = el("button"); b.type = "button";
       b.appendChild(el("kbd", "", String(i + 1)));
-      b.appendChild(el("span", "", R.judgment(jid).text));
+      b.appendChild(el("span", "", R.judgment(S, jid).text));
       b.addEventListener("click", function () { choose(jid); });
       wrap.appendChild(b);
     });
     step("stepJudge");
-    announce("Three appraisals. Choose the one you can best defend from the desk.");
+    announce(S.scene.question + " Three appraisals. Choose the one you can best defend from the table.");
   });
   $("backBtn").addEventListener("click", function () { step("stepRoom"); renderRoom(); });
   function choose(jid) {
@@ -141,12 +142,13 @@
     $("fidelity").textContent = r.fidelity;
     $("drift").textContent = r.drift;
     $("driftVal").textContent = r.drift;
-    $("lanternUsed").textContent = r.lantern + " of " + R.SCENE.items.length;
+    $("lanternUsed").textContent = r.lantern + " of " + S.scene.items.length;
+    $("whenHead").textContent = "In " + S.scene.when;
     const body = $("itemTable").tBodies[0]; body.textContent = "";
-    R.SCENE.items.forEach(function (it) {
+    S.scene.items.forEach(function (it) {
       const tr = el("tr"), on = R.onDesk(S, it.id);
       tr.appendChild(el("th", "", it.label)).scope = "row";
-      tr.appendChild(el("td", on ? (it.belongs ? "ok" : "no") : "", on ? "On the desk" : "Left"));
+      tr.appendChild(el("td", on ? (it.belongs ? "ok" : "no") : "", on ? "On the table" : "Left"));
       tr.appendChild(el("td", it.belongs ? "ok" : "no", it.belongs ? "Belongs" : "Later: " + it.kind));
       tr.appendChild(el("td", "", it.note));
       body.appendChild(tr);
@@ -156,16 +158,34 @@
   }
 
   /* ---------- wiring ---------- */
-  function start() {
-    S = R.newState(parseInt(params.get("seed"), 10) || (Date.now() & 0xffffff));
+  let sceneId = null;
+  function start(id) {
+    sceneId = id || sceneId || R.SCENES[0].id;
+    S = R.newState(parseInt(params.get("seed"), 10) || (Date.now() & 0xffffff), sceneId);
     open = null; $("reading").hidden = true;
-    if (scene) scene.reset();
+    $("whereWhen").textContent = S.scene.place + ", " + S.scene.date;
+    $("roomSetup").textContent = S.scene.setup;
+    $("stage").hidden = false;
+    if (scene) { scene.resize(); scene.load(S.scene.id); }
     step("stepRoom"); renderRoom();
     if (scene) $("scene").focus({ preventScroll: true });
-    announce("You are in the counting house. Eight papers are in the room. Carry three to the desk.");
+    announce(S.scene.place + ", " + S.scene.date + ". " + S.scene.setup + " Eight papers are in the room. Carry three to the table.");
   }
-  $("startBtn").addEventListener("click", start);
-  $("replayBtn").addEventListener("click", start);
+  function menu() {
+    S = null; open = null;
+    $("stage").hidden = true; $("whereWhen").textContent = "Four rooms";
+    hud(); renderList(); step("stepIntro");
+  }
+  R.SCENES.forEach(function (sc) {
+    const b = el("button"); b.type = "button";
+    b.appendChild(el("span", "t", sc.title));
+    b.appendChild(el("span", "w", sc.place + ", " + sc.date));
+    b.appendChild(el("span", "d", sc.question));
+    b.addEventListener("click", function () { start(sc.id); });
+    $("rooms").appendChild(b);
+  });
+  $("replayBtn").addEventListener("click", function () { start(); });
+  $("otherBtn").addEventListener("click", menu);
   document.querySelectorAll(".walkpad button[data-move]").forEach(function (b) {
     const name = b.dataset.move;
     b.addEventListener("pointerdown", function (e) { e.preventDefault(); if (scene) scene.hold(name, true); });
@@ -188,4 +208,5 @@
     }
   });
   hud();
+  if (params.get("scene") && R.sceneById(params.get("scene")).id === params.get("scene")) start(params.get("scene"));
 })();

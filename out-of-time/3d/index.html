@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Out of Time 3D, a prototype. Stand in a Boston counting house in June 1774 and decide which papers in the room this merchant could actually have known, before you judge the choice in front of him.">
+<meta name="description" content="Out of Time 3D, a prototype. Stand in a room at one moment in the past and decide which papers in it could actually have been known there, before you judge the choice being made.">
 <title>Out of Time 3D | Prototype</title>
 <link rel="stylesheet" href="https://minerclass.github.io/tokens.css">
 <link rel="stylesheet" href="styles.css">
@@ -17,15 +17,15 @@
     <span class="tag">Prototype</span>
   </div>
   <div class="meta">
-    <span>Boston, late June 1774</span>
-    <span>On the desk <b id="deskCount">0</b> of 3</span>
+    <span id="whereWhen">Four rooms</span>
+    <span>On the table <b id="deskCount">0</b> of 3</span>
     <span>Presentist drift <b id="driftVal">0</b></span>
   </div>
 </header>
 
 <main>
-  <div class="stage" id="stage">
-    <canvas id="scene" tabindex="0" aria-label="3D view of a Boston counting house in 1774. Arrow keys or W A S D walk and turn. The list of papers below gives the same information as text."></canvas>
+  <div class="stage" id="stage" hidden>
+    <canvas id="scene" tabindex="0" aria-label="3D view of the room. Arrow keys or W A S D walk and turn. The list of papers below gives the same information as text."></canvas>
     <div class="walkbar" id="walkbar">
       <p id="focusNote" aria-live="polite">Walk up to a paper to read it.</p>
       <div class="walkpad" role="group" aria-label="Walk controls">
@@ -42,11 +42,12 @@
 
   <section class="panel" id="panel">
     <div class="step" id="stepIntro">
-      <h1>Judge the choice with what he could have known.</h1>
-      <p>You are a historian standing in a merchant's counting house in Boston, late June 1774. The port has been closed. A paper is waiting on his table for his signature.</p>
-      <p>Eight papers are in this room. Some belong to this moment. Others carry knowledge, words, or verdicts from later. Carry <b>three</b> that he could have held to the green cloth on the table, then judge his hesitation.</p>
-      <p class="dim">You have a hindsight lantern. It shows at once whether a paper belongs here, and every use adds presentist drift. Reading closely costs nothing.</p>
-      <button type="button" class="primary" id="startBtn">Enter the room</button>
+      <h1>Judge the choice with what could have been known.</h1>
+      <p>Each room is one moment in the past, and someone in it faces a hard choice. Eight papers are in the room. Some belong to that moment. Others carry knowledge, words, or verdicts from later, and nothing on them says so.</p>
+      <p>Carry <b>three</b> papers that could have been held there to the table. Then, as a historian, appraise the choice.</p>
+      <p class="dim">You have a hindsight lantern. It shows at once whether a paper belongs, and every use adds presentist drift. Reading closely costs nothing.</p>
+      <h3>Choose a room</h3>
+      <div class="rooms" id="rooms"></div>
       <a class="quiet" href="../">Original 2D version</a>
     </div>
 
@@ -56,17 +57,18 @@
         <blockquote id="readText"></blockquote>
         <p id="lanternNote" class="lantern" hidden></p>
         <div class="row">
-          <button type="button" class="primary" id="takeBtn">Carry it to the desk</button>
+          <button type="button" class="primary" id="takeBtn">Carry it to the table</button>
           <button type="button" id="lanternBtn">Hold the lantern to it</button>
           <button type="button" id="closeBtn">Put it down</button>
         </div>
       </div>
+      <p id="roomSetup"></p>
       <p id="roomPrompt"></p>
       <button type="button" class="primary" id="judgeBtn" disabled>Sit down and judge</button>
     </div>
 
     <div class="step" id="stepJudge" hidden>
-      <h2>How should we appraise this merchant's hesitation to sign?</h2>
+      <h2 id="question"></h2>
       <p class="dim" id="deskRecap"></p>
       <div class="options" id="options"></div>
       <button type="button" id="backBtn">Back to the room</button>
@@ -82,9 +84,12 @@
         <div><dt>Papers checked by lantern</dt><dd id="lanternUsed"></dd></div>
       </dl>
       <h3>Every paper in the room</h3>
-      <div class="scroll"><table id="itemTable"><thead><tr><th scope="col">Paper</th><th scope="col">You</th><th scope="col">In June 1774</th><th scope="col">Why</th></tr></thead><tbody></tbody></table></div>
+      <div class="scroll"><table id="itemTable"><thead><tr><th scope="col">Paper</th><th scope="col">You</th><th scope="col" id="whenHead">Then</th><th scope="col">Why</th></tr></thead><tbody></tbody></table></div>
       <p class="dim">Contextualizing a choice is not excusing it. The aim is to explain the choice from inside its moment, and only then to weigh it.</p>
-      <button type="button" class="primary" id="replayBtn">Enter the room again</button>
+      <div class="row">
+        <button type="button" class="primary" id="otherBtn">Choose another room</button>
+        <button type="button" id="replayBtn">Enter this room again</button>
+      </div>
     </div>
   </section>
 
@@ -94,12 +99,13 @@
   </details>
 
   <footer>
-    <p>A prototype. The merchant, his ledger, and his neighbour's note are composites written for this game. The Boston Port Act, the Solemn League and Covenant, and Lexington and Concord are real. Scores are an illustrative model, not a measure of learning. Nothing here calls an AI service or collects data. <a href="https://minerclass.github.io/games-hub/">Games Hub</a></p>
+    <p>A prototype. The events and documents named are real, and quoted papers are paraphrases. Papers written for this game are marked as composites in each debrief. Scores are an illustrative model, not a measure of learning. Nothing here calls an AI service or collects data. <a href="https://minerclass.github.io/games-hub/">Games Hub</a></p>
   </footer>
 </main>
 
 <script src="vendor/three.min.js"></script>
 <script src="rules.js"></script>
+<script src="rooms.js"></script>
 <script src="scene.js"></script>
 <script src="game.js"></script>
 </body>

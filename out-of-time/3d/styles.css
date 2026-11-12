@@ -52,6 +52,9 @@ p { margin:0 0 12px; max-width:70ch; }
 blockquote { margin:0 0 12px; padding:14px 18px; background:#efe5cf; color:#231c14; border-radius:4px; font:1.05rem/1.55 var(--serif); max-width:62ch; }
 .lantern { padding:8px 12px; border-left:3px solid #9fc4ff; background:rgba(159,196,255,.1); border-radius:0 8px 8px 0; }
 
+.rooms { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:14px; }
+.rooms button { text-align:left; padding:14px; display:grid; gap:2px; }
+.rooms .t { font:700 1.05rem var(--serif); } .rooms .w { color:var(--gold); font-size:.9rem; } .rooms .d { color:var(--dim); font-size:.88rem; }
 .options { display:grid; gap:10px; margin-bottom:14px; }
 .options button { text-align:left; padding:14px; display:flex; gap:10px; align-items:baseline; }
 
@@ -72,5 +75,5 @@ td.ok { color:var(--teal); } td.no { color:var(--coral); font-weight:600; }
 footer { margin-top:18px; font-size:.8rem; color:var(--dim); }
 footer a { color:var(--gold); }
 
-@media (max-width:760px) { #scene { height:40vh; } .meta { margin-left:0; } }
+@media (max-width:760px) { #scene { height:40vh; } .meta { margin-left:0; } .rooms { grid-template-columns:1fr; } }
 @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
