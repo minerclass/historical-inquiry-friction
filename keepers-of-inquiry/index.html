@@ -927,7 +927,9 @@
         barrierPenalty = (barrier - 30) * 0.6;
       }
       
-      return Math.round(clamp(25 + thinking * 0.9 - challengePenalty - barrierPenalty));
+      // Weight tuned so "Inquiry protected" (78) is reachable in four moves,
+      // and only when the Access Scaffold is one of them.
+      return Math.round(clamp(25 + thinking * 1.2 - challengePenalty - barrierPenalty));
     }
 
     function frictionStatus() {
@@ -1005,12 +1007,9 @@
       if (lineAgency) lineAgency.classList.toggle("pulse-gold", state.metrics.agency >= 45);
       if (lineAccess) lineAccess.classList.toggle("pulse-gold", state.metrics.access >= 45);
 
-      // Check overall victory (all 5 nodes unlocked)
-      const isVictory = state.metrics.sourcing >= 45 &&
-                        state.metrics.context >= 45 &&
-                        state.metrics.corroboration >= 45 &&
-                        state.metrics.agency >= 45 &&
-                        state.metrics.access >= 45;
+      // Overall victory matches the "Inquiry protected" verdict. Unlocking all
+      // five nodes cannot be done in four moves, so it is not the test.
+      const isVictory = integrityScore() >= 78;
 
       const mapEl = document.querySelector(".map");
       if (mapEl) {
