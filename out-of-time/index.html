@@ -1692,6 +1692,8 @@
       // Shuffle tiles for each scene
       activeScenes.forEach(scene => {
         scene.tiles = shuffleArray(scene.tiles);
+        // Shuffle the appraisals so the soundest one is not always first.
+        scene.judgments = shuffleArray(scene.judgments);
       });
 
       // UI Swaps

@@ -428,7 +428,12 @@
       return {
         title: c.title,
         verdict: c.verdict,
-        exchanges: chosen
+        // Shuffle the rebuttal cards so the strongest one is not always first.
+        exchanges: chosen.map(function(e){
+          var copy = Object.assign({}, e);
+          copy.cards = shuffleArray(e.cards);
+          return copy;
+        })
       };
     });
     state = {
@@ -496,7 +501,7 @@
       var m = MOVES[card.move];
       var b = document.createElement("button");
       b.className = "card";
-      b.innerHTML = '<span class="move"><span class="k">'+m.key+'</span>'+m.name+'</span><span class="txt">'+card.txt+'</span>';
+      b.innerHTML = '<span class="move"><span class="k">'+(i+1)+'</span>'+m.name+'</span><span class="txt">'+card.txt+'</span>';
       b.addEventListener("click", function(){ pick(i); });
       wrap.appendChild(b);
     });

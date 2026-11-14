@@ -1613,6 +1613,8 @@
 
     function startGame() {
       activeMoments = shuffleArray(momentsData).slice(0, 5);
+      // Shuffle the responses so the strongest one is not always first.
+      activeMoments.forEach((moment) => { moment.options = shuffleArray(moment.options); });
       currentMomentIdx = 0;
       discourse = 55;
       rigor = 55;
