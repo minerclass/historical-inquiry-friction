@@ -199,3 +199,21 @@ positive** of the first kind: the numeral sits on the dark hole of a donut drawn
 by a pseudo-element, not on the teal arc, and was confirmed readable by eye. It
 was correctly left alone. Absolute readings from any such tool should be
 confirmed visually before code is changed on their authority.
+
+## 2026-11-14 · The Devil's Advocate: labels revealed after the choice
+
+*   **Tool:** Claude Code (Claude Fable 5.2), directed and reviewed by the author.
+*   **Task:** remove the answer tells in `devils-advocate/index.html`.
+*   **Data used:** the game's own source. No participant, student, or district data.
+*   **Changes:** move names are hidden until the player has chosen, then shown on
+    all four replies with the strongest one marked. Feedback now names the
+    strongest reply instead of repeating the move's definition. The typed
+    reason is shown beside the result and listed in the debrief; it is held in
+    memory only and is not saved or sent.
+*   **Content correction for author review:** one Civil War reply said the
+    Confederate Constitution kept protective tariff clauses identical to the
+    U.S. Constitution. It barred protective duties, so the reply was reworded.
+    The author should confirm the new wording against the document.
+*   **Verification:** one scripted six-exchange run in a desktop browser with no
+    console errors. Not tested by keyboard alone, on touch, with a screen
+    reader, or on a Chromebook.

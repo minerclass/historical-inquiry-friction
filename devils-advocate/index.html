@@ -75,6 +75,12 @@
     .card:disabled { opacity:.5; cursor:default; }
     .card .move { font-family:var(--mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); display:flex; gap:8px; align-items:center; margin-bottom:7px; }
     .card .move .k { width:18px; height:18px; border-radius:5px; display:grid; place-items:center; background:rgba(213,174,88,.2); font-size:.62rem; }
+    .card .move .strongest { margin-left:auto; padding:2px 7px; border:1px solid var(--gold); border-radius:999px; color:#f6f0df; }
+    .card.is-best:disabled { opacity:.9; border-style:dashed; border-color:var(--gold); }
+    .feedback .reason { margin:10px 0 0; padding-left:12px; border-left:2px solid var(--gold); color:#e8e2d2; font-size:.92rem; }
+    .reasons { margin:10px 0 0; padding:0; list-style:none; }
+    .reasons li { padding:10px 0; border-top:1px solid var(--line); color:#e8e2d2; }
+    .reasons .where { display:block; font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin-bottom:3px; }
     .card .txt { font-size:.98rem; line-height:1.35; color:#ece6d6; }
 
     .feedback { margin-top:16px; border:1px solid var(--line); border-radius:14px; padding:16px 18px; background:rgba(255,255,255,.05); }
@@ -211,11 +217,11 @@
 
     <!-- RATIONALE ENTRY (Pedagogical Friction) -->
     <div class="panel" id="rationaleArea" style="display:none; margin-top:16px; border-color:var(--gold); background:rgba(213,174,88,.05);">
-      <label for="rationaleInput" style="font-family:var(--mono); font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); display:block; margin-bottom:8px;">Pedagogical Friction: Explain your Rationale first</label>
-      <p style="margin:0 0 10px; font-size:0.88rem; color:#cfc8b4;">Why is this specific move the most appropriate and rigorous response to the Advocate's claim?</p>
+      <label for="rationaleInput" style="font-family:var(--mono); font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); display:block; margin-bottom:8px;">Before the reveal</label>
+      <p style="margin:0 0 10px; font-size:0.88rem; color:#cfc8b4;">In a sentence, why this reply? You will see it again beside the result and in the debrief.</p>
       <textarea id="rationaleInput" rows="2" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--line); border-radius:8px; color:#fff; padding:10px; font-family:var(--sans); font-size:0.9rem; resize:vertical; margin-bottom:10px;" placeholder="Write your explanation here..."></textarea>
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <span id="rationaleWarning" style="font-size:0.75rem; color:var(--ember); visibility:hidden;">Please write a brief explanation (minimum 6 characters).</span>
+        <span id="rationaleWarning" style="font-size:0.75rem; color:var(--ember); visibility:hidden;">Write a few words first.</span>
         <button class="btn" id="submitRationaleBtn" style="margin-top:0; padding:8px 18px; font-size:0.85rem;">Submit &amp; Reveal &rarr;</button>
       </div>
     </div>
@@ -224,6 +230,7 @@
       <div class="delta" id="fbDelta"></div>
       <div class="txt" id="fbText"></div>
       <p class="react" id="fbReact"></p>
+      <p class="reason" id="fbReason"></p>
       <div class="verdict" id="fbVerdict" style="display:none"></div>
     </div>
     <div class="row"><button class="btn" id="continueBtn" style="display:none">Continue &rarr;</button></div>
@@ -244,6 +251,10 @@
 
     <h2 style="margin-top:22px; font-size:1.4rem;">The moves you reached for</h2>
     <table><thead><tr><th>Move</th><th>Times used</th><th>What it is</th></tr></thead><tbody id="moveTable"></tbody></table>
+
+    <h2 style="margin-top:22px; font-size:1.4rem;">Your reasons, in your words</h2>
+    <p style="color:#cfc8b4; font-size:.9rem; margin:0;">Read them against the result. Nothing you typed is saved or sent anywhere.</p>
+    <ul class="reasons" id="reasonList"></ul>
 
     <div class="meta">The Advocate was never trying to be right &mdash; only to <em>sound</em> right. That's what generative AI does by default. Historical thinking is what makes fluency earn its claims.</div>
     <div class="frameworks">
@@ -389,7 +400,7 @@
           adv:"The economic divide between the industrial North and the agrarian South was the real driver. The tariff dispute of 1860, not slavery, pushed the South to secede.",
           cards:[
             { move:"counter", txt:"“The secession declarations do not complain about tariffs; they list Northern interference with slavery as their primary grievance.”", reb:18, evid:15, ans:4, best:true },
-            { move:"source", txt:"“The Confederate Constitution actually banned the slave trade but kept protective tariff clauses identical to the US Constitution.”", reb:12, evid:14, ans:2 },
+            { move:"source", txt:"“The Confederate Constitution protects slavery by name. Its tariff language is a single clause barring protective duties.”", reb:12, evid:14, ans:2 },
             { move:"context", txt:"“Tariff tensions peaked in 1832; by 1860, Southern tariffs were at historical lows. Secession was triggered by Lincoln's election, not tariffs.”", reb:8, evid:10, ans:0 },
             { move:"concede", txt:"“True — it was tariff policy that caused the split.”", reb:-3, evid:-12, ans:-15 }
           ]
@@ -444,7 +455,8 @@
       evid:50,
       ans:72,
       picked:false,
-      moveCounts:{}
+      moveCounts:{},
+      reasons:[]
     };
   }
 
@@ -498,10 +510,10 @@
     state.picked = false;
     var wrap = $("cards"); wrap.innerHTML = "";
     ex.cards.forEach(function(card, i){
-      var m = MOVES[card.move];
       var b = document.createElement("button");
       b.className = "card";
-      b.innerHTML = '<span class="move"><span class="k">'+(i+1)+'</span>'+m.name+'</span><span class="txt">'+card.txt+'</span>';
+      // The move name stays hidden until the player has chosen, so the label cannot give the answer away.
+      b.innerHTML = '<span class="move"><span class="k">'+(i+1)+'</span><span class="mv">Reply '+(i+1)+'</span></span><span class="txt">'+card.txt+'</span>';
       b.addEventListener("click", function(){ pick(i); });
       wrap.appendChild(b);
     });
@@ -568,7 +580,35 @@
     // feedback
     var sign = function(n){ return (n>=0?"+":"") + n; };
     $("fbDelta").textContent = "Rebuttal " + sign(card.reb) + "  ·  Evidence " + sign(card.evid) + "  ·  Answerability " + sign(card.ans);
-    $("fbText").textContent = MOVES[card.move].name + " — " + MOVES[card.move].what;
+    // Name every reply's move now that the choice is made, and mark the strongest one.
+    var best = null;
+    ex.cards.forEach(function(c, ci){
+      if(c.best) best = c;
+      var label = btns[ci].querySelector(".mv");
+      label.textContent = MOVES[c.move].name;
+      if(c.best){
+        btns[ci].classList.add("is-best");
+        var tag = document.createElement("span");
+        tag.className = "strongest";
+        tag.textContent = "Strongest reply";
+        btns[ci].querySelector(".move").appendChild(tag);
+      }
+    });
+    var plain = function(t){ return t.replace(/\*/g, ""); };
+    var stronger = best ? " The strongest reply was " + MOVES[best.move].name + ": " + plain(best.txt) : "";
+    var note;
+    if(card.best){
+      note = MOVES[card.move].name + ". This was the strongest reply on the table. " + MOVES[card.move].what;
+    } else if(card.move === "concede"){
+      note = "Concede. You granted a claim the evidence does not support." + stronger;
+    } else if(card.reb < 0){
+      note = MOVES[card.move].name + ". You pushed back on a point that was accurate." + stronger;
+    } else {
+      note = MOVES[card.move].name + ". A sound reply that left the claim's main weakness standing." + stronger;
+    }
+    $("fbText").textContent = note;
+    $("fbReason").textContent = "Your reason: " + rationale;
+    state.reasons.push({ where: state.cases[state.ci].title, move: MOVES[card.move].name, best: !!card.best, text: rationale });
     
     var react;
     if(card.best){ react = ex.fair ? "The Advocate blinks. “…A fair concession. Noted.”" : "The Advocate hesitates. “…Granted, in part.”"; }
@@ -622,6 +662,7 @@
     else { band = "Out-argued"; sub = "The Advocate's confidence did your thinking. That's the trap with generative AI — run it back and make it prove each claim."; }
     $("standing").textContent = band + "  ·  " + score + "/100";
     $("standingSub").textContent = sub;
+    renderReasons();
     // move table
     var tb = $("moveTable"); tb.innerHTML = "";
     Object.keys(MOVES).forEach(function(k){
@@ -630,6 +671,19 @@
       var tr = document.createElement("tr");
       tr.innerHTML = "<td>"+MOVES[k].name+"</td><td>"+n+"</td><td style='color:#cfc8b4'>"+MOVES[k].what+"</td>";
       tb.appendChild(tr);
+    });
+  }
+
+  function renderReasons(){
+    var list = $("reasonList"); list.innerHTML = "";
+    state.reasons.forEach(function(r){
+      var li = document.createElement("li");
+      var where = document.createElement("span");
+      where.className = "where";
+      where.textContent = r.where + " · " + r.move + (r.best ? " · strongest reply" : " · not the strongest reply");
+      li.appendChild(where);
+      li.appendChild(document.createTextNode(r.text));
+      list.appendChild(li);
     });
   }
 
