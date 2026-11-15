@@ -320,11 +320,30 @@
     /* Play Screen Layout */
     .game-grid {
       display: grid;
-      grid-template-columns: minmax(280px, 0.9fr) minmax(460px, 1.3fr) minmax(320px, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 20px;
-      height: calc(100vh - 150px);
-      min-height: 550px;
     }
+    .panel.room-panel { scroll-margin-top: 150px; }
+    .room-result { margin-top: 14px; }
+    .room-result .empty-state { padding: 6px 0 0; min-height: 0; height: auto; flex-direction: row; gap: 10px; justify-content: flex-start; text-align: left; }
+    .room-result .empty-state-icon { display: none; }
+
+    /* The room is the main display: it sits across the top beside the moment. */
+    .panel.room-panel { grid-column: 1 / -1; }
+    .room-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .room-frame {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px 12px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .room-caption { margin: 10px 0 0; font-size: 0.92rem; color: var(--paper); line-height: 1.4; }
+    .room-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 
     .panel {
       border: 1px solid var(--line);
@@ -810,6 +829,8 @@
       .panel {
         max-height: 550px;
       }
+      .panel.room-panel { max-height: none; }
+      .room-layout { grid-template-columns: 1fr; }
       .essay-grid {
         grid-template-columns: 1fr;
       }
@@ -824,8 +845,9 @@
 
     /* Seating Chart visual styles */
     .student-dot {
-      transition: cx 0.6s cubic-bezier(0.1, 0.8, 0.2, 1), cy 0.6s cubic-bezier(0.1, 0.8, 0.2, 1), fill 0.5s;
+      transition: cx 0.9s cubic-bezier(0.1, 0.8, 0.2, 1), fill 0.6s;
     }
+    .board-line { transition: opacity 0.6s; }
   </style>
 </head>
 <body>
@@ -903,18 +925,32 @@
         <div class="game-grid">
           
           <!-- Column 1: Classroom Moment Setup -->
-          <section class="panel" aria-labelledby="colMomentTitle">
+          <section class="panel room-panel" aria-labelledby="colMomentTitle">
             <div class="panel-header">
               <h3 id="colMomentTitle">Classroom Moment</h3>
               <span id="momentTracker" style="font-size: 0.8rem; font-weight: bold; color: var(--gold);">Moment 1 of 5</span>
             </div>
             <div class="panel-body">
-              <!-- Seating Chart Panel -->
-              <div style="border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; background: rgba(0,0,0,0.2); margin-bottom: 4px; text-align: center;">
-                <div style="font-family: ui-monospace, monospace; font-size: 9px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Classroom Seating Chart</div>
+              <div class="room-layout">
+              <div class="room-frame">
                 <div id="classroom-seating-chart"></div>
+                <p class="room-caption" id="roomCaption" aria-live="polite"></p>
+                <div class="room-result">
+              <div class="empty-state" id="feedbackEmptyState">
+                <div class="empty-state-icon">⚖️</div>
+                <p>Choose a response, then watch the room.</p>
               </div>
 
+              <div id="feedbackContent" style="display: none; flex: 1; display: flex; flex-direction: column; gap: 16px;">
+                <div class="feedback-box" id="feedbackBox">
+                  <!-- Feedback text -->
+                </div>
+
+                <button class="btn-next" id="btnNextMoment">Continue Arc</button>
+              </div>
+                </div>
+              </div>
+              <div class="room-side">
               <div class="moment-card" id="momentCard">
                 <span class="moment-meta" id="momentKicker">Opinion Stated as Fact</span>
                 <h2 id="momentTopic">Student opinion stated as settled fact</h2>
@@ -934,6 +970,8 @@
                   Hint Content
                 </div>
               </div>
+              </div>
+              </div>
             </div>
           </section>
 
@@ -950,26 +988,6 @@
             </div>
           </section>
 
-          <!-- Column 3: Feedback & Analysis -->
-          <section class="panel" aria-labelledby="colFeedbackTitle">
-            <div class="panel-header">
-              <h3 id="colFeedbackTitle">Impact &amp; Framework Analysis</h3>
-            </div>
-            <div class="panel-body">
-              <div class="empty-state" id="feedbackEmptyState">
-                <div class="empty-state-icon">⚖️</div>
-                <p>Select a response option to see the trade-offs, meter changes, and CORE/HEART framework alignments.</p>
-              </div>
-
-              <div id="feedbackContent" style="display: none; flex: 1; display: flex; flex-direction: column; gap: 16px;">
-                <div class="feedback-box" id="feedbackBox">
-                  <!-- Feedback text -->
-                </div>
-
-                <button class="btn-next" id="btnNextMoment">Continue Arc</button>
-              </div>
-            </div>
-          </section>
 
         </div>
       </div>
@@ -1029,7 +1047,7 @@
             <div style="border-top: 1px solid var(--line); margin-top: 24px; padding-top: 24px;">
               <h4 style="font-family: Georgia, serif; font-size: 1.2rem; color: var(--paper-2); text-align: center; margin-bottom: 6px;">Classroom Seating Chart Evolution</h4>
               <p style="font-size: 0.88rem; color: var(--muted); text-align: center; margin-bottom: 20px;">
-                Compare how your facilitation choices shifted student trust and discourse from the starting classroom state to the final classroom state.
+                Compare how your facilitation choices shifted student trust, discourse, and the evidence on the board from the starting classroom state to the final classroom state.
               </p>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div style="text-align: center; background: rgba(0,0,0,0.2); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;">
@@ -1469,9 +1487,28 @@
       });
     });
 
-    function drawClassroom(containerId, discVal, trustVal) {
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    function svgEl(name, attrs) {
+      const el = document.createElementNS(SVG_NS, name);
+      Object.keys(attrs).forEach(k => el.setAttribute(k, attrs[k]));
+      return el;
+    }
+
+    /* One sentence that says what the picture shows, so the room never depends on colour alone. */
+    function roomCaption(discVal, trustVal, rigorVal) {
+      const lines = Math.round(clamp(rigorVal, 0, 100) / 20);
+      let room;
+      if (discVal < 40) room = "The room has gone quiet. Few students are speaking.";
+      else if (trustVal < 48) room = "The room has pulled apart. Students are sitting back toward the walls.";
+      else if (trustVal >= 70 && discVal >= 70) room = "The room is leaning in. Students on both sides are talking across the aisle.";
+      else room = "The room is holding. Students are still turned toward the middle.";
+      return room + " Evidence on the board: " + lines + " of 5 lines.";
+    }
+
+    function drawClassroom(containerId, discVal, trustVal, rigorVal) {
       const container = document.getElementById(containerId);
       if (!container) return;
+      if (rigorVal === undefined) rigorVal = 55;
 
       const polarization = Math.max(0, 100 - trustVal);
       const silenceFactor = Math.max(0, 50 - discVal) / 50;
@@ -1486,33 +1523,37 @@
         dotColor = "rgba(125, 159, 214, 0.9)"; // Blue
       }
 
-      let svgHtml = `<svg viewBox="0 0 180 90" style="width: 100%; height: auto; display: block; overflow: visible;">`;
-      svgHtml += `<line x1="90" y1="5" x2="90" y2="85" stroke="var(--line)" stroke-width="1" stroke-dasharray="3,3" />`;
-
-      desks.forEach(desk => {
-        const isLeft = desk.x < 90;
-        let lean = 0;
-        if (isLeft) {
-          lean = (90 - desk.x) * 0.22 * (trustVal / 100);
-        } else {
-          lean = -(desk.x - 90) * 0.22 * (trustVal / 100);
+      // Build the drawing once, then move the same dots so the change is visible.
+      let svg = container.querySelector("svg");
+      if (!svg) {
+        svg = svgEl("svg", { viewBox: "0 -22 180 112", role: "img", style: "width: 100%; height: auto; display: block; overflow: visible;" });
+        svg.appendChild(svgEl("rect", { x: 50, y: -20, width: 80, height: 18, rx: 1.5, fill: "rgba(0,0,0,0.25)", stroke: "var(--line)", "stroke-width": 1 }));
+        for (let i = 0; i < 5; i++) {
+          svg.appendChild(svgEl("line", { x1: 55, y1: -17 + i * 3, x2: 125 - (i % 2) * 14, y2: -17 + i * 3, stroke: "var(--paper)", "stroke-width": 0.9, class: "board-line" }));
         }
+        svg.appendChild(svgEl("line", { x1: 90, y1: 5, x2: 90, y2: 85, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "3,3" }));
+        desks.forEach(desk => {
+          svg.appendChild(svgEl("rect", { x: desk.x - 6, y: desk.y - 4, width: 12, height: 8, rx: 1.5, fill: "none", stroke: "var(--line)", "stroke-width": 1, style: "opacity: 0.6;" }));
+          svg.appendChild(svgEl("circle", { cx: desk.x, cy: desk.y, r: 3, class: "student-dot" }));
+        });
+        container.appendChild(svg);
+      }
 
-        let drift = 0;
-        if (isLeft) {
-          drift = -12 * (polarization / 100);
-        } else {
-          drift = 12 * (polarization / 100);
-        }
-
-        const xActual = desk.x + lean + drift;
-
-        svgHtml += `<rect x="${desk.x - 6}" y="${desk.y - 4}" width="12" height="8" rx="1.5" fill="none" stroke="var(--line)" stroke-width="1" style="opacity: 0.6;" />`;
-        svgHtml += `<circle cx="${xActual}" cy="${desk.y}" r="3" fill="${dotColor}" class="student-dot" style="filter: drop-shadow(0 0 2px ${dotColor});" />`;
+      const dots = svg.querySelectorAll(".student-dot");
+      desks.forEach((desk, i) => {
+        const side = desk.x < 90 ? 1 : -1;
+        const lean = side * Math.abs(90 - desk.x) * 0.22 * (trustVal / 100);
+        const drift = -side * 12 * (polarization / 100);
+        dots[i].style.cx = (desk.x + lean + drift) + "px";
+        dots[i].setAttribute("cx", desk.x + lean + drift);
+        dots[i].style.fill = dotColor;
       });
+      const shown = Math.round(clamp(rigorVal, 0, 100) / 20);
+      svg.querySelectorAll(".board-line").forEach((line, i) => { line.style.opacity = i < shown ? 0.85 : 0.08; });
 
-      svgHtml += `</svg>`;
-      container.innerHTML = svgHtml;
+      const caption = roomCaption(discVal, trustVal, rigorVal);
+      svg.setAttribute("aria-label", caption);
+      return caption;
     }
 
     // Play Elements
@@ -1599,7 +1640,7 @@
       document.getElementById("meterTrust").setAttribute("aria-valuenow", trust);
       document.getElementById("meterTrust").setAttribute("aria-valuetext", "Student Trust: " + trust + " percent");
 
-      drawClassroom("classroom-seating-chart", discourse, trust);
+      document.getElementById("roomCaption").textContent = drawClassroom("classroom-seating-chart", discourse, trust, rigor);
     }
 
     // --- FLOW LOGIC ---
@@ -1621,7 +1662,7 @@
       trust = 55;
       selectedTags = [];
       
-      moment1State = { discourse: 55, trust: 55 };
+      moment1State = { discourse: 55, trust: 55, rigor: 55 };
 
       screenTitle.style.display = "none";
       screenPlay.style.display = "block";
@@ -1718,8 +1759,8 @@
         announce("Workable alternative selected. Balanced outcome.");
       }
       
-      // Auto scroll column 3 into view on mobile
-      feedbackContent.scrollIntoView({ behavior: 'smooth' });
+      // Bring the room into view after the feedback is laid out, so the change is seen and not only reported.
+      document.querySelector(".room-panel").scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     }
 
     function advanceMoment() {
@@ -1748,9 +1789,9 @@
 
       // Draw the classroom seating chart comparison maps
       if (moment1State) {
-        drawClassroom("debrief-room-m1", moment1State.discourse, moment1State.trust);
+        drawClassroom("debrief-room-m1", moment1State.discourse, moment1State.trust, moment1State.rigor);
       }
-      drawClassroom("debrief-room-m5", discourse, trust);
+      drawClassroom("debrief-room-m5", discourse, trust, rigor);
 
       // Build Leadership Profile Tally
       profileGrid.innerHTML = "";

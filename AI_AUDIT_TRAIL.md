@@ -217,3 +217,17 @@ confirmed visually before code is changed on their authority.
 *   **Verification:** one scripted six-exchange run in a desktop browser with no
     console errors. Not tested by keyboard alone, on touch, with a screen
     reader, or on a Chromebook.
+
+## 2026-11-14 · Common Ground: the room as the main display
+
+*   **Tool:** Claude Code (Claude Fable 5.2), directed and reviewed by the author.
+*   **Task:** make the seating chart the main display in `common-ground/index.html`.
+*   **Data used:** the game's own source. No participant, student, or district data.
+*   **Changes:** the seating chart now sits across the top beside the moment,
+    with the feedback directly under it. The dots move between states instead
+    of being redrawn. A board at the front shows Academic Rigor as lines of
+    evidence, and a one-sentence caption states what the room shows. The third
+    column was removed. No moment, response, or score was changed.
+*   **Verification:** two scripted runs in a desktop browser at two widths with
+    no console errors. Not tested by keyboard alone, on touch, with a screen
+    reader, or on a Chromebook.
