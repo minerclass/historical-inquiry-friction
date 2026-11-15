@@ -2447,6 +2447,12 @@
       // Verdict Box content
       let title = "";
       let desc = "";
+      const STRONG = 60;
+      const weakMeters = [
+        { name: "Evidence Base", value: evidence, note: "It rests on claims that were not checked against local records." },
+        { name: "Stakeholder Breadth", value: stakeholders, note: "It leaves out people who would carry the costs." },
+        { name: "Feasibility", value: feasibility, note: "It asks for more than the responsible body can fund or carry out." }
+      ].filter(m => m.value < STRONG);
 
       if (ownership === "outsourced") {
         title = "❌ Outsourced / Flawed Action Plan";
@@ -2456,6 +2462,14 @@
       } else if (ownership === "borrowed") {
         title = "⚠️ Promising but Borrowed Plan";
         desc = "Your plan is clean and has decent statistics, but relies heavily on imported AI templates without complete local verification. While it is mostly workable, you will struggle to defend the local data sources and details if questioned in public committee.";
+        verdictBox.style.background = "rgba(215, 161, 61, 0.08)";
+        verdictBox.style.borderColor = "var(--gold)";
+      } else if (weakMeters.length) {
+        // Owning the plan is not enough: the verdict also has to match what the three meters show.
+        const names = weakMeters.map(m => m.name);
+        const list = names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0];
+        title = "Your Own Plan, With Gaps";
+        desc = "You did the reasoning yourself and caught the flaws in the AI draft. The plan is still weak on " + list + ". " + weakMeters.map(m => m.note).join(" ");
         verdictBox.style.background = "rgba(215, 161, 61, 0.08)";
         verdictBox.style.borderColor = "var(--gold)";
       } else {

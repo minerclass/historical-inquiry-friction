@@ -250,3 +250,18 @@ confirmed visually before code is changed on their authority.
 *   **Verification:** one scripted five-moment run in a desktop browser at two
     widths, by click and by number keys, with no console errors. Not tested on
     touch, with a screen reader, with reduced motion, or on a Chromebook.
+
+## 2026-11-14 · Informed Action: verdict tied to all three meters
+
+*   **Tool:** Claude Code (Claude Fable 5.2), directed and reviewed by the author.
+*   **Task:** correct the debrief verdict in `informed-action/index.html`.
+*   **Data used:** the game's own source. No participant, student, or district data.
+*   **Finding:** the verdict read only the ownership state. A player could pick
+    the weakest option in every phase, spot the flaw in the AI draft, and be
+    told the plan was defensible with an evidence score near 20.
+*   **Change:** an owned plan is called defensible only when Evidence Base,
+    Stakeholder Breadth, and Feasibility are each 60 or higher. Otherwise the
+    verdict is "Your Own Plan, With Gaps" and names the weak meters. The 60
+    threshold and the three gap sentences were drafted by the tool.
+*   **Verification:** the debrief was called with five set score combinations
+    in a desktop browser. No full click-through was played.
