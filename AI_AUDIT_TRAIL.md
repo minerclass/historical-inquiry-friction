@@ -304,3 +304,25 @@ confirmed visually before code is changed on their authority.
 *   **Verification:** one scripted run of Common Ground and two of Informed
     Action in a desktop browser with no console errors. Not tested by keyboard
     alone, on touch, with a screen reader, or on a Chromebook.
+
+## 2026-11-14 · The Devil's Advocate: the floor as a scene, short replies
+
+*   **Tool:** Claude Code (Claude Fable 5.2), directed and reviewed by the author.
+*   **Task:** redesign `devils-advocate/index.html` in the same way as Common
+    Ground, at the author's request.
+*   **Data used:** the game's own source. No participant, student, or district data.
+*   **Changes:** a drawing of two lecterns shows how much of the floor the
+    player holds, the evidence on their lectern, and whether their voice is
+    still their own, with a caption in words. Replies show as short labels;
+    picking one shows the full reply, and the player writes a reason and
+    commits before anything is scored. The debrief opens with the standing,
+    the final floor, and six chips that carry each reply and the player's
+    reason; the move table sits behind a disclosure. The title text is one
+    sentence. Claims, replies, scores, and verdict rules are unchanged.
+*   **New wording for author review:** forty-eight reply labels in `LABELS`
+    and the caption wording were drafted by the tool. Labels paraphrase the
+    reply and do not name the move.
+*   **Verification:** one scripted six-exchange run in a desktop browser at
+    two widths, by click and by number keys, with no console errors. Not
+    tested on touch, with a screen reader, with reduced motion, or on a
+    Chromebook.
