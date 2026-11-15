@@ -402,6 +402,22 @@
     #aiDraftBox[hidden] { display: none; }
     #aiDraftBox { max-height: 220px; overflow-y: auto; }
 
+
+    /* Debrief: picture first, reading on request */
+    .verdict-short { font-family: Georgia, serif; font-size: 1.15rem; line-height: 1.4; margin: 6px 0 10px; }
+    .debrief-more { margin-top: 8px; }
+    .debrief-more > summary { cursor: pointer; font-weight: 700; color: var(--gold); padding: 6px 0; }
+    .debrief-block-title { font-family: ui-monospace, monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); text-align: center; margin: 28px 0 12px; }
+    .journey { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .journey-chip { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 0.84rem; text-align: left; max-width: 240px; color: var(--paper); }
+    .journey-chip b { display: block; font-family: ui-monospace, monospace; font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+    .journey-chip i { display: block; font-style: normal; font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .journey-chip.strong { border-color: var(--teal); }
+    .journey-chip.weak { border-color: var(--rose); }
+    .journey-chip.borrowed { border-color: var(--gold); border-style: dashed; }
+    .debrief-stats-grid .stat-desc { display: none; }
+    .debrief-plan { max-width: 520px; margin: 0 auto; }
+
     /* The plan drawing */
     #planScene { max-width: 400px; margin: 0 auto; }
     .plan-svg text { font: 6px ui-monospace, monospace; fill: var(--muted); text-anchor: middle; }
@@ -1226,13 +1242,26 @@
       <div class="screen" id="screenDebrief" style="display: none;">
         <div class="debrief-layout">
           
-          <div class="debrief-intro">
-            <h2>Civic Plan Audit</h2>
-            <p>Your civic action plan has been finalized. Let's inspect your ownership and planning rigor.</p>
+          <div class="verdict-box" id="verdictBox">
+            <h4>Defensible Action Plan</h4>
+            <p class="verdict-short" id="verdictShort"></p>
+            <details class="debrief-more">
+              <summary>Read the full audit</summary>
+              <p id="verdictDesc"></p>
+            </details>
           </div>
 
+          <h3 class="debrief-block-title">The plan you are submitting</h3>
+          <div class="room-frame debrief-plan">
+            <div id="planSceneFinal"></div>
+            <p class="room-caption" id="planCaptionFinal"></p>
+          </div>
+
+          <h3 class="debrief-block-title">Your five steps</h3>
+          <div class="journey" id="journeyRow"></div>
+
           <!-- Meters Dashboard -->
-          <div class="debrief-stats-grid">
+          <div class="debrief-stats-grid" style="margin-top: 28px;">
             <div class="stat-card">
               <h3>Evidence Base</h3>
               <div class="stat-dial-container">
@@ -1240,9 +1269,7 @@
                   <span class="dial-val" id="valEvidence">40<span>%</span></span>
                 </div>
               </div>
-              <p class="stat-desc">Measures if your plan relies on credible, triangulated, verified statistics and local surveys rather than national vibes or unverified summaries.</p>
             </div>
-
             <div class="stat-card">
               <h3>Stakeholder Breadth</h3>
               <div class="stat-dial-container">
@@ -1250,9 +1277,7 @@
                   <span class="dial-val" id="valStakeholder">40<span>%</span></span>
                 </div>
               </div>
-              <p class="stat-desc">Measures whose voices and interests are incorporated in the plan. High scores require consulting those most affected and marginalized.</p>
             </div>
-
             <div class="stat-card">
               <h3>Feasibility</h3>
               <div class="stat-dial-container">
@@ -1260,21 +1285,15 @@
                   <span class="dial-val" id="valFeasibility">50<span>%</span></span>
                 </div>
               </div>
-              <p class="stat-desc">Measures if your proposed action is realistic, targets the correct decision-making body, and operates within real-world scopes.</p>
             </div>
-
             <div class="stat-card" style="justify-content: center; gap: 10px;">
               <h3>Plan Ownership</h3>
               <span class="ownership-badge owned" style="font-size: 1.5rem; padding: 10px 24px; border-radius: 8px;" id="valOwnership">Owned</span>
-              <p class="stat-desc" style="margin-top: 10px;">Indicates whether this plan is truly yours. Accepting pre-packaged AI plans outsources your agency, while interrogating details secures it.</p>
-              
-              <div class="verdict-box" id="verdictBox">
-                <h4>Defensible Action Plan</h4>
-                <p>Content...</p>
-              </div>
             </div>
           </div>
 
+          <details class="debrief-more">
+            <summary>Why the frictionless plan is a trap</summary>
           <!-- Essay Box -->
           <div class="essay-grid">
             <div class="essay-card highlight">
@@ -1289,7 +1308,9 @@
               <p>By forcing yourself to look for what the AI left out, you build the <strong>pedagogical friction</strong> necessary for real conceptual learning and ownership.</p>
             </div>
           </div>
-
+          </details>
+          <details class="debrief-more">
+            <summary>C.O.R.E. and H.E.A.R.T. alignment</summary>
           <!-- Framework Card -->
           <div class="framework-card">
             <h3>C.O.R.E. &amp; H.E.A.R.T. Alignment</h3>
@@ -1304,7 +1325,9 @@
               </div>
             </div>
           </div>
-
+          </details>
+          <details class="debrief-more">
+            <summary>Dissertation bridge</summary>
           <section class="framework-card" aria-labelledby="dissertationBridgeTitle">
             <h3 id="dissertationBridgeTitle">Dissertation bridge</h3>
             <p>Public scholarship for <em>Pedagogical Friction in the Age of Generative AI and Tertiary Algorithmicity</em> &mdash; prompts about the proposed study, not findings from it.</p>
@@ -1315,6 +1338,7 @@
             </ul>
             <p style="text-align: center; margin: 18px 0 0;"><a href="https://minerclass.github.io/dissertationquestionsbeta/dissertation-sites/" target="_blank" rel="noopener" style="color: var(--teal);">See the full current research questions &rarr;</a></p>
           </section>
+          </details>
 
           <p style="font-size: 0.78rem; color: var(--muted, #8a8478); font-style: italic; text-align: center; margin: 22px auto 0; max-width: 60ch;"><strong>Note:</strong> All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
 
@@ -2167,8 +2191,8 @@
 
     /* Sources on the left, the plan in the middle, voices on the right, and the route to
        whoever decides underneath. The caption says the same thing in words. */
-    function drawPlan() {
-      const container = document.getElementById("planScene");
+    function drawPlan(sceneId, captionId) {
+      const container = document.getElementById(sceneId || "planScene");
       let svg = container.querySelector("svg");
       if (!svg) {
         svg = svgEl("svg", { viewBox: "0 0 240 174", role: "img", class: "plan-svg", style: "width: 100%; height: auto; display: block;" });
@@ -2210,7 +2234,7 @@
       const signWord = ownership === "owned" ? "Signed by you." : ownership === "borrowed" ? "Partly borrowed from AI." : "Signed off by the AI.";
       const caption = "Sources checked: " + sources + " of 5. Voices at the table: " + voices + " of 10. Route to who decides: " + routeWord + ". " + signWord;
       svg.setAttribute("aria-label", caption);
-      document.getElementById("planCaption").textContent = caption;
+      document.getElementById(captionId || "planCaption").textContent = caption;
     }
 
     // --- CHOICES: read a move first, then commit ---
@@ -2488,8 +2512,30 @@
         verdictBox.style.borderColor = "var(--teal)";
       }
 
+      title = title.replace(/^[^A-Za-z]+/, "");
       verdictBox.querySelector("h4").textContent = title;
-      verdictBox.querySelector("p").textContent = desc;
+      document.getElementById("verdictDesc").textContent = desc;
+      document.getElementById("verdictShort").textContent =
+        ownership === "outsourced" ? "The AI's draft went in under your name, flaws included."
+        : ownership === "borrowed" ? "The plan works on paper, but parts of it are not yours to defend."
+        : weakMeters.length ? "The reasoning is yours. The plan still has gaps."
+        : "You can defend this plan line by line.";
+
+      // The finished plan and the five steps
+      drawPlan("planSceneFinal", "planCaptionFinal");
+      const journeyRow = document.getElementById("journeyRow");
+      journeyRow.innerHTML = "";
+      const stepNames = ["Question", "Evidence", "Stakeholders", "Action", "Review"];
+      const stepWord = { strong: "Sound", weak: "Shaky", borrowed: "Borrowed from AI" };
+      stepNames.forEach((name, i) => {
+        const kind = phaseResults[i] || "weak";
+        const chip = document.createElement("div");
+        chip.className = "journey-chip " + kind;
+        const b = document.createElement("b"); b.textContent = (i + 1) + ". " + name;
+        chip.appendChild(b);
+        chip.appendChild(document.createTextNode(stepWord[kind]));
+        journeyRow.appendChild(chip);
+      });
 
       announce("Inquiry debrief generated. Audit complete.");
       window.scrollTo({ top: 0, behavior: 'smooth' });

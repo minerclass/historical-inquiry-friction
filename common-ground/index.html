@@ -901,6 +901,25 @@
       }
     }
 
+
+    /* Debrief: picture first, reading on request */
+    .verdict-short { font-family: Georgia, serif; font-size: 1.15rem; line-height: 1.4; margin: 6px 0 10px; }
+    .debrief-more { margin-top: 8px; }
+    .debrief-more > summary { cursor: pointer; font-weight: 700; color: var(--gold); padding: 6px 0; }
+    .debrief-block-title { font-family: ui-monospace, monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); text-align: center; margin: 28px 0 12px; }
+    .journey { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .journey-chip { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 0.84rem; text-align: left; max-width: 240px; color: var(--paper); }
+    .journey-chip b { display: block; font-family: ui-monospace, monospace; font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+    .journey-chip i { display: block; font-style: normal; font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .journey-chip.strong { border-color: var(--teal); }
+    .journey-chip.weak { border-color: var(--rose); }
+    .journey-chip.borrowed { border-color: var(--gold); border-style: dashed; }
+    .debrief-stats-grid .stat-desc { display: none; }
+    .room-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .room-pair .room-frame p { margin: 8px 0 0; font-size: 0.86rem; color: var(--paper); text-align: left; }
+    .profile-item.dim { opacity: 0.45; }
+    @media (max-width: 640px) { .room-pair { grid-template-columns: 1fr; } }
+
     /* Seating Chart visual styles */
     .student-dot {
       transition: cx 0.9s cubic-bezier(0.1, 0.8, 0.2, 1), fill 0.6s;
@@ -1029,13 +1048,34 @@
       <div class="screen" id="screenDebrief" style="display: none;">
         <div class="debrief-layout">
           
-          <div class="debrief-intro">
-            <h2>Facilitation Complete</h2>
-            <p>You have finished navigating the polarized classroom dilemmas. Here is your leadership profile.</p>
+          <div class="verdict-box" id="verdictBox">
+            <h4>Classroom Climate Verdict</h4>
+            <p class="verdict-short" id="verdictShort"></p>
+            <details class="debrief-more">
+              <summary>Read the full verdict</summary>
+              <p id="verdictDesc"></p>
+            </details>
           </div>
 
+          <h3 class="debrief-block-title">The room, before and after</h3>
+          <div class="room-pair">
+            <div class="room-frame">
+              <div class="scene-who">Starting classroom</div>
+              <div id="debrief-room-m1"></div>
+              <p id="debriefCapStart"></p>
+            </div>
+            <div class="room-frame">
+              <div class="scene-who">Final classroom</div>
+              <div id="debrief-room-m5"></div>
+              <p id="debriefCapEnd"></p>
+            </div>
+          </div>
+
+          <h3 class="debrief-block-title">Your five moves</h3>
+          <div class="journey" id="journeyRow"></div>
+
           <!-- Dials Dashboard -->
-          <div class="debrief-stats-grid">
+          <div class="debrief-stats-grid" style="margin-top: 28px;">
             <div class="stat-card">
               <h3>Civil Discourse</h3>
               <div class="stat-dial-container">
@@ -1043,9 +1083,7 @@
                   <span class="dial-val" id="valDiscourse">55<span>%</span></span>
                 </div>
               </div>
-              <p class="stat-desc">Measures if your classroom remains a place where students can disagree productively and humanely, without collapsing into shouting or silence.</p>
             </div>
-
             <div class="stat-card">
               <h3>Academic Rigor</h3>
               <div class="stat-dial-container">
@@ -1053,9 +1091,7 @@
                   <span class="dial-val" id="valRigor">55<span>%</span></span>
                 </div>
               </div>
-              <p class="stat-desc">Measures if claims in your room remain bound to primary sources, evidence, and critical cross-examination rather than superficial opinions.</p>
             </div>
-
             <div class="stat-card">
               <h3>Student Trust</h3>
               <div class="stat-dial-container">
@@ -1063,43 +1099,17 @@
                   <span class="dial-val" id="valTrust">55<span>%</span></span>
                 </div>
               </div>
-              <p class="stat-desc">Measures if students feel their basic human dignity and diverse identities are safe in your room, protecting them from hostility or silencing.</p>
             </div>
           </div>
           <p style="font-size: 0.82rem; color: var(--muted); text-align: center; margin-top: 15px; font-style: italic;"><strong>Note:</strong> All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
 
-          <!-- Leadership Profile Tally -->
           <div class="profile-card">
             <h3>CORE &amp; HEART Leadership Profile</h3>
-            <p style="text-align: center; color: var(--muted); margin: 0 0 20px; font-size: 0.95rem;">Based on your choices, here are the pedagogical principles you leaned on most:</p>
-            <div class="profile-grid" id="profileGrid">
-              <!-- Dynamically populated tallies -->
-            </div>
-
-            <!-- Seating Chart Comparison Map -->
-            <div style="border-top: 1px solid var(--line); margin-top: 24px; padding-top: 24px;">
-              <h4 style="font-family: Georgia, serif; font-size: 1.2rem; color: var(--paper-2); text-align: center; margin-bottom: 6px;">Classroom Seating Chart Evolution</h4>
-              <p style="font-size: 0.88rem; color: var(--muted); text-align: center; margin-bottom: 20px;">
-                Compare how your facilitation choices shifted student trust, discourse, and the evidence on the board from the starting classroom state to the final classroom state.
-              </p>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div style="text-align: center; background: rgba(0,0,0,0.2); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;">
-                  <div style="font-family: ui-monospace, monospace; font-size: 9px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; font-weight: bold;">Starting Classroom</div>
-                  <div id="debrief-room-m1"></div>
-                </div>
-                <div style="text-align: center; background: rgba(0,0,0,0.2); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px;">
-                  <div style="font-family: ui-monospace, monospace; font-size: 9px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; font-weight: bold;">Final Classroom</div>
-                  <div id="debrief-room-m5"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="verdict-box" id="verdictBox" style="margin-top: 24px;">
-              <h4>Classroom Climate Verdict</h4>
-              <p id="verdictDesc">Description...</p>
-            </div>
+            <div class="profile-grid" id="profileGrid"></div>
           </div>
 
+          <details class="debrief-more">
+            <summary>The stance behind the game</summary>
           <!-- Essay Box -->
           <div class="essay-grid">
             <div class="essay-card highlight">
@@ -1114,6 +1124,7 @@
               <p>By keeping the focus strictly on <strong>evidence, accountability, and empathy</strong>, we build a resilient space where students feel safe to stretch their thinking.</p>
             </div>
           </div>
+          </details>
 
           <div class="replay-area" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
             <button class="btn-action" id="btnReplay">Facilitate Again</button>
@@ -1748,6 +1759,7 @@
       selectedTags = [];
       
       moment1State = { discourse: 55, trust: 55, rigor: 55 };
+      journey = [];
 
       screenTitle.style.display = "none";
       screenPlay.style.display = "block";
@@ -1758,6 +1770,7 @@
       announce("Simulation started. First dilemma loaded.");
     }
 
+    let journey = [];
     let previewOpt = null;
     let previewBtn = null;
     let committed = false;
@@ -1853,6 +1866,12 @@
       });
       selectedBtn.classList.add("selected");
 
+      journey.push({
+        kicker: activeMoments[currentMomentIdx].kicker,
+        label: opt.label || "",
+        kind: opt.best ? "strong" : (opt.tags && opt.tags.includes("anti-pattern")) ? "weak" : "ok"
+      });
+
       // Apply deltas
       discourse += opt.deltas.discourse;
       rigor += opt.deltas.rigor;
@@ -1915,9 +1934,24 @@
 
       // Draw the classroom seating chart comparison maps
       if (moment1State) {
-        drawClassroom("debrief-room-m1", moment1State.discourse, moment1State.trust, moment1State.rigor);
+        document.getElementById("debriefCapStart").textContent = drawClassroom("debrief-room-m1", moment1State.discourse, moment1State.trust, moment1State.rigor);
       }
-      drawClassroom("debrief-room-m5", discourse, trust, rigor);
+      document.getElementById("debriefCapEnd").textContent = drawClassroom("debrief-room-m5", discourse, trust, rigor);
+
+      // The five moves, as chips
+      const journeyRow = document.getElementById("journeyRow");
+      journeyRow.innerHTML = "";
+      const kindWord = { strong: "Aligned", ok: "Workable", weak: "Costly" };
+      journey.forEach((step) => {
+        const chip = document.createElement("div");
+        chip.className = "journey-chip " + step.kind;
+        const b = document.createElement("b"); b.textContent = step.kicker;
+        const i = document.createElement("i"); i.textContent = kindWord[step.kind];
+        chip.appendChild(b);
+        chip.appendChild(document.createTextNode(step.label));
+        chip.appendChild(i);
+        journeyRow.appendChild(chip);
+      });
 
       // Build Leadership Profile Tally
       profileGrid.innerHTML = "";
@@ -1963,7 +1997,7 @@
 
       results.forEach(res => {
         const item = document.createElement("div");
-        item.className = "profile-item";
+        item.className = "profile-item" + (res.count > 0 ? "" : " dim");
         
         // Find title
         const meta = traitDescriptions[res.key] || { title: res.key === "E_H" ? "Empathy" : "Engagement" };
@@ -1975,7 +2009,7 @@
             <h4>${displayTitle}</h4>
             <span class="profile-count">${res.count}</span>
           </div>
-          <p>${displayDesc}</p>
+          ${res.count > 0 ? `<p>${displayDesc}</p>` : ""}
         `;
         profileGrid.appendChild(item);
       });
@@ -2000,8 +2034,16 @@
 
       const verdictTitleEl = document.querySelector(".verdict-box h4");
       const verdictTextEl = document.getElementById("verdictDesc");
+      verdictTitle = verdictTitle.replace(/^[^A-Za-z]+/, "");
       verdictTitleEl.textContent = verdictTitle;
       verdictTextEl.textContent = verdictDescText;
+      const shortLines = {
+        Deliberative: "Students argue from evidence and trust the room.",
+        Civility: "Rigor has slipped. Claims are going unchecked.",
+        Rigorous: "The evidence is there, but students have stopped trusting the room.",
+        Developing: "The room is holding, with trust and rigor still to build."
+      };
+      document.getElementById("verdictShort").textContent = shortLines[verdictTitle.split(" ")[0]] || "";
 
       announce("Simulation debrief loaded.");
       window.scrollTo({ top: 0, behavior: 'smooth' });

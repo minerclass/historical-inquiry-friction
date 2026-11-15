@@ -287,3 +287,20 @@ confirmed visually before code is changed on their authority.
     and a shortcut path for each of the four issues) with no console errors.
     Not tested by keyboard alone, on touch, with a screen reader, with reduced
     motion, or on a Chromebook.
+
+## 2026-11-14 · Common Ground and Informed Action: debriefs led by the picture
+
+*   **Tool:** Claude Code (Claude Fable 5.2), directed and reviewed by the author.
+*   **Task:** redesign the two debrief screens to match the new play screens.
+*   **Data used:** the games' own source. No participant, student, or district data.
+*   **Changes:** each debrief now opens with the verdict title and one short
+    line, then the picture (before and after rooms in Common Ground, the
+    finished plan in Informed Action), then a row of chips for the five moves
+    or steps. Dial descriptions are removed. The full verdict, the essays, the
+    framework alignment, and the dissertation bridge are kept unchanged behind
+    "read more" disclosures. Emoji are removed from verdict titles.
+*   **New wording for author review:** eight one-line verdict summaries and
+    the chip status words were drafted by the tool.
+*   **Verification:** one scripted run of Common Ground and two of Informed
+    Action in a desktop browser with no console errors. Not tested by keyboard
+    alone, on touch, with a screen reader, or on a Chromebook.
