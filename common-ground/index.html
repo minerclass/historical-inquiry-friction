@@ -324,7 +324,64 @@
       gap: 20px;
     }
     .panel.room-panel { scroll-margin-top: 150px; }
-    .room-result { margin-top: 14px; }
+    .room-result { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+    .scene-line, .teacher-line {
+      margin: 0 0 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px 14px 14px 4px;
+      background: rgba(244, 234, 215, 0.07);
+      color: var(--paper);
+      font-family: Georgia, serif;
+      font-size: 1.05rem;
+      line-height: 1.4;
+    }
+    .teacher-line { margin: 0; border-radius: 14px 14px 4px 14px; border-color: var(--gold); font-size: 0.98rem; }
+    .scene-who {
+      display: block;
+      font-family: ui-monospace, monospace;
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 3px;
+    }
+    .choose-line { margin: 0; font-size: 0.85rem; color: var(--muted); }
+    .moment-more { margin-top: 8px; font-size: 0.9rem; }
+    .moment-more summary { cursor: pointer; font-weight: 700; }
+    .moment-more p { margin: 8px 0 0; }
+    .option-key {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      display: grid; place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      color: var(--gold);
+    }
+    .delta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .delta-chip {
+      font-family: ui-monospace, monospace;
+      font-size: 0.72rem;
+      padding: 3px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--paper);
+    }
+    #btnCommit:disabled { opacity: 0.45; cursor: default; }
+
+    /* Scene actors drawn on the seating chart */
+    .teacher-dot { fill: var(--gold); }
+    .student-dot.speaking, .student-dot.speaking-b { stroke: var(--gold); stroke-width: 1.6px; animation: speakPulse 1.4s ease-in-out infinite; }
+    .student-dot.speaking-b { stroke: var(--rose); animation-delay: 0.7s; }
+    .student-dot.silent { opacity: 0.28; }
+    .student-dot.away { opacity: 0.14; }
+    .scene-envelope { fill: none; stroke: var(--paper); stroke-width: 1px; animation: sceneArrive 0.9s ease-out both; }
+    .scene-phone { fill: var(--paper); animation: sceneGlow 1.6s ease-in-out infinite; }
+    @keyframes speakPulse { 50% { stroke-width: 3.4px; stroke-opacity: 0.4; } }
+    @keyframes sceneArrive { from { transform: translateX(26px); opacity: 0; } }
+    @keyframes sceneGlow { 50% { opacity: 0.4; } }
     .room-result .empty-state { padding: 6px 0 0; min-height: 0; height: auto; flex-direction: row; gap: 10px; justify-content: flex-start; text-align: left; }
     .room-result .empty-state-icon { display: none; }
 
@@ -478,10 +535,11 @@
       padding: 14px 16px;
       color: var(--paper);
       background: rgba(255, 255, 255, 0.03);
-      font-size: 0.9rem;
-      line-height: 1.45;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.35;
       display: flex;
-      align-items: start;
+      align-items: center;
       gap: 12px;
     }
 
@@ -909,9 +967,8 @@
         <p class="subtitle">A classroom facilitation game for history educators under pressure</p>
 
         <div class="framing-card">
-          <p>You teach history in a polarized moment. State laws, parent distrust, and internet outrage create intense pressure to avoid difficult topics or supply students with safe, tidy answers.</p>
-          <p><strong>Every charged moment is a choice.</strong> You can take shortcuts that protect surface civility but gut academic rigor, or pick sides and destroy student trust. Or, you can model how to think &mdash; leading with C.O.R.E. and H.E.A.R.T.</p>
-          <p>In this simulation, you will navigate 5 realistic classroom dilemmas. Your choices will directly affect your classroom's <strong>Civil Discourse</strong>, <strong>Academic Rigor</strong>, and <strong>Student Trust</strong>.</p>
+          <p>You teach history in a polarized moment. Five charged moments will reach your classroom.</p>
+          <p><strong>Pick a move, hear it, then commit.</strong> Watch what it does to the room.</p>
         </div>
 
         <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 20px;">
@@ -923,8 +980,6 @@
       <!-- SCREEN: PLAY -->
       <div class="screen" id="screenPlay" style="display: none;">
         <div class="game-grid">
-          
-          <!-- Column 1: Classroom Moment Setup -->
           <section class="panel room-panel" aria-labelledby="colMomentTitle">
             <div class="panel-header">
               <h3 id="colMomentTitle">Classroom Moment</h3>
@@ -932,63 +987,41 @@
             </div>
             <div class="panel-body">
               <div class="room-layout">
-              <div class="room-frame">
-                <div id="classroom-seating-chart"></div>
-                <p class="room-caption" id="roomCaption" aria-live="polite"></p>
-                <div class="room-result">
-              <div class="empty-state" id="feedbackEmptyState">
-                <div class="empty-state-icon">⚖️</div>
-                <p>Choose a response, then watch the room.</p>
-              </div>
+                <div class="room-frame">
+                  <p class="scene-line"><span class="scene-who" id="sceneWho"></span><span id="sceneSay"></span></p>
+                  <div id="classroom-seating-chart"></div>
+                  <p class="room-caption" id="roomCaption" aria-live="polite"></p>
+                  <div class="room-result" id="feedbackContent" style="display: none;">
+                    <div class="feedback-box" id="feedbackBox"></div>
+                    <button class="btn-next" id="btnNextMoment">Next moment</button>
+                  </div>
+                </div>
+                <div class="room-side">
+                  <div class="moment-card" id="momentCard">
+                    <span class="moment-meta" id="momentKicker"></span>
+                    <h2 id="momentTopic"></h2>
+                    <details class="moment-more" id="momentMore">
+                      <summary>Read the full moment</summary>
+                      <p id="momentSituation"></p>
+                    </details>
+                  </div>
 
-              <div id="feedbackContent" style="display: none; flex: 1; display: flex; flex-direction: column; gap: 16px;">
-                <div class="feedback-box" id="feedbackBox">
-                  <!-- Feedback text -->
-                </div>
+                  <p class="choose-line" id="chooseLine">Pick a move to hear it. Then commit.</p>
+                  <div class="options-stack" id="optionsGrid"></div>
+                  <p class="teacher-line" id="teacherLine" hidden><span class="scene-who">You</span><span id="teacherSay"></span></p>
+                  <button class="btn-next" id="btnCommit" disabled>Commit to this move</button>
 
-                <button class="btn-next" id="btnNextMoment">Continue Arc</button>
-              </div>
+                  <div class="mentor-box">
+                    <div class="mentor-header" id="mentorHeader" role="button" aria-expanded="false" tabindex="0">
+                      <h4><span>Teacher's Log</span></h4>
+                      <span class="mentor-toggle-icon" id="mentorToggleIcon">▼</span>
+                    </div>
+                    <div class="mentor-content" id="mentorContent"></div>
+                  </div>
                 </div>
-              </div>
-              <div class="room-side">
-              <div class="moment-card" id="momentCard">
-                <span class="moment-meta" id="momentKicker">Opinion Stated as Fact</span>
-                <h2 id="momentTopic">Student opinion stated as settled fact</h2>
-                <p id="momentSituation">During a discussion on the causes of the American Revolution, a student asserts: 'The colonists were just greedy tax evaders, and there was no real principle behind it.'</p>
-              </div>
-
-              <!-- Mentor Box -->
-              <div class="mentor-box">
-                <div class="mentor-header" id="mentorHeader" role="button" aria-expanded="false" tabindex="0">
-                  <h4>
-                    <span>📓</span>
-                    <span>Teacher's Log</span>
-                  </h4>
-                  <span class="mentor-toggle-icon" id="mentorToggleIcon">▼</span>
-                </div>
-                <div class="mentor-content" id="mentorContent">
-                  Hint Content
-                </div>
-              </div>
-              </div>
               </div>
             </div>
           </section>
-
-          <!-- Column 2: Response Choices -->
-          <section class="panel" aria-labelledby="colChoicesTitle">
-            <div class="panel-header">
-              <h3 id="colChoicesTitle">Choose Response</h3>
-            </div>
-            <div class="panel-body">
-              <p style="font-size: 0.88rem; color:var(--muted); margin: 0 0 4px;">Choose the response that best models historical inquiry, respects dignity, and protects rigor:</p>
-              <div class="options-stack" id="optionsGrid">
-                <!-- Options injected dynamically -->
-              </div>
-            </div>
-          </section>
-
-
         </div>
       </div>
 
@@ -1443,6 +1476,37 @@
       T: { title: "Thoughtfulness", desc: "You encouraged metacognition, reflective writing, and deliberate pacing rather than fast, reactionary media comments." }
     };
 
+    /* Staging: how each moment is shown in the room, and a short neutral label for each
+       response (in the same order as the options above). The full wording stays in momentsData. */
+    const STAGING = {
+      "Opinion Stated as Fact": { scene: "speaker", who: "Student", say: "“The colonists were just greedy tax evaders.”",
+        labels: ["Test it as a claim", "Move on", "Correct the student", "Ask them to say more"] },
+      "The Family Concern": { scene: "email", who: "Parent email", say: "“Your unit is pushing a political viewpoint.”",
+        labels: ["Share the sources", "Set up a meeting", "Trim the unit", "Cite the standards"] },
+      "Teaching a Painful Chapter": { scene: "planning", who: "Your planning period", say: "Next unit: the Indian Removal Act of 1830.",
+        labels: ["Build on period sources", "Assign reflective journals", "Soften the account", "Debate who owes apologies"] },
+      "The Viral Claim": { scene: "phone", who: "Student, holding up a video", say: "“The U.S. blew up the USS Maine itself.”",
+        labels: ["Check the source together", "Offer extra credit", "Dismiss it", "Call both versions valid"] },
+      "The Heated Exchange": { scene: "clash", who: "Two students", say: "They are shouting over each other about immigration policy.",
+        labels: ["Pause and use the protocol", "Switch to silent reading", "Back the student with data", "Let them work it out"] },
+      "The ChatGPT Shortcut": { scene: "clash", who: "Two students", say: "“I had ChatGPT summarize the packet.” “That's cheating.”",
+        labels: ["Audit the AI summary", "Discuss when AI helps", "Give a zero", "Allow it for everyone"] },
+      "The Silence of the Disengaged": { scene: "silence", who: "You notice", say: "The back row has not spoken all period.",
+        labels: ["Write, pair, then share", "Check in privately", "Call on the back row", "Keep going with volunteers"] },
+      "The Offensive Term": { scene: "speaker", who: "Student, reading aloud", say: "An offensive period term is read aloud. The room tenses.",
+        labels: ["Pause and name it", "Acknowledge, return to the text", "Require an apology", "Keep reading"] },
+      "The Presentist Judgment": { scene: "speaker", who: "Student", say: "“Jefferson was a hypocrite. We can ignore his ideas.”",
+        labels: ["Analyze the tension", "Read the deleted draft passage", "Call him a man of his time", "Agree with the student"] },
+      "The Distrustful Parent": { scene: "email", who: "Parent complaint", say: "“Your seminars are indoctrinating students.”",
+        labels: ["Share plans and documents", "Invite the parent to observe", "Cite the standards", "Swap in a textbook summary"] }
+    };
+    momentsData.forEach((moment) => {
+      const stage = STAGING[moment.kicker];
+      if (!stage) return;
+      moment.stage = stage;
+      moment.options.forEach((opt, i) => { opt.label = stage.labels[i]; });
+    });
+
     function shuffleArray(array) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -1556,6 +1620,29 @@
       return caption;
     }
 
+    /* Mark who is involved in the moment on the main seating chart. */
+    function setScene(type) {
+      const svg = document.querySelector("#classroom-seating-chart svg");
+      if (!svg) return;
+      let layer = svg.querySelector(".scene-layer");
+      if (!layer) { layer = svgEl("g", { class: "scene-layer" }); svg.appendChild(layer); }
+      while (layer.firstChild) layer.removeChild(layer.firstChild);
+      layer.appendChild(svgEl("circle", { cx: 142, cy: -11, r: 3.6, class: "teacher-dot" }));
+      const dots = svg.querySelectorAll(".student-dot");
+      dots.forEach(d => d.classList.remove("speaking", "speaking-b", "silent", "away"));
+      if (type === "speaker" || type === "phone") dots[8].classList.add("speaking");
+      if (type === "clash") { dots[8].classList.add("speaking"); dots[9].classList.add("speaking-b"); }
+      if (type === "silence") for (let i = 18; i < 24; i++) dots[i].classList.add("silent");
+      if (type === "planning") dots.forEach(d => d.classList.add("away"));
+      if (type === "email") {
+        const env = svgEl("g", { class: "scene-envelope" });
+        env.appendChild(svgEl("rect", { x: 150, y: -16, width: 13, height: 9, rx: 1 }));
+        env.appendChild(svgEl("polyline", { points: "150,-16 156.5,-10.5 163,-16" }));
+        layer.appendChild(env);
+      }
+      if (type === "phone") layer.appendChild(svgEl("rect", { x: desks[8].x + 6, y: desks[8].y - 11, width: 4.5, height: 7.5, rx: 1, class: "scene-phone" }));
+    }
+
     // Play Elements
     const momentTracker = document.getElementById("momentTracker");
     const momentKicker = document.getElementById("momentKicker");
@@ -1567,7 +1654,6 @@
     const mentorToggleIcon = document.getElementById("mentorToggleIcon");
     const mentorContent = document.getElementById("mentorContent");
 
-    const feedbackEmptyState = document.getElementById("feedbackEmptyState");
     const feedbackContent = document.getElementById("feedbackContent");
     const feedbackBox = document.getElementById("feedbackBox");
     const btnNextMoment = document.getElementById("btnNextMoment");
@@ -1600,14 +1686,13 @@
 
     // Keyboard navigation (1-4 keys for option selection)
     window.addEventListener("keydown", (e) => {
-      if (screenPlay.style.display === "block") {
-        if (e.key === "1" || e.key === "2" || e.key === "3" || e.key === "4") {
-          const idx = parseInt(e.key) - 1;
-          const buttons = optionsGrid.querySelectorAll(".option-btn");
-          if (buttons && buttons[idx] && !buttons[idx].disabled) {
-            buttons[idx].click();
-          }
-        }
+      if (screenPlay.style.display !== "block") return;
+      if (e.key >= "1" && e.key <= "4") {
+        const buttons = optionsGrid.querySelectorAll(".option-btn");
+        const btn = buttons[parseInt(e.key, 10) - 1];
+        if (btn && !btn.disabled) { btn.click(); btn.focus(); }
+      } else if (e.key === "Enter" && !e.target.closest("button, summary, a, [role='button']")) {
+        if (previewOpt && !committed) commitOption();
       }
     });
 
@@ -1673,34 +1758,86 @@
       announce("Simulation started. First dilemma loaded.");
     }
 
+    let previewOpt = null;
+    let previewBtn = null;
+    let committed = false;
+    const btnCommit = document.getElementById("btnCommit");
+    const teacherLine = document.getElementById("teacherLine");
+    btnCommit.addEventListener("click", commitOption);
+
     function loadMoment(idx) {
       const moment = activeMoments[idx];
+      const stage = moment.stage || { scene: "speaker", who: "In the room", say: moment.situation };
 
       momentTracker.textContent = `Moment ${idx + 1} of 5`;
       momentKicker.textContent = moment.kicker;
       momentTopic.textContent = moment.topic;
       momentSituation.textContent = moment.situation;
+      document.getElementById("momentMore").open = false;
+      document.getElementById("sceneWho").textContent = stage.who;
+      document.getElementById("sceneSay").textContent = stage.say;
+      setScene(stage.scene);
 
       mentorContent.textContent = moment.hint;
       mentorContent.classList.remove("open");
       mentorHeader.setAttribute("aria-expanded", "false");
       mentorToggleIcon.textContent = "▼";
 
-      feedbackEmptyState.style.display = "flex";
       feedbackContent.style.display = "none";
+      previewOpt = null; previewBtn = null; committed = false;
+      teacherLine.hidden = true;
+      btnCommit.disabled = true;
+      btnCommit.style.display = "";
+      document.getElementById("chooseLine").textContent = "Pick a move to hear it. Then commit.";
 
       optionsGrid.innerHTML = "";
       moment.options.forEach((opt, oIdx) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "option-btn";
-        btn.innerHTML = `
-          <div class="option-btn-dot"></div>
-          <span>${oIdx + 1}. ${opt.text}</span>
-        `;
-        btn.addEventListener("click", () => handleOptionSelect(opt, btn));
+        btn.setAttribute("aria-pressed", "false");
+        const key = document.createElement("span");
+        key.className = "option-key";
+        key.textContent = oIdx + 1;
+        const label = document.createElement("span");
+        label.textContent = opt.label || opt.text;
+        btn.appendChild(key);
+        btn.appendChild(label);
+        btn.addEventListener("click", () => previewOption(opt, btn));
         optionsGrid.appendChild(btn);
       });
+    }
+
+    /* First click: hear the move. Nothing is scored until the player commits. */
+    function previewOption(opt, btn) {
+      if (committed) return;
+      previewOpt = opt; previewBtn = btn;
+      optionsGrid.querySelectorAll(".option-btn").forEach(b => { b.classList.remove("selected"); b.setAttribute("aria-pressed", "false"); });
+      btn.classList.add("selected");
+      btn.setAttribute("aria-pressed", "true");
+      document.getElementById("teacherSay").textContent = opt.text;
+      teacherLine.hidden = false;
+      btnCommit.disabled = false;
+      announce("Your move: " + opt.text);
+    }
+
+    function commitOption() {
+      if (!previewOpt || committed) return;
+      committed = true;
+      btnCommit.style.display = "none";
+      document.getElementById("chooseLine").textContent = "Watch the room.";
+      handleOptionSelect(previewOpt, previewBtn);
+    }
+
+    function feedbackHtml(title, opt) {
+      const sign = n => (n >= 0 ? "+" : "") + n;
+      const note = opt.feedback.replace(/\s*\([^)]*\)\s*$/, "");
+      return `<strong>${title}</strong>${note}
+        <div class="delta-row">
+          <span class="delta-chip">Discourse ${sign(opt.deltas.discourse)}</span>
+          <span class="delta-chip">Rigor ${sign(opt.deltas.rigor)}</span>
+          <span class="delta-chip">Trust ${sign(opt.deltas.trust)}</span>
+        </div>`;
     }
 
     function toggleMentor() {
@@ -1713,7 +1850,6 @@
       const buttons = optionsGrid.querySelectorAll(".option-btn");
       buttons.forEach(btn => {
         btn.disabled = true;
-        btn.classList.remove("selected");
       });
       selectedBtn.classList.add("selected");
 
@@ -1732,30 +1868,20 @@
       updateMeters();
 
       // Show Feedback
-      feedbackEmptyState.style.display = "none";
       feedbackContent.style.display = "flex";
 
       feedbackBox.className = "feedback-box";
       if (opt.best) {
         feedbackBox.classList.add("correct");
-        feedbackBox.innerHTML = `
-          <strong>🎯 CORE / HEART Stance Aligned</strong>
-          ${opt.feedback}
-        `;
+        feedbackBox.innerHTML = feedbackHtml("C.O.R.E. / H.E.A.R.T. stance aligned", opt);
         announce("Stance aligned. Discourse, rigor, and trust increased.");
       } else if (opt.tags && opt.tags.includes("anti-pattern")) {
         feedbackBox.classList.add("incorrect");
-        feedbackBox.innerHTML = `
-          <strong>⚠️ Facilitation Anti-pattern</strong>
-          ${opt.feedback}
-        `;
+        feedbackBox.innerHTML = feedbackHtml("Facilitation anti-pattern", opt);
         announce("Anti-pattern chosen. Trust or rigor compromised.");
       } else {
         feedbackBox.classList.add("workable");
-        feedbackBox.innerHTML = `
-          <strong>⚖️ Workable Alternative</strong>
-          ${opt.feedback}
-        `;
+        feedbackBox.innerHTML = feedbackHtml("Workable alternative", opt);
         announce("Workable alternative selected. Balanced outcome.");
       }
       

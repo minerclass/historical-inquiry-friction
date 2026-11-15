@@ -231,3 +231,22 @@ confirmed visually before code is changed on their authority.
 *   **Verification:** two scripted runs in a desktop browser at two widths with
     no console errors. Not tested by keyboard alone, on touch, with a screen
     reader, or on a Chromebook.
+
+## 2026-11-14 · Common Ground: staged scenes and short moves
+
+*   **Tool:** Claude Code (Claude Fable 5.2), directed and reviewed by the author.
+*   **Task:** cut the reading load in `common-ground/index.html` and show each
+    moment as a scene after the author found the game too text-heavy.
+*   **Data used:** the game's own source. No participant, student, or district data.
+*   **Changes:** each of the ten moments is staged on the seating chart (a
+    speaking student, two students, a quiet back row, a parent message, a
+    planning period) with one short line. Responses show as short labels; the
+    full wording appears when a label is picked, and nothing is scored until
+    the player commits. Feedback drops the bracketed score list for three
+    chips. The title text is two sentences. The third column is gone.
+*   **New wording for author review:** the ten scene lines and forty response
+    labels in `STAGING` were drafted by the tool from the existing text. The
+    original situations, responses, feedback, and scores are unchanged.
+*   **Verification:** one scripted five-moment run in a desktop browser at two
+    widths, by click and by number keys, with no console errors. Not tested on
+    touch, with a screen reader, with reduced motion, or on a Chromebook.
