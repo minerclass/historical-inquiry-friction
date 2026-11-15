@@ -326,3 +326,24 @@ confirmed visually before code is changed on their authority.
     two widths, by click and by number keys, with no console errors. Not
     tested on touch, with a screen reader, with reduced motion, or on a
     Chromebook.
+
+## 2026-11-14 · Keepers of Inquiry: the map as the main display
+
+*   **Tool:** Claude Code (Claude Fable 5.2), directed and reviewed by the author.
+*   **Task:** redesign `keepers-of-inquiry/index.html` in the same way as
+    Common Ground, at the author's request.
+*   **Data used:** the game's own source. No participant, student, or district data.
+*   **Changes:** three columns become two. The inquiry map is redrawn as five
+    rings that fill with each thinking move, a challenge track with its
+    productive band, and a block that shrinks as the exclusionary barrier
+    comes down, with a caption in words. Moves show as titles; picking one
+    shows its description, and the player gives a reason and commits before
+    anything changes. The seven meters, the integrity dial, and the move log
+    are unchanged behind "See the numbers". Scenario notes sit behind "About
+    this scenario". Scenarios, moves, scoring, and the debrief are unchanged.
+*   **New wording for author review:** the caption wording was drafted by the
+    tool.
+*   **Verification:** two scripted runs in a desktop browser at two widths
+    with no console errors, including one that reached "Inquiry protected".
+    Not tested by keyboard alone, on touch, with a screen reader, with reduced
+    motion, the print summary, or on a Chromebook.

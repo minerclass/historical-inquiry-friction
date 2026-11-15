@@ -654,6 +654,46 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
+
+    /* --- Map-led layout --- */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+    .game.v2 { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); height: auto; align-items: start; }
+    .game.v2 .panel { padding: 18px; display: flex; flex-direction: column; gap: 12px; overflow: visible; height: auto; max-height: none; }
+    .claim-line { margin: 0; padding: 10px 14px; border: 1px solid var(--line); border-left: 5px solid var(--rose); border-radius: 12px 12px 12px 4px; background: rgba(212, 104, 93, 0.1); font-family: Georgia, serif; font-size: 1.05rem; line-height: 1.4; }
+    .claim-line .who, .move-line .who { display: block; font-family: ui-monospace, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 3px; }
+    .map-v2 { border: 1px solid var(--line); border-radius: var(--radius); background: rgba(0, 0, 0, 0.2); padding: 10px; max-width: 560px; width: 100%; margin: 0 auto; }
+    .map-caption { margin: 0; font-size: 0.92rem; line-height: 1.4; color: var(--paper); }
+    .choose-line { margin: 0; font-size: 0.85rem; color: var(--muted); }
+    .game.v2 .move-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: none; overflow: visible; }
+    .game.v2 .move { padding: 10px 12px; }
+    .game.v2 .move.is-picked { border-color: var(--gold); }
+    .game.v2 .move.is-used strong::after { content: " \2713"; color: var(--teal); }
+    .move-line { margin: 0 0 10px; padding: 10px 14px; border: 1px solid var(--gold); border-radius: 12px 12px 4px 12px; background: rgba(215, 161, 61, 0.07); font-family: Georgia, serif; line-height: 1.4; }
+    #movePreview textarea { width: 100%; height: 56px; border-radius: 6px; border: 1px solid var(--line); padding: 8px; background: rgba(16, 25, 35, 0.6); color: var(--paper); font-family: inherit; font-size: 0.9rem; resize: vertical; margin-bottom: 8px; }
+    #movePreview label { display: block; font-family: ui-monospace, monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+    details.more > summary { cursor: pointer; font-weight: 700; color: var(--gold); padding: 4px 0; }
+    details.more[open] { display: grid; gap: 12px; }
+    .game.v2 .verdict { min-height: 0; }
+    .game.v2 .verdict p:empty { display: none; }
+
+    .kmap text { font: 7px ui-monospace, monospace; fill: var(--muted); text-anchor: middle; }
+    .kmap .klink { stroke: var(--line); stroke-width: 2px; transition: stroke 0.6s; }
+    .kmap .klink.on { stroke: var(--gold); }
+    .kmap .kring { fill: #131d28; stroke: var(--line); stroke-width: 3px; }
+    .kmap .karc { fill: none; stroke: var(--gold); stroke-width: 3px; stroke-linecap: round; transition: stroke-dasharray 0.8s cubic-bezier(.2,.7,.2,1), stroke 0.6s; }
+    .kmap .knode { transform-box: fill-box; transform-origin: center; }
+    .kmap .knode.warning .karc { stroke: var(--rose); }
+    .kmap .knode.unlocked .karc { stroke: var(--teal); }
+    .kmap .knode.unlocked .kring { fill: #1c3a3c; }
+    .kmap .knode.unlocked text { fill: var(--paper); }
+    .kmap .ktrack { stroke: var(--line); stroke-width: 5px; stroke-linecap: round; }
+    .kmap .ktrack.good { stroke: rgba(100, 198, 189, 0.7); stroke-linecap: butt; }
+    .kmap .kmark { fill: var(--gold); transition: transform 0.8s cubic-bezier(.2,.7,.2,1); }
+    .kmap .kframe { fill: none; stroke: var(--paper); stroke-width: 1.2px; }
+    .kmap .kdoor { transition: width 0.8s, fill 0.6s; }
+    .kmap.won .klink { stroke: var(--gold); stroke-dasharray: 4 3; }
+    @media (max-width: 980px) { .game.v2 { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .game.v2 .move-deck { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -679,21 +719,7 @@
       </div>
     </header>
 
-    <main class="game">
-      <section class="panel left" aria-label="Scenario and moves">
-        <p class="section-title">Scenario</p>
-        <select class="scenario-select" id="scenarioSelect" aria-label="Choose historical scenario"></select>
-        <article class="scenario-card">
-          <div class="scenario-meta" id="scenarioMeta"></div>
-          <h2 id="scenarioTitle"></h2>
-          <div class="ai-claim" id="aiClaim"></div>
-          <p id="scenarioPrompt"></p>
-        </article>
-
-        <p class="section-title">Inquiry Moves</p>
-        <div class="move-deck" id="moveDeck"></div>
-      </section>
-
+    <main class="game v2">
       <section class="panel board" aria-label="Inquiry map">
         <div class="board-head">
           <div>
@@ -702,37 +728,49 @@
           </div>
           <div class="turns">
             <span id="turnsLeft">4 moves left</span>
-            <span id="statusText">Inquiry open</span>
+            <span id="statusText" class="sr-only">Inquiry open</span>
           </div>
         </div>
 
-        <div class="map" aria-label="Historical inquiry map">
-          <svg viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
-            <path id="lineSource" d="M185 145 C330 180 390 245 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
-            <path id="lineContext" d="M815 145 C670 180 610 245 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
-            <path id="lineAgency" d="M210 520 C330 455 390 390 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
-            <path id="lineAccess" d="M790 520 C670 455 610 390 500 310" stroke="rgba(100,198,189,.46)" stroke-width="8" fill="none" stroke-linecap="round" />
-            
-            <!-- Victory Constellation Lines (revealed when all nodes are protected) -->
-            <line x1="185" y1="145" x2="815" y2="145" stroke="rgba(215,161,61,0)" stroke-width="4" stroke-dasharray="6,6" class="constellation-link" />
-            <line x1="185" y1="145" x2="210" y2="520" stroke="rgba(215,161,61,0)" stroke-width="4" stroke-dasharray="6,6" class="constellation-link" />
-            <line x1="815" y1="145" x2="790" y2="520" stroke="rgba(215,161,61,0)" stroke-width="4" stroke-dasharray="6,6" class="constellation-link" />
-            <line x1="210" y1="520" x2="790" y2="520" stroke="rgba(215,161,61,0)" stroke-width="4" stroke-dasharray="6,6" class="constellation-link" />
-          </svg>
-          <div class="node n-source" data-node="sourcing"><b>Sourcing</b><span>Who made the claim, why, and from what evidence?</span></div>
-          <div class="node n-context" data-node="context"><b>Context</b><span>What conditions shaped the event and the source?</span></div>
-          <div class="node n-corroborate warning" data-node="corroboration"><b>Corroboration</b><span>Where do accounts conflict, converge, or stay silent?</span></div>
-          <div class="node n-agency" data-node="agency"><b>Agency</b><span>What judgment must students still own?</span></div>
-          <div class="node n-access" data-node="access"><b>Access</b><span>Which barriers can be reduced without erasing inquiry?</span></div>
-        </div>
+        <select class="scenario-select" id="scenarioSelect" aria-label="Choose historical scenario"></select>
+        <p class="claim-line"><span class="who">AI claim</span><span id="aiClaim"></span></p>
+
+        <div class="map-v2" id="inquiryMap"></div>
+        <p class="map-caption" id="mapCaption" aria-live="polite"></p>
 
         <div class="verdict">
           <h3 id="verdictTitle">Start with the AI claim as a contested text.</h3>
-          <p id="verdictBody">Choose up to four moves. Your goal is productive friction: enough challenge to build historical thinking, not so much that students cannot enter the work.</p>
+          <p id="verdictBody"></p>
         </div>
+
+        <details class="more">
+          <summary>About this scenario</summary>
+          <h2 id="scenarioTitle" class="sr-only"></h2>
+          <div class="scenario-meta" id="scenarioMeta"></div>
+          <p id="scenarioPrompt"></p>
+          <p id="scenarioRisk"></p>
+        </details>
       </section>
 
-      <aside class="panel right" aria-label="Meters and debrief">
+      <aside class="panel right" aria-label="Moves and debrief">
+        <p class="section-title">Inquiry Moves</p>
+        <p class="choose-line">Pick a move to read it. Say why, then commit. You have four.</p>
+        <div class="move-deck" id="moveDeck"></div>
+        <div id="movePreview"></div>
+
+        <div class="scenario-actions">
+          <button class="ghost" type="button" id="acceptClaim">Accept claim</button>
+          <button class="primary" type="button" id="debriefBtn">Debrief</button>
+        </div>
+
+        <div class="debrief" id="debrief">
+          <h3>Debrief</h3>
+          <ul id="debriefList"></ul>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--muted); text-align: center; margin-top: 10px; font-style: italic;"><strong>Note:</strong> All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
+
+        <details class="more">
+          <summary>See the numbers</summary>
         <div class="integrity">
           <div class="dial" id="integrityDial" role="progressbar" aria-label="Inquiry Integrity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40" aria-valuetext="Inquiry Integrity: 40 percent">40</div>
           <div>
@@ -766,23 +804,11 @@
         </div>
 
         <div class="meter-stack" id="meterStack"></div>
-
-        <div class="scenario-actions">
-          <button class="ghost" type="button" id="acceptClaim">Accept claim</button>
-          <button class="primary" type="button" id="debriefBtn">Debrief</button>
-        </div>
-
-        <div class="debrief" id="debrief">
-          <h3>Debrief</h3>
-          <ul id="debriefList"></ul>
-        </div>
-        <p style="font-size: 0.8rem; color: var(--muted); text-align: center; margin-top: 10px; font-style: italic;"><strong>Note:</strong> All scores, stats, and achievements are illustrative models of the pedagogical friction framework, not validated learning assessment instruments.</p>
-
         <div class="log">
           <h3>Move Log</h3>
           <div class="log-list" id="logList"></div>
         </div>
-      </aside>
+        </details>
     </main>
   </div>
 
@@ -961,9 +987,8 @@
 
     function renderMoves() {
       moveDeck.innerHTML = moves.map((move) => `
-        <button class="move" type="button" data-move="${move.id}">
+        <button class="move" type="button" data-move="${move.id}" aria-pressed="false">
           <strong>${move.title}</strong>
-          <span>${move.text}</span>
         </button>
       `).join("");
 
@@ -989,32 +1014,85 @@
       `).join("");
     }
 
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    function svgEl(name, attrs, text) {
+      const el = document.createElementNS(SVG_NS, name);
+      Object.keys(attrs || {}).forEach(k => el.setAttribute(k, attrs[k]));
+      if (text) el.textContent = text;
+      return el;
+    }
+    const MAP_NODES = [
+      { key: "sourcing", label: "SOURCING", x: 60, y: 76, ask: "Who made the claim, why, and from what evidence?" },
+      { key: "context", label: "CONTEXT", x: 240, y: 76, ask: "What conditions shaped the event and the source?" },
+      { key: "corroboration", label: "CORROBORATION", x: 150, y: 116, ask: "Where do accounts conflict, converge, or stay silent?" },
+      { key: "agency", label: "AGENCY", x: 60, y: 162, ask: "What judgment must students still own?" },
+      { key: "access", label: "ACCESS", x: 240, y: 162, ask: "Which barriers can be reduced without erasing inquiry?" }
+    ];
+    const RING = 2 * Math.PI * 15;
+
+    /* Five thinking moves as rings that fill, a challenge track across the top with its
+       productive band, and a block at the bottom that shrinks as the barrier comes down. */
     function renderNodes() {
-      document.querySelectorAll(".node").forEach((node) => {
-        const key = node.dataset.node;
-        node.classList.toggle("unlocked", state.metrics[key] >= 45);
-        node.classList.toggle("warning", state.metrics[key] < 30);
+      const box = document.getElementById("inquiryMap");
+      let svg = box.querySelector("svg");
+      if (!svg) {
+        svg = svgEl("svg", { viewBox: "0 0 300 222", role: "img", class: "kmap", style: "width: 100%; height: auto; display: block;" });
+        svg.appendChild(svgEl("line", { x1: 30, y1: 16, x2: 270, y2: 16, class: "ktrack" }));
+        svg.appendChild(svgEl("line", { x1: 162, y1: 16, x2: 222, y2: 16, class: "ktrack good" }));
+        svg.appendChild(svgEl("text", { x: 96, y: 31 }, "TOO EASY"));
+        svg.appendChild(svgEl("text", { x: 192, y: 31 }, "PRODUCTIVE"));
+        svg.appendChild(svgEl("text", { x: 248, y: 31 }, "TOO HARD"));
+        svg.appendChild(svgEl("polygon", { points: "-4,-9 4,-9 0,-2", class: "kmark" }));
+        const centre = MAP_NODES[2];
+        MAP_NODES.forEach((n) => {
+          if (n.key !== "corroboration") svg.appendChild(svgEl("line", { x1: n.x, y1: n.y, x2: centre.x, y2: centre.y, class: "klink", "data-link": n.key }));
+        });
+        MAP_NODES.forEach((n) => {
+          const g = svgEl("g", { class: "knode", "data-node": n.key });
+          g.appendChild(svgEl("title", {}, n.ask));
+          g.appendChild(svgEl("circle", { cx: n.x, cy: n.y, r: 15, class: "kring" }));
+          g.appendChild(svgEl("circle", { cx: n.x, cy: n.y, r: 15, class: "karc", transform: `rotate(-90 ${n.x} ${n.y})` }));
+          g.appendChild(svgEl("text", { x: n.x, y: n.y + 27 }, n.label));
+          svg.appendChild(g);
+        });
+        svg.appendChild(svgEl("rect", { x: 138, y: 186, width: 24, height: 24, class: "kframe" }));
+        svg.appendChild(svgEl("rect", { x: 139, y: 187, width: 22, height: 22, class: "kdoor" }));
+        svg.appendChild(svgEl("text", { x: 150, y: 219 }, "BARRIER"));
+        box.appendChild(svg);
+      }
+
+      const m = state.metrics;
+      const safe = [], risk = [];
+      MAP_NODES.forEach((n) => {
+        const value = clamp(m[n.key] || 0);
+        const g = svg.querySelector(`[data-node="${n.key}"]`);
+        const unlocked = value >= 45, warning = value < 30;
+        g.setAttribute("class", "knode" + (unlocked ? " unlocked" : warning ? " warning" : ""));
+        g.querySelector(".karc").style.strokeDasharray = (RING * value / 100) + " " + RING;
+        const link = svg.querySelector(`[data-link="${n.key}"]`);
+        if (link) link.classList.toggle("on", unlocked);
+        const name = n.label.charAt(0) + n.label.slice(1).toLowerCase();
+        if (unlocked) safe.push(name); else if (warning) risk.push(name);
       });
 
-      // Toggle gold pulse along SVG paths when nodes are unlocked (metric >= 45)
-      const lineSource = document.getElementById("lineSource");
-      const lineContext = document.getElementById("lineContext");
-      const lineAgency = document.getElementById("lineAgency");
-      const lineAccess = document.getElementById("lineAccess");
+      const challenge = clamp(m.challenge || 0);
+      svg.querySelector(".kmark").style.transform = `translate(${30 + 2.4 * challenge}px, 16px)`;
+      const barrier = 100 - (m.access || 0);
+      const band = barrierBand(barrier);
+      const door = svg.querySelector(".kdoor");
+      door.style.width = Math.max(2, Math.min(22, 22 * (barrier - 10) / 50)) + "px";
+      door.style.fill = band === "high" ? "var(--rose)" : band === "drifting" ? "var(--gold)" : "var(--teal)";
 
-      if (lineSource) lineSource.classList.toggle("pulse-gold", state.metrics.sourcing >= 45);
-      if (lineContext) lineContext.classList.toggle("pulse-gold", state.metrics.context >= 45);
-      if (lineAgency) lineAgency.classList.toggle("pulse-gold", state.metrics.agency >= 45);
-      if (lineAccess) lineAccess.classList.toggle("pulse-gold", state.metrics.access >= 45);
+      const score = integrityScore();
+      svg.classList.toggle("won", score >= 78);
 
-      // Overall victory matches the "Inquiry protected" verdict. Unlocking all
-      // five nodes cannot be done in four moves, so it is not the test.
-      const isVictory = integrityScore() >= 78;
-
-      const mapEl = document.querySelector(".map");
-      if (mapEl) {
-        mapEl.classList.toggle("victory-active", isVictory);
-      }
+      const challengeWord = challenge < 55 ? "too easy" : challenge > 80 ? "too hard" : "productive";
+      const doorWord = band + " (" + Math.round(barrier) + "%)";
+      const caption = (safe.length ? "Protected: " + safe.join(", ") + "." : "Nothing is protected yet.") +
+        (risk.length ? " At risk: " + risk.join(", ") + "." : "") +
+        " Challenge: " + challengeWord + ". Barrier to entry: " + doorWord + ". Integrity " + score + " of 100.";
+      svg.setAttribute("aria-label", caption);
+      document.getElementById("mapCaption").textContent = caption;
     }
 
     function renderLog() {
@@ -1058,16 +1136,20 @@
       turnsLeft.textContent = `${state.movesLeft} move${state.movesLeft === 1 ? "" : "s"} left`;
       statusText.textContent = frictionStatus();
       
-      if (pendingMoveId === null) {
-        verdictTitle.textContent = score >= 78 ? "Inquiry protected" : score >= 55 ? "Inquiry emerging" : "Inquiry still fragile";
-        verdictBody.textContent = score >= 78
-          ? "The AI output is now an object of historical investigation, not a substitute for the investigation."
-          : `Main risk: ${state.scenario.risk}`;
-      }
+      verdictTitle.textContent = score >= 78 ? "Inquiry protected" : score >= 55 ? "Inquiry emerging" : "Inquiry still fragile";
+      verdictBody.textContent = score >= 78
+        ? "The AI output is now an object of historical investigation, not a substitute for the investigation."
+        : "";
+      document.getElementById("scenarioRisk").textContent = `Main risk: ${state.scenario.risk}`;
 
       document.querySelectorAll(".move").forEach((button) => {
-        button.disabled = state.movesLeft === 0 || state.used.has(button.dataset.move) || pendingMoveId !== null;
+        const used = state.used.has(button.dataset.move);
+        button.disabled = state.movesLeft === 0 || used;
+        button.classList.toggle("is-used", used);
+        button.classList.toggle("is-picked", button.dataset.move === pendingMoveId);
+        button.setAttribute("aria-pressed", button.dataset.move === pendingMoveId ? "true" : "false");
       });
+      if (pendingMoveId === null) document.getElementById("movePreview").innerHTML = "";
 
       renderMeters();
       renderNodes();
@@ -1087,25 +1169,26 @@
       render();
     }
 
+    /* Picking a move only shows it. Nothing changes until the player gives a reason and commits. */
     function initiatePendingMove(id) {
       if (state.movesLeft <= 0 || state.used.has(id)) return;
+      const draft = document.getElementById("rationaleInput") ? document.getElementById("rationaleInput").value : "";
       pendingMoveId = id;
-      
       const move = moves.find(m => m.id === id);
-      verdictTitle.innerHTML = `✏️ Rationale: ${move.title}`;
-      verdictBody.innerHTML = `
-        <p style="margin: 0 0 10px; font-size: 0.92rem; color: var(--paper);">Explain how this design choice addresses learning goals or scaffolding needs for this scenario:</p>
-        <textarea id="rationaleInput" oninput="document.getElementById('rationaleValidation').style.display='none';" placeholder="Type your prediction/rationale here..." style="width: 100%; height: 60px; border-radius: 6px; border: 1px solid var(--line); padding: 8px; background: rgba(16, 25, 35, 0.6); color: var(--paper); font-family: inherit; font-size: 0.9rem; resize: none; margin-bottom: 10px;"></textarea>
-        <div id="rationaleValidation" role="status" aria-live="polite" style="display:none; margin: -4px 0 10px; font-size: 0.82rem; color: var(--rose); font-family: inherit;"></div>
+      render();
+      const box = document.getElementById("movePreview");
+      box.innerHTML = `
+        <p class="move-line"><span class="who">${move.title}</span><span id="moveSay"></span></p>
+        <label for="rationaleInput">In a sentence, why this move here?</label>
+        <textarea id="rationaleInput" oninput="document.getElementById('rationaleValidation').style.display='none';" placeholder="Your reason..."></textarea>
+        <div id="rationaleValidation" role="status" aria-live="polite" style="display:none; margin: -4px 0 10px; font-size: 0.82rem; color: var(--rose);"></div>
         <div style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button class="ghost" type="button" onclick="cancelPendingMove()" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 999px;">Cancel</button>
-          <button class="primary" type="button" onclick="commitPendingMove()" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 999px;">Commit Choice</button>
+          <button class="ghost" type="button" onclick="cancelPendingMove()" style="padding: 8px 14px; font-size: 0.85rem; border-radius: 999px;">Cancel</button>
+          <button class="primary" type="button" onclick="commitPendingMove()" style="padding: 8px 14px; font-size: 0.85rem; border-radius: 999px;">Commit to this move</button>
         </div>
       `;
-      
-      document.querySelectorAll(".move").forEach((button) => {
-        button.disabled = true;
-      });
+      document.getElementById("moveSay").textContent = move.text;
+      document.getElementById("rationaleInput").value = draft;
     }
 
     function commitPendingMove() {
@@ -1114,7 +1197,7 @@
       if (!text) {
         const valMsg = document.getElementById("rationaleValidation");
         if (valMsg) {
-          valMsg.textContent = "Please enter a brief rationale before proceeding.";
+          valMsg.textContent = "Write a few words first.";
           valMsg.style.display = "block";
         }
         return;
@@ -1149,6 +1232,7 @@
 
       pendingMoveId = null;
       render();
+      document.getElementById("inquiryMap").scrollIntoView({ block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     }
 
     function cancelPendingMove() {
