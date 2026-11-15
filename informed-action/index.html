@@ -369,11 +369,65 @@
     /* Play Screen Layout */
     .game-grid {
       display: grid;
-      grid-template-columns: minmax(260px, 0.8fr) minmax(460px, 1.3fr) minmax(320px, 0.9fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 20px;
-      height: calc(100vh - 150px);
-      min-height: 550px;
     }
+
+    /* The plan is the main display: it sits beside the current step. */
+    .panel.room-panel { scroll-margin-top: 150px; }
+    .room-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+    .room-frame { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px 12px; background: rgba(0, 0, 0, 0.2); }
+    .room-caption { margin: 10px 0 0; font-size: 0.92rem; color: var(--paper); line-height: 1.4; }
+    .room-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+    .room-result { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+    .scene-line, .teacher-line {
+      margin: 0 0 12px; padding: 10px 14px;
+      border: 1px solid var(--line); border-radius: 14px 14px 14px 4px;
+      background: rgba(244, 234, 215, 0.07); color: var(--paper);
+      font-family: Georgia, serif; font-size: 1.02rem; line-height: 1.4;
+    }
+    .teacher-line { margin: 0; border-radius: 14px 14px 4px 14px; border-color: var(--gold); font-size: 0.96rem; }
+    .scene-who { display: block; font-family: ui-monospace, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 3px; }
+    .choose-line { margin: 0; font-size: 0.85rem; color: var(--muted); }
+    .moment-more { font-size: 0.9rem; color: var(--muted); }
+    .moment-more summary { cursor: pointer; font-weight: 700; }
+    .moment-more p { margin: 8px 0 0; }
+    .delta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .delta-chip { font-family: ui-monospace, monospace; font-size: 0.72rem; padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--paper); }
+    #btnCommit:disabled { opacity: 0.45; cursor: default; }
+    .phase-list.phase-strip { display: flex; flex-direction: row; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .phase-list.phase-strip .phase-item { width: auto; flex: 0 0 auto; padding: 4px 10px; font-size: 0.74rem; border: 1px solid var(--line); border-radius: 999px; margin: 0; background: none; }
+    .phase-strip .phase-item.active { border-color: var(--gold); color: var(--gold); }
+    .phase-strip .phase-item.completed { color: var(--muted); }
+    #aiDraftBox[hidden] { display: none; }
+    #aiDraftBox { max-height: 220px; overflow-y: auto; }
+
+    /* The plan drawing */
+    #planScene { max-width: 400px; margin: 0 auto; }
+    .plan-svg text { font: 6px ui-monospace, monospace; fill: var(--muted); text-anchor: middle; }
+    .plan-paper { fill: rgba(244, 234, 215, 0.06); stroke: var(--line); }
+    .plan-src, .plan-seat { fill: transparent; stroke: var(--line); stroke-width: 1px; transition: fill 0.6s, stroke 0.6s; }
+    .plan-src.on { fill: rgba(100, 198, 189, 0.75); stroke: var(--teal); }
+    .plan-seat.on { fill: rgba(125, 159, 214, 0.85); stroke: #7d9fd6; }
+    .plan-route { stroke: var(--line); stroke-width: 2.4px; transition: stroke 0.6s; }
+    .plan-route.on { stroke: var(--gold); }
+    .plan-hall { fill: none; stroke: var(--paper); stroke-width: 1px; }
+    .plan-row line { stroke: var(--line); stroke-width: 1.6px; transition: stroke 0.6s; }
+    .plan-row circle { fill: transparent; stroke: var(--line); transition: fill 0.6s, stroke 0.6s; }
+    .plan-row.current circle { stroke: var(--gold); animation: planPulse 1.4s ease-in-out infinite; }
+    .plan-row.strong line { stroke: var(--paper); }
+    .plan-row.strong circle { fill: var(--teal); stroke: var(--teal); }
+    .plan-row.weak line { stroke: var(--rose); stroke-dasharray: 3 3; }
+    .plan-row.weak circle { stroke: var(--rose); }
+    .plan-row.borrowed line { stroke: var(--gold); stroke-dasharray: 6 3; }
+    .plan-row.borrowed circle { stroke: var(--gold); }
+    .plan-sign-line { stroke: var(--line); stroke-width: 0.8px; }
+    .plan-sign-ink { fill: none; stroke: var(--gold); stroke-width: 1.3px; }
+    .plan-sign.borrowed .plan-sign-ink { stroke-dasharray: 2 2; opacity: 0.6; }
+    .plan-sign.outsourced .plan-sign-ink { display: none; }
+    .plan-svg .plan-sign-ai { display: none; fill: var(--rose); font-weight: 700; font-size: 8px; }
+    .plan-svg .plan-sign.outsourced .plan-sign-ai { display: block; }
+    @keyframes planPulse { 50% { stroke-width: 3px; stroke-opacity: 0.4; } }
 
     .panel {
       border: 1px solid var(--line);
@@ -1016,6 +1070,8 @@
       .panel {
         max-height: 550px;
       }
+      .panel.room-panel { max-height: none; }
+      .room-layout { grid-template-columns: 1fr; }
       .essay-grid, .framework-subgrid {
         grid-template-columns: 1fr;
       }
@@ -1092,9 +1148,8 @@
         <p class="subtitle">A civics decision game mapping stakeholders, evidence, and trade-offs</p>
 
         <div class="framing-card">
-          <p>An issue in your community requires action. Generative AI can draft a polished, professional-sounding civic action plan in seconds &mdash; <strong>but this is a bypass trap.</strong> The plan arrives without the cognitive labor and research that makes a citizen truly informed.</p>
-          <p>In this game, you will navigate the <strong>C3 Framework Inquiry Arc</strong>. You must frame the problem, select credible evidence, map stakeholders, and weigh actions.</p>
-          <p><strong>The temptation:</strong> Throughout the game, AI will offer you frictionless summaries and shortcuts. Accepting them will save time, but will dilute your <strong>Evidence</strong>, ignore critical <strong>Stakeholders</strong>, and outsource your <strong>Ownership</strong>. Interrogate the AI to earn a plan you can stand behind.</p>
+          <p>An issue in your community needs action. AI can draft a polished plan in seconds.</p>
+          <p><strong>Build the plan in five steps.</strong> At each one, decide whether to do the work or take the shortcut, and watch what it does to the plan.</p>
         </div>
 
         <div class="selector-area">
@@ -1116,117 +1171,54 @@
       <!-- SCREEN: PLAY -->
       <div class="screen" id="screenPlay" style="display: none;">
         <div class="game-grid">
-          
-          <!-- Column 1: Phase Tracker -->
-          <section class="panel" aria-labelledby="colTrackerTitle">
+          <section class="panel room-panel" aria-labelledby="colTrackerTitle">
             <div class="panel-header">
-              <h3 id="colTrackerTitle">C3 Inquiry Arc</h3>
+              <h3 id="colTrackerTitle">Your Civic Plan</h3>
+              <span id="phaseTracker" style="font-size: 0.8rem; font-weight: bold; color: var(--gold);">Step 1 of 5</span>
             </div>
             <div class="panel-body">
-              <ul class="phase-list">
-                <li class="phase-item" id="phase-0">
-                  <div class="phase-item-dot"></div>
-                  <span>1. Frame the Question</span>
-                </li>
-                <li class="phase-item" id="phase-1">
-                  <div class="phase-item-dot"></div>
-                  <span>2. Gather Evidence</span>
-                </li>
-                <li class="phase-item" id="phase-2">
-                  <div class="phase-item-dot"></div>
-                  <span>3. Map Stakeholders</span>
-                </li>
-                <li class="phase-item" id="phase-3">
-                  <div class="phase-item-dot"></div>
-                  <span>4. Choose Action</span>
-                </li>
-                <li class="phase-item" id="phase-4">
-                  <div class="phase-item-dot"></div>
-                  <span>5. Review Plan</span>
-                </li>
-              </ul>
-
-              <div class="mentor-box">
-                <div class="mentor-header" id="mentorHeader" role="button" aria-expanded="false" tabindex="0">
-                  <h4>
-                    <span>💡</span>
-                    <span>Mentor Hint</span>
-                  </h4>
-                  <span class="mentor-toggle-icon" id="mentorToggleIcon">▼</span>
-                </div>
-                <div class="mentor-content" id="mentorContent">
-                  Hint Content
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Column 2: Decision Options & AI Temptation -->
-          <section class="panel" aria-labelledby="colDecisionTitle">
-            <div class="panel-header">
-              <h3 id="colDecisionTitle">Active Phase</h3>
-            </div>
-            <div class="panel-body">
-              <div class="scenario-info-card" id="scenarioInfoCard">
-                <h4 id="scenarioTitle">The Dangerous Crossing</h4>
-                <p id="scenarioBrief">Students report near-misses at the main intersection near the school. You want to secure a safer crossing signal from the city.</p>
-              </div>
-
-              <!-- Normal Decision Panel -->
-              <div id="normalDecisionPanel" style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
-                <h2 class="decision-prompt" id="decisionPrompt">How do you frame your civic investigation?</h2>
-                <div class="options-stack" id="optionsGrid">
-                  <!-- Options injected here -->
-                </div>
-              </div>
-
-              <!-- AI Assist temptation card -->
-              <div class="ai-assist-container" id="aiAssistContainer">
-                <div class="ai-assist-card">
-                  <div class="ai-assist-header">🤖 AI shortcut offer</div>
-                  <p id="aiAssistPrompt">AI has drafted an instant summary of the traffic data and academic studies on phone distractions. Save time by using this ready-made template.</p>
-                  <div class="ai-assist-actions" id="aiAssistActions">
-                    <!-- Action buttons injected here -->
+              <div class="room-layout">
+                <div class="room-frame">
+                  <p class="scene-line"><span class="scene-who" id="sceneWho"></span><span id="sceneSay"></span></p>
+                  <div id="planScene"></div>
+                  <p class="room-caption" id="planCaption" aria-live="polite"></p>
+                  <div class="room-result" id="feedbackContent" style="display: none;">
+                    <div class="feedback-box" id="feedbackBox"></div>
+                    <button class="btn-next" id="btnNextPhase">Next step</button>
                   </div>
                 </div>
-              </div>
+                <div class="room-side">
+                  <ol class="phase-list phase-strip">
+                    <li class="phase-item" id="phase-0"><span>1. Question</span></li>
+                    <li class="phase-item" id="phase-1"><span>2. Evidence</span></li>
+                    <li class="phase-item" id="phase-2"><span>3. Stakeholders</span></li>
+                    <li class="phase-item" id="phase-3"><span>4. Action</span></li>
+                    <li class="phase-item" id="phase-4"><span>5. Review</span></li>
+                  </ol>
 
-              <!-- Flaw Interrogation Column 2 -->
-              <div class="flaw-section" id="flawSection">
-                <h2 class="decision-prompt">Audit the AI proposal text:</h2>
-                <div class="ai-draft-box" id="aiDraftBox">
-                  Draft text...
+                  <h2 class="decision-prompt" id="decisionPrompt"></h2>
+                  <div class="ai-draft-box" id="aiDraftBox" hidden></div>
+                  <p class="choose-line" id="chooseLine"></p>
+                  <div class="options-stack" id="optionsGrid"></div>
+                  <p class="teacher-line" id="yourLine" hidden><span class="scene-who">Your move</span><span id="yourSay"></span></p>
+                  <button class="btn-next" id="btnCommit" disabled>Commit to this move</button>
+
+                  <div class="mentor-box">
+                    <div class="mentor-header" id="mentorHeader" role="button" aria-expanded="false" tabindex="0">
+                      <h4><span>Mentor Hint</span></h4>
+                      <span class="mentor-toggle-icon" id="mentorToggleIcon">▼</span>
+                    </div>
+                    <div class="mentor-content" id="mentorContent"></div>
+                  </div>
+
+                  <details class="moment-more">
+                    <summary>About <span id="scenarioTitle"></span></summary>
+                    <p id="scenarioBrief"></p>
+                  </details>
                 </div>
-                <p style="font-size:0.88rem; color:var(--muted); margin:0;"><strong>Friction Audit:</strong> Select the major design flaw in this draft plan before submitting it.</p>
-                <div class="flaw-options-grid" id="flawOptionsGrid">
-                  <!-- Flaw buttons injected here -->
-                </div>
-              </div>
-
-            </div>
-          </section>
-
-          <!-- Column 3: Feedback & Actions -->
-          <section class="panel" aria-labelledby="colFeedbackTitle">
-            <div class="panel-header">
-              <h3 id="colFeedbackTitle">Friction Log &amp; Analysis</h3>
-            </div>
-            <div class="panel-body">
-              <div class="empty-state" id="feedbackEmptyState">
-                <div class="empty-state-icon">📝</div>
-                <p>Choose an option or evaluate the AI shortcut to see the reasoning analysis and impact on your plan's meters.</p>
-              </div>
-
-              <div id="feedbackContent" style="display: none; flex: 1; display: flex; flex-direction: column; gap: 16px;">
-                <div class="feedback-box" id="feedbackBox">
-                  <!-- Feedback text -->
-                </div>
-
-                <button class="btn-next" id="btnNextPhase">Continue Arc</button>
               </div>
             </div>
           </section>
-
         </div>
       </div>
 
@@ -1990,16 +1982,9 @@
     const mentorToggleIcon = document.getElementById("mentorToggleIcon");
     const mentorContent = document.getElementById("mentorContent");
 
-    const normalDecisionPanel = document.getElementById("normalDecisionPanel");
-    const aiAssistContainer = document.getElementById("aiAssistContainer");
-    const aiAssistPrompt = document.getElementById("aiAssistPrompt");
-    const aiAssistActions = document.getElementById("aiAssistActions");
 
-    const flawSection = document.getElementById("flawSection");
     const aiDraftBox = document.getElementById("aiDraftBox");
-    const flawOptionsGrid = document.getElementById("flawOptionsGrid");
 
-    const feedbackEmptyState = document.getElementById("feedbackEmptyState");
     const feedbackContent = document.getElementById("feedbackContent");
     const feedbackBox = document.getElementById("feedbackBox");
     const btnNextPhase = document.getElementById("btnNextPhase");
@@ -2030,16 +2015,14 @@
 
     btnNextPhase.addEventListener("click", advancePhase);
 
-    // Keyboard navigation (1-3 keys for option selection)
+    // Keyboard: 1-3 reads a move, Enter commits it.
     window.addEventListener("keydown", (e) => {
-      if (screenPlay.style.display === "block" && normalDecisionPanel.style.display === "flex") {
-        if (e.key === "1" || e.key === "2" || e.key === "3") {
-          const idx = parseInt(e.key) - 1;
-          const buttons = optionsGrid.querySelectorAll(".option-btn");
-          if (buttons && buttons[idx] && !buttons[idx].disabled) {
-            buttons[idx].click();
-          }
-        }
+      if (screenPlay.style.display !== "block") return;
+      if (e.key >= "1" && e.key <= "3") {
+        const btn = optionsGrid.querySelectorAll(".option-btn")[parseInt(e.key, 10) - 1];
+        if (btn && !btn.disabled) { btn.click(); btn.focus(); }
+      } else if (e.key === "Enter" && !e.target.closest("button, summary, a, select, [role='button']")) {
+        commitChoice();
       }
     });
 
@@ -2095,6 +2078,43 @@
       announce("Returned to title screen.");
     }
 
+    /* Staging: one short line per issue and a short label for every choice, in the same
+       order as the options and flaws above. The full wording stays in scenarios. */
+    const STAGING = {
+      crossing: { line: "Near-misses at the crossing by the school.", labels: [
+        ["Ask the council about the signal", "Ask why drivers are reckless", "Ask how to make every street safe"],
+        ["Use it, then check local records", "Use the AI summary as is", "Use one viral post"],
+        ["Map five groups, with access advocates", "Center student anger", "Students, drivers, one resident"],
+        ["Take a proposal to the Traffic Commission", "Petition and hashtag campaign", "Walk out and block the intersection"],
+        ["Wrong authority, no disability access", "Too costly; use volunteers", "Not enough signatures"]] },
+      phones: { line: "Your high school needs a phone policy.", labels: [
+        ["Balance focus, safety and accommodations", "Frame bans as a rights violation", "Ask how to jam the signal"],
+        ["Use it, then survey our school", "Use the AI summary as is", "Use one national editorial"],
+        ["Map five groups, with students who need access", "Center teacher and administrator demands", "Handle accommodations as they come up"],
+        ["Handbook policy to the Principal and Council", "Voluntary poster campaign", "Demand smart-lock lockers"],
+        ["No medical or translation exceptions", "Passing periods not covered", "No administrator named"]] },
+      startTime: { line: "The district is weighing a later high school start.", labels: [
+        ["Compare options and their effects", "Ask why the district forces early starts", "Ask how no one is ever tired"],
+        ["Use it, then verify with district data", "Use the AI summary as is", "Use one student poll"],
+        ["Map eight groups, with working students", "Students and sleep researchers only", "Ask coaches, assume the rest adjust"],
+        ["Two costed options and a pilot", "Petition for an immediate change", "Let teachers start late as needed"],
+        ["Wrong decision-maker, impacts assumed away", "Needs a stronger slogan", "Require sleep logs"]] },
+      libraryAccess: { line: "Residents want evening and weekend library hours.", labels: [
+        ["Ask what pilot the Library Board should weigh", "Ask why the library locks knowledge away", "Ask how to stay open forever"],
+        ["Use it, then verify with library data", "Use the AI estimate as is", "Use comments from daytime visitors"],
+        ["Map nine groups, with nonusers", "Frequent users only", "The Board and one student"],
+        ["A funded twelve-week pilot", "Volunteers keep the building open", "Demand 24-hour access"],
+        ["Wrong authority, nothing funded or planned", "Promise weekly use by everyone", "Needs a more inspiring name"]] }
+    };
+    Object.keys(STAGING).forEach((key) => {
+      const scenario = scenarios[key];
+      if (!scenario) return;
+      scenario.line = STAGING[key].line;
+      scenario.phases.forEach((phase, i) => {
+        (phase.options || phase.flaws || []).forEach((choice, j) => { choice.label = STAGING[key].labels[i][j]; });
+      });
+    });
+
     function shuffleArray(array) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -2134,94 +2154,181 @@
       announce(`Investigation started. Planning issue: ${activeScenario.title}.`);
     }
 
+    // --- THE PLAN DRAWING ---
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    function svgEl(name, attrs, text) {
+      const el = document.createElementNS(SVG_NS, name);
+      Object.keys(attrs || {}).forEach(k => el.setAttribute(k, attrs[k]));
+      if (text) el.textContent = text;
+      return el;
+    }
+
+    let phaseResults = [];
+
+    /* Sources on the left, the plan in the middle, voices on the right, and the route to
+       whoever decides underneath. The caption says the same thing in words. */
+    function drawPlan() {
+      const container = document.getElementById("planScene");
+      let svg = container.querySelector("svg");
+      if (!svg) {
+        svg = svgEl("svg", { viewBox: "0 0 240 174", role: "img", class: "plan-svg", style: "width: 100%; height: auto; display: block;" });
+        svg.appendChild(svgEl("text", { x: 30, y: 14 }, "SOURCES"));
+        for (let i = 0; i < 5; i++) svg.appendChild(svgEl("rect", { x: 14, y: 22 + i * 17, width: 32, height: 12, rx: 2, class: "plan-src" }));
+        svg.appendChild(svgEl("rect", { x: 78, y: 8, width: 84, height: 112, rx: 3, class: "plan-paper" }));
+        for (let i = 0; i < 5; i++) {
+          const row = svgEl("g", { class: "plan-row" });
+          row.appendChild(svgEl("circle", { cx: 89, cy: 22 + i * 18, r: 4 }));
+          row.appendChild(svgEl("line", { x1: 98, y1: 20 + i * 18, x2: 154, y2: 20 + i * 18 }));
+          row.appendChild(svgEl("line", { x1: 98, y1: 25 + i * 18, x2: 140, y2: 25 + i * 18 }));
+          svg.appendChild(row);
+        }
+        const sign = svgEl("g", { class: "plan-sign" });
+        sign.appendChild(svgEl("line", { x1: 100, y1: 114, x2: 154, y2: 114, class: "plan-sign-line" }));
+        sign.appendChild(svgEl("path", { d: "M104 112 q4 -8 8 0 t8 0 t8 0 t8 0", class: "plan-sign-ink" }));
+        sign.appendChild(svgEl("text", { x: 127, y: 112, class: "plan-sign-ai" }, "AI"));
+        svg.appendChild(sign);
+        svg.appendChild(svgEl("text", { x: 200, y: 14 }, "VOICES"));
+        for (let i = 0; i < 10; i++) svg.appendChild(svgEl("circle", { cx: 190 + (i % 2) * 20, cy: 28 + Math.floor(i / 2) * 17, r: 5, class: "plan-seat" }));
+        for (let i = 0; i < 5; i++) svg.appendChild(svgEl("line", { x1: 120, y1: 124 + i * 5.4, x2: 120, y2: 127.6 + i * 5.4, class: "plan-route" }));
+        svg.appendChild(svgEl("polygon", { points: "104,157 120,150 136,157", class: "plan-hall" }));
+        svg.appendChild(svgEl("rect", { x: 107, y: 157, width: 26, height: 8, class: "plan-hall" }));
+        svg.appendChild(svgEl("text", { x: 120, y: 172 }, "WHO DECIDES"));
+        container.appendChild(svg);
+      }
+      const sources = Math.round(clamp(evidence, 0, 100) / 20);
+      const voices = Math.round(clamp(stakeholders, 0, 100) / 10);
+      const route = Math.round(clamp(feasibility, 0, 100) / 20);
+      svg.querySelectorAll(".plan-src").forEach((el, i) => el.classList.toggle("on", i < sources));
+      svg.querySelectorAll(".plan-seat").forEach((el, i) => el.classList.toggle("on", i < voices));
+      svg.querySelectorAll(".plan-route").forEach((el, i) => el.classList.toggle("on", i < route));
+      svg.querySelectorAll(".plan-row").forEach((el, i) => {
+        el.setAttribute("class", "plan-row " + (phaseResults[i] || (i === currentPhaseIdx ? "current" : "pending")));
+      });
+      svg.querySelector(".plan-sign").setAttribute("class", "plan-sign " + ownership);
+
+      const routeWord = route >= 4 ? "clear" : route >= 2 ? "partly open" : "blocked";
+      const signWord = ownership === "owned" ? "Signed by you." : ownership === "borrowed" ? "Partly borrowed from AI." : "Signed off by the AI.";
+      const caption = "Sources checked: " + sources + " of 5. Voices at the table: " + voices + " of 10. Route to who decides: " + routeWord + ". " + signWord;
+      svg.setAttribute("aria-label", caption);
+      document.getElementById("planCaption").textContent = caption;
+    }
+
+    // --- CHOICES: read a move first, then commit ---
+    let choiceList = [];
+    let previewIdx = -1;
+    let committed = false;
+    const btnCommit = document.getElementById("btnCommit");
+    const yourLine = document.getElementById("yourLine");
+    const chooseLine = document.getElementById("chooseLine");
+    btnCommit.addEventListener("click", commitChoice);
+
+    function setScene(who, say) {
+      document.getElementById("sceneWho").textContent = who;
+      document.getElementById("sceneSay").textContent = say;
+    }
+
+    function renderChoices(list, hint) {
+      choiceList = list; previewIdx = -1; committed = false;
+      yourLine.hidden = true;
+      btnCommit.disabled = true;
+      btnCommit.style.display = "";
+      chooseLine.textContent = hint || "Pick a move to read it. Then commit.";
+      optionsGrid.innerHTML = "";
+      list.forEach((choice, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.setAttribute("aria-pressed", "false");
+        const num = document.createElement("span");
+        num.className = "option-btn-num";
+        num.textContent = i + 1;
+        const label = document.createElement("span");
+        label.textContent = choice.label;
+        btn.appendChild(num);
+        btn.appendChild(label);
+        btn.addEventListener("click", () => previewChoice(i));
+        optionsGrid.appendChild(btn);
+      });
+    }
+
+    function previewChoice(i) {
+      if (committed) return;
+      previewIdx = i;
+      optionsGrid.querySelectorAll(".option-btn").forEach((b, bi) => {
+        b.classList.toggle("selected", bi === i);
+        b.setAttribute("aria-pressed", bi === i ? "true" : "false");
+      });
+      document.getElementById("yourSay").textContent = choiceList[i].full;
+      yourLine.hidden = false;
+      btnCommit.disabled = false;
+      announce("Your move: " + choiceList[i].full);
+    }
+
+    function commitChoice() {
+      if (previewIdx < 0 || committed) return;
+      committed = true;
+      optionsGrid.querySelectorAll(".option-btn").forEach(b => { b.disabled = true; });
+      btnCommit.style.display = "none";
+      chooseLine.textContent = "";
+      choiceList[previewIdx].commit();
+    }
+
+    function showFeedback(kind, title, text, deltas) {
+      const sign = n => (n >= 0 ? "+" : "") + n;
+      let chips = "";
+      if (deltas) {
+        chips = `<div class="delta-row">
+          <span class="delta-chip">Evidence ${sign(deltas.ev)}</span>
+          <span class="delta-chip">Stakeholders ${sign(deltas.st)}</span>
+          <span class="delta-chip">Feasibility ${sign(deltas.fe)}</span>
+        </div>`;
+      }
+      feedbackBox.className = "feedback-box " + kind;
+      feedbackBox.innerHTML = `<strong>${title}</strong>${text}${chips}`;
+      feedbackContent.style.display = "flex";
+      updateMeters();
+      drawPlan();
+      document.querySelector(".room-panel").scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    }
+
     function loadPhase(idx) {
       const phase = activeScenario.phases[idx];
+      if (idx === 0) phaseResults = [];
 
-      // Update tracker styling
       for (let i = 0; i < 5; i++) {
         const item = document.getElementById(`phase-${i}`);
         item.className = "phase-item";
-        if (i < idx) {
-          item.classList.add("completed");
-        } else if (i === idx) {
-          item.classList.add("active");
-        }
+        if (i < idx) item.classList.add("completed");
+        else if (i === idx) item.classList.add("active");
       }
+      document.getElementById("phaseTracker").textContent = `Step ${idx + 1} of 5`;
 
-      // Load Hint
       mentorContent.textContent = phase.hint;
       mentorContent.classList.remove("open");
       mentorHeader.setAttribute("aria-expanded", "false");
       mentorToggleIcon.textContent = "▼";
 
-      // Reset Panels
-      normalDecisionPanel.style.display = "none";
-      aiAssistContainer.style.display = "none";
-      flawSection.style.display = "none";
-
-      feedbackEmptyState.style.display = "flex";
       feedbackContent.style.display = "none";
+      aiDraftBox.hidden = true;
+      btnNextPhase.textContent = idx < 4 ? "Next step" : "See the plan audit";
 
       if (phase.kind === "normal") {
-        // Render Standard Phase
-        normalDecisionPanel.style.display = "flex";
+        setScene(activeScenario.title, activeScenario.line || activeScenario.brief);
         decisionPrompt.textContent = phase.question;
-        
-        optionsGrid.innerHTML = "";
-        phase.options.forEach((opt, oIdx) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "option-btn";
-          btn.innerHTML = `
-            <span class="option-btn-num">${oIdx + 1}</span>
-            <span>${opt.text}</span>
-          `;
-          btn.addEventListener("click", () => handleOptionSelect(opt, btn));
-          optionsGrid.appendChild(btn);
-        });
-
+        renderChoices(phase.options.map(opt => ({ label: opt.label || opt.text, full: opt.text, commit: () => commitOption(idx, opt) })));
       } else if (phase.kind === "assist") {
-        // Render AI Assist Temptation
-        aiAssistContainer.style.display = "block";
-        aiAssistPrompt.textContent = phase.aiPrompt;
-
-        aiAssistActions.innerHTML = "";
-        phase.options.forEach(opt => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          if ((opt.own_change || opt.deltas.own_change) === "borrowed") {
-            btn.className = "btn-shortcut";
-          } else {
-            btn.className = "btn-interrogate";
-          }
-          btn.textContent = opt.text;
-          btn.addEventListener("click", () => handleAssistSelect(opt, btn));
-          aiAssistActions.appendChild(btn);
-        });
-
+        setScene("AI offer", phase.aiPrompt);
+        decisionPrompt.textContent = phase.question || "What do you do with the offer?";
+        renderChoices(phase.options.map(opt => ({ label: opt.label || opt.text, full: opt.text, commit: () => commitAssist(idx, opt) })));
       } else if (phase.kind === "climactic") {
-        // Render Climactic Shortcut
-        aiAssistContainer.style.display = "block";
-        aiAssistPrompt.textContent = phase.aiPrompt;
-
-        aiAssistActions.innerHTML = "";
-
-        // Button 1: Accept Shortcut (Outsource)
-        const btnAccept = document.createElement("button");
-        btnAccept.type = "button";
-        btnAccept.className = "btn-shortcut";
-        btnAccept.textContent = "Accept & Submit Plan (Frictionless)";
-        btnAccept.addEventListener("click", handleClimacticAccept);
-        aiAssistActions.appendChild(btnAccept);
-
-        // Button 2: Interrogate Plan
-        const btnInterrogate = document.createElement("button");
-        btnInterrogate.type = "button";
-        btnInterrogate.className = "btn-interrogate";
-        btnInterrogate.textContent = "Interrogate Plan (Friction)";
-        btnInterrogate.addEventListener("click", handleClimacticInterrogate);
-        aiAssistActions.appendChild(btnInterrogate);
+        setScene("AI offer", phase.aiPrompt);
+        decisionPrompt.textContent = phase.question || "Review the final draft";
+        renderChoices([
+          { label: "Submit the AI draft", full: "Send the polished draft as it stands and finish.", commit: acceptDraft },
+          { label: "Read the draft first", full: "Open the draft and audit it before anything is submitted.", commit: () => openDraft(phase) }
+        ]);
       }
+      drawPlan();
     }
 
     function toggleMentor() {
@@ -2230,175 +2337,71 @@
       mentorToggleIcon.textContent = isOpen ? "▲" : "▼";
     }
 
-    function handleOptionSelect(opt, selectedBtn) {
-      // Disable options
-      const buttons = optionsGrid.querySelectorAll(".option-btn");
-      buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.remove("selected");
-      });
-      selectedBtn.classList.add("selected");
-
-      // Apply deltas
+    function commitOption(idx, opt) {
       evidence += opt.deltas.ev;
       stakeholders += opt.deltas.st;
       feasibility += opt.deltas.fe;
-
-      updateMeters();
-
-      // Show Feedback Column
-      feedbackEmptyState.style.display = "none";
-      feedbackContent.style.display = "flex";
-
-      feedbackBox.className = "feedback-box"; // reset classes
+      phaseResults[idx] = opt.best ? "strong" : "weak";
       if (opt.best) {
-        feedbackBox.classList.add("correct");
-        feedbackBox.innerHTML = `
-          <strong>⚖️ Balanced Civic Strategy</strong>
-          ${opt.feedback}
-        `;
+        showFeedback("correct", "Balanced civic strategy", opt.feedback, opt.deltas);
         announce("Balanced civic strategy selected. Plan stats increased.");
       } else {
-        feedbackBox.classList.add("incorrect");
-        feedbackBox.innerHTML = `
-          <strong>⚠️ Skewed Civic Strategy</strong>
-          ${opt.feedback}
-        `;
+        showFeedback("incorrect", "Skewed civic strategy", opt.feedback, opt.deltas);
         announce("Skewed civic strategy selected. Plan stats decreased.");
       }
     }
 
-    function handleAssistSelect(opt, selectedBtn) {
-      // Disable assist buttons
-      const buttons = aiAssistActions.querySelectorAll("button");
-      buttons.forEach(btn => btn.disabled = true);
-
-      // Apply Ownership changes
-      if ((opt.own_change || opt.deltas.own_change) === "borrowed") {
-        if (ownership === "owned") {
-          ownership = "borrowed";
-        }
-      }
-      
+    function commitAssist(idx, opt) {
+      const borrowed = (opt.own_change || opt.deltas.own_change) === "borrowed";
+      if (borrowed && ownership === "owned") ownership = "borrowed";
       evidence += opt.deltas.ev;
       stakeholders += opt.deltas.st;
       feasibility += opt.deltas.fe;
-
-      updateMeters();
-
-      // Show Feedback
-      feedbackEmptyState.style.display = "none";
-      feedbackContent.style.display = "flex";
-
-      feedbackBox.className = "feedback-box";
-      if ((opt.own_change || opt.deltas.own_change) === "borrowed") {
-        feedbackBox.classList.add("assist");
-        feedbackBox.innerHTML = `
-          <strong>🤖 AI Summary Accepted</strong>
-          ${opt.feedback}
-        `;
+      if (borrowed) {
+        phaseResults[idx] = "borrowed";
+        showFeedback("assist", "AI summary accepted", opt.feedback, opt.deltas);
         announce("AI Summary shortcut accepted. Ownership shifted to Borrowed.");
       } else if (opt.deltas.ev > 0) {
-        feedbackBox.classList.add("correct");
-        feedbackBox.innerHTML = `
-          <strong>⚖️ AI Output Interrogated &amp; Verified</strong>
-          ${opt.feedback}
-        `;
+        phaseResults[idx] = "strong";
+        showFeedback("correct", "AI output checked and verified", opt.feedback, opt.deltas);
         announce("AI output verified against relevant evidence. Rigor and Ownership preserved.");
       } else {
-        feedbackBox.classList.add("incorrect");
-        feedbackBox.innerHTML = `
-          <strong>⚠️ Unverified Source Used</strong>
-          ${opt.feedback}
-        `;
+        phaseResults[idx] = "weak";
+        showFeedback("incorrect", "Unverified source used", opt.feedback, opt.deltas);
         announce("Unverified source used. Evidence base depleted.");
       }
     }
 
-    // Climactic actions
-    function handleClimacticAccept() {
-      // Outsource plan completely
+    function acceptDraft() {
       ownership = "outsourced";
-      updateMeters();
-
-      feedbackEmptyState.style.display = "none";
-      feedbackContent.style.display = "flex";
-
-      feedbackBox.className = "feedback-box incorrect";
-      feedbackBox.innerHTML = `
-        <strong>⚠️ Plan Outsourced to AI</strong>
-        You accepted the frictionless, pre-packaged AI action plan. The plan has been submitted to school/city records, but you bypassed the critical reasoning needed to verify its flaws.
-      `;
-
-      // Disable card actions
-      const buttons = aiAssistActions.querySelectorAll("button");
-      buttons.forEach(btn => btn.disabled = true);
-
-      // Go to final debrief button
-      btnNextPhase.textContent = "See Plan Audit";
+      phaseResults[4] = "weak";
+      showFeedback("incorrect", "Plan outsourced to AI", "You submitted the AI draft without reading it. It is on record now, and you skipped the reasoning that would have caught its flaws.");
       announce("AI Plan submitted directly. Ownership is now Outsourced.");
     }
 
-    function handleClimacticInterrogate() {
-      // Hide shortcut card, show flaw checker
-      aiAssistContainer.style.display = "none";
-      flawSection.style.display = "flex";
-
-      const phase = activeScenario.phases[4];
+    function openDraft(phase) {
       aiDraftBox.innerHTML = phase.draftText;
-
-      // Populate flaw choices
-      flawOptionsGrid.innerHTML = "";
-      phase.flaws.forEach((flaw, fIdx) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "flaw-btn";
-        btn.textContent = flaw.text;
-        btn.addEventListener("click", () => handleFlawSelection(flaw, btn));
-        flawOptionsGrid.appendChild(btn);
-      });
+      aiDraftBox.hidden = false;
+      decisionPrompt.textContent = "What is the major flaw in this draft?";
+      renderChoices(phase.flaws.map(flaw => ({ label: flaw.label || flaw.text, full: flaw.text, commit: () => commitFlaw(flaw) })), "Read the draft, pick the flaw, then commit.");
       announce("AI plan text revealed. Identify the structural design flaws in the draft.");
     }
 
-    function handleFlawSelection(flaw, selectedBtn) {
-      const buttons = flawOptionsGrid.querySelectorAll(".flaw-btn");
-      buttons.forEach(btn => btn.disabled = true);
-
-      feedbackEmptyState.style.display = "none";
-      feedbackContent.style.display = "flex";
-      feedbackBox.className = "feedback-box";
-
+    function commitFlaw(flaw) {
       if (flaw.correct) {
-        // Success
-        selectedBtn.classList.add("correct-flaw");
-        feedbackBox.classList.add("correct");
-        feedbackBox.innerHTML = `
-          <strong>⚖️ Balanced Audit (Design Flaws Resolved)</strong>
-          ${flaw.feedback}
-        `;
-
         evidence += 15;
         stakeholders += 15;
         feasibility += 15;
-        // Restores or preserves owned status if not completely outsourced
-        if (ownership === "borrowed") {
-          ownership = "owned";
-        }
+        if (ownership === "borrowed") ownership = "owned";
+        phaseResults[4] = "strong";
+        showFeedback("correct", "Flaws found and resolved", flaw.feedback, { ev: 15, st: 15, fe: 15 });
         announce("Correct flaws identified. Plan corrected, rigor increased, and Ownership secured.");
       } else {
-        // Fail
-        selectedBtn.classList.add("selected");
-        feedbackBox.classList.add("incorrect");
-        feedbackBox.innerHTML = `
-          <strong>⚠️ Unresolved Flaws (Outsourced Design)</strong>
-          ${flaw.feedback}
-        `;
         ownership = "outsourced";
+        phaseResults[4] = "weak";
+        showFeedback("incorrect", "Flaws left unresolved", flaw.feedback);
         announce("Failed to identify structural flaws. Plan remains flawed and outsourced.");
       }
-
-      updateMeters();
-      btnNextPhase.textContent = "See Plan Audit";
     }
 
     function advancePhase() {

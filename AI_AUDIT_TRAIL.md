@@ -265,3 +265,25 @@ confirmed visually before code is changed on their authority.
     threshold and the three gap sentences were drafted by the tool.
 *   **Verification:** the debrief was called with five set score combinations
     in a desktop browser. No full click-through was played.
+
+## 2026-11-14 · Informed Action: the plan as a scene, short moves
+
+*   **Tool:** Claude Code (Claude Fable 5.2), directed and reviewed by the author.
+*   **Task:** redesign `informed-action/index.html` in the same way as Common
+    Ground, at the author's request, to cut the reading load.
+*   **Data used:** the game's own source. No participant, student, or district data.
+*   **Changes:** the three text columns are replaced by one screen. A drawing
+    of the plan shows sources checked, voices at the table, the route to who
+    decides, the five steps, and whose signature is on it, with a caption that
+    says the same in words. Choices are short labels; picking one shows the
+    full wording, and nothing is scored until the player commits. The final
+    step no longer labels its two choices "Frictionless" and "Friction".
+    Feedback uses three chips. The title text is two sentences.
+*   **New wording for author review:** four issue lines and sixty choice
+    labels in `STAGING`, the caption wording, and the two final-step labels
+    were drafted by the tool. Original questions, options, feedback, drafts,
+    and scores are unchanged.
+*   **Verification:** eight scripted runs in a desktop browser (a strongest
+    and a shortcut path for each of the four issues) with no console errors.
+    Not tested by keyboard alone, on touch, with a screen reader, with reduced
+    motion, or on a Chromebook.
