@@ -646,29 +646,72 @@
     .slide.tight .card h3 { margin-bottom: 4px; }
     .slide.tight .card p, .slide.tight .tab-pane p, .slide.tight .timeline-item span { font-size: clamp(.92rem, 1.25vw, 1.3rem); }
     .slide.tight .takeaway { padding-top: 10px; padding-bottom: 10px; }
+
+    /* Projector fit: on landscape screens each slide scales its body text by its own --z
+       (set on the section), so the slide fills the screen. */
+    @media screen and (min-aspect-ratio: 3/2) and (min-width: 901px) {
+      .slide .content > :not(h1):not(h2):not(.lead):not(.claim):not(.big):not(.survey-qr) { zoom: var(--z, 1); }
+    }
+    /* Center each slide's content between the kicker and the footer (not on phones, where slides scroll) */
+    @media screen and (min-width: 901px) { .slide .content { align-content: center; } }
+    /* Full HD and wider: the base type sizes stop growing, so scale a little further */
+    @media screen and (min-aspect-ratio: 3/2) and (min-width: 1800px) {
+      .slide .content > :not(h1):not(h2):not(.lead):not(.claim):not(.big):not(.survey-qr) { zoom: calc(var(--z, 1) * 1.18); }
+    }
+    /* Speaker notes: press N to show or hide them for the current slide */
+    body.show-notes .slide.active .speaker-notes { display: block; position: fixed; z-index: 35; left: 20px; bottom: 18px; width: min(46vw, 760px); max-height: 32vh; overflow: auto; padding: 14px 18px; border: 1px solid rgba(248, 242, 232, .25); border-radius: 8px; background: rgba(17, 24, 32, .95); color: #f8f2e8; font-size: clamp(.95rem, 1.15vw, 1.2rem); line-height: 1.4; }
+    .light .survey-notice a { color: #174a7c; }
+    .grid5 { display: grid; gap: 18px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .grid5 .choice { min-height: 0; padding: clamp(12px, 1.4vw, 20px); }
+    .grid5 .choice h3 { font-size: clamp(.95rem, 1.22vw, 1.3rem); color: var(--gold); }
+    .light .grid5 .choice h3 { color: var(--gold-text); }
+    .footer a { color: inherit; }
+    /* Five-stage diagram */
+    .stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 14px; }
+    .stage-band { grid-row: 1; padding: 4px 2px 8px; border-bottom: 3px solid; font-weight: 800; font-size: clamp(.74rem, .95vw, 1rem); letter-spacing: .06em; text-transform: uppercase; }
+    .stage-band.ong { grid-column: 1 / span 3; color: var(--teal); }
+    .stage-band.mine { grid-column: 4 / span 2; color: var(--gold); }
+    .stage { position: relative; padding: clamp(12px, 1.4vw, 20px); border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255, 255, 255, .055); }
+    .stage.mine { border-color: rgba(217, 164, 65, .55); background: rgba(217, 164, 65, .08); }
+    .stage svg { display: block; width: clamp(34px, 3.2vw, 50px); height: auto; color: var(--teal); }
+    .stage.mine svg { color: var(--gold); }
+    .stage .num { position: absolute; top: clamp(10px, 1.2vw, 18px); right: clamp(12px, 1.4vw, 20px); font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: clamp(1rem, 1.5vw, 1.6rem); color: var(--muted); }
+    .stage h3 { margin: 10px 0 6px; font-size: clamp(.98rem, 1.28vw, 1.35rem); line-height: 1.15; }
+    .stage p { font-size: clamp(.88rem, 1.12vw, 1.15rem); line-height: 1.35; }
+    .stage:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -11px; border-left: 7px solid var(--muted); border-top: 6px solid transparent; border-bottom: 6px solid transparent; opacity: .7; }
+    @media (max-width: 900px) { .stages { grid-template-columns: 1fr; } .stage-band { grid-column: 1 !important; grid-row: auto; } .stage::after { display: none; } }
+    /* Tabbed panel: spread the heading, text, and example through the panel instead of stacking them at the top */
+    .tab-pane { display: flex; flex-direction: column; justify-content: center; gap: clamp(16px, 2.6vh, 30px); }
+    .tab-pane h3 { margin: 0; }
+    .tab-pane p { max-width: none; line-height: 1.45; }
+    .tab-list { gap: clamp(10px, 1.6vh, 18px); }
+    .refs p { font-size: clamp(.95rem, 1.25vw, 1.3rem); }
+    @media (max-width: 900px) { .grid5 { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
 
   <main class="deck" aria-live="polite">
-    <section class="slide active" data-title="Title">
-      <div class="kicker">NSSLA 2026 &middot; Chicago &middot; December 3, 2026</div>
+    <section class="slide active" data-title="Title" style="--z:1.2">
+      <div class="kicker">National Social Studies Leaders Association &middot; NSSLA 2026 &middot; Chicago &middot; December 3, 2026</div>
       <div class="content">
         <h1>Leading with Technoskepticism</h1>
         <p class="lead">Media ecology and infrastructure friction.</p>
         <div class="badge-row">
           <span class="badge">Micah Miner</span>
-          <span class="badge">Beach Park District 3</span>
-          <span class="badge">Leadership clinic</span>
+          <span class="badge">Director of Innovation &amp; Technology</span>
+          <span class="badge">Beach Park CCSD 3</span>
+          <span class="badge">NSSLA at NCSS 2026</span>
           <a class="badge" href="../ncss-historical-inquiry/">NCSS session deck</a>
         </div>
       </div>
-      <div class="footer"><span>NSSLA 2026 leadership clinic</span><span>1</span></div>
-      <aside class="speaker-notes">Open with the leadership problem, not the technology. This is a working session: tables of four to six, 55 minutes, and every group leaves with a draft.</aside>
+      <div class="footer"><span>NSSLA 2026 session</span><span>1</span></div>
+      <aside class="speaker-notes">Open with the leadership problem, not the technology. This is a 50-minute presentation with three short turn-and-talk moments: the debate, the diagnostic, and one activity.</aside>
     </section>
-    <section class="slide light" data-title="The Leadership Problem">
+    <section class="slide light tight" data-title="The Leadership Problem" style="--z:1.45">
       <div class="kicker">The leadership problem</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-nssla-1.mp4" data-clip-title="Inquiry Quest 1: Everyone Wants a Plan" data-clip-desc="20 seconds, with music. Every classroom finishes the quest and nobody opens a source. An illustration, not study data.">Play Inquiry Quest 1 <span>Everyone Wants a Plan &middot; 0:20</span></button>
       <div class="content">
         <h2>Everyone wants us to do something about AI.</h2>
         <div class="grid3">
@@ -679,57 +722,62 @@
         <div class="takeaway">This session moves past reactive bans and uncritical adoption toward strategic, research-based leadership.</div>
       </div>
       <div class="footer"><span>Session overview</span><span>2</span></div>
-      <aside class="speaker-notes">Name the pressure everyone in the room feels. The rest of the session gives them a way to answer it that protects the discipline.</aside>
+      <aside class="speaker-notes">Name the pressure everyone in the room feels. The rest of the session gives them a way to answer it that protects the discipline. Optional: Inquiry Quest 1 runs 20 seconds with chiptune music and sound effects (check the room audio; the player has a volume control) and ends on a pause question, &ldquo;Where does your system reward speed?&rdquo; It is the first diagnostic question, so let it hang until the diagnostic on slide 10.</aside>
     </section>
-    <section class="slide" data-title="Session Map">
-      <div class="kicker">Session arc &middot; 55 minutes</div>
+    <section class="slide" data-title="Session Map" style="--z:1.45">
+      <div class="kicker">Session arc &middot; 50 minutes</div>
       <div class="content">
-        <h2>A leadership clinic, not a lecture</h2>
+        <h2>Where this session goes</h2>
         <div class="rail rail7">
-          <button type="button" class="active" data-result="Media ecology, tertiary algorithmicity, and the technoskeptical stance."><span class="n">01</span>Foundation &middot; 10</button>
-          <button type="button" data-result="Four questions: three minutes alone, then three in pairs."><span class="n">02</span>Diagnostic &middot; 6</button>
-          <button type="button" data-result="Infrastructure friction across four domains: policy, professional learning, assessment, and communication."><span class="n">03</span>Framework &middot; 12</button>
-          <button type="button" data-result="Tables draft the core of a Social Studies + GenAI Leadership Brief."><span class="n">04</span>Sprint &middot; 15</button>
-          <button type="button" data-result="A quick swap with the next table, using three questions."><span class="n">05</span>Feedback &middot; 4</button>
-          <button type="button" data-result="What my study is asking, then three commitments to take home."><span class="n">06</span>Action &middot; 5</button>
-          <button type="button" data-result="Resources, closing, and the survey invitation."><span class="n">07</span>Close &middot; 3</button>
+          <button type="button" class="active" data-result="Media ecology, five stages of the word, the technoskeptical stance, the five questions, a thought exercise, and a two-minute debate."><span class="n">01</span>Foundation &middot; 17</button>
+          <button type="button" data-result="Four questions. Pick one and talk it through with a neighbor."><span class="n">02</span>Diagnostic &middot; 4</button>
+          <button type="button" data-result="Infrastructure friction across four domains: policy, professional learning, assessment, and communication."><span class="n">03</span>Framework &middot; 11</button>
+          <button type="button" data-result="One task, four decisions: keep, scaffold, shift, or remove."><span class="n">04</span>Try it &middot; 6</button>
+          <button type="button" data-result="What my dissertation study is asking. Research in progress, no findings yet."><span class="n">05</span>Research &middot; 3</button>
+          <button type="button" data-result="Three commitments to take home."><span class="n">06</span>Next steps &middot; 3</button>
+          <button type="button" data-result="Resources, closing, questions, and the survey invitation."><span class="n">07</span>Close &middot; 6</button>
         </div>
-        <div class="result-box" id="railResult">Media ecology, tertiary algorithmicity, and the technoskeptical stance.</div>
+        <div class="result-box" id="railResult">Media ecology, five stages of the word, the technoskeptical stance, the five questions, a thought exercise, and a two-minute debate.</div>
       </div>
-      <div class="footer"><span>Times in minutes. Tables of four to six.</span><span>3</span></div>
-      <aside class="speaker-notes">The proposal was a 90-minute clinic; the accepted NSSLA slot is 55 minutes. These times protect the design sprint and replace the full gallery walk with a quick table swap. If you run long, shorten the diagnostic pairs first.</aside>
+      <div class="footer"><span>Times in minutes</span><span>3</span></div>
+      <aside class="speaker-notes">The proposal planned a 90-minute clinic. This is a 50-minute NSSLA session within the NCSS conference, so the design sprint, constraints, and gallery walk are out and one short activity takes their place. If you run long, skip the debate first, then shorten the close. Every clip is optional.</aside>
     </section>
-    <section class="slide light tight" data-title="Media Ecology">
-      <div class="kicker">Part 1 &middot; Media ecology in ten minutes</div>
-      <button class="clip-launch clip-corner" type="button" data-clip="../assets/how-a-student-meets-the-past.mp4" data-clip-title="How a student meets the past" data-clip-desc="18 seconds, no audio. Print, broadcast, feed, generated: where did this come from? An illustration, not a real document.">Play scene <span>How a student meets the past &middot; 0:18</span></button>
+    <section class="slide light tight" data-title="Media Ecology" style="--z:1.45">
+      <div class="kicker">Part 1 &middot; Media ecology</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/how-a-student-meets-the-past.mp4" data-clip-title="How a student meets the past" data-clip-desc="18 seconds, with soft music. Print, broadcast, feed, generated: where did this come from? An illustration, not a real document.">Play scene <span>How a student meets the past &middot; 0:18</span></button>
       <div class="content">
         <h2>AI changes the information environment, not just the toolbox.</h2>
         <div class="timeline">
           <div class="timeline-item"><strong>Printing press &middot; 1440s</strong><span>Democratized access and created new literacy demands.</span></div>
-          <div class="timeline-item"><strong>Broadcast &middot; 1950s</strong><span>Centralized narratives and made collective memory possible.</span></div>
-          <div class="timeline-item"><strong>Social platforms &middot; 2000s</strong><span>Algorithmic curation and filter bubbles.</span></div>
+          <div class="timeline-item"><strong>Broadcast &middot; 1950s</strong><span>Centralized narratives and gave mass audiences shared reference points.</span></div>
+          <div class="timeline-item"><strong>Social platforms &middot; 2000s</strong><span>Algorithmic curation of what each person sees.</span></div>
           <div class="timeline-item"><strong>Generative AI &middot; 2020s</strong><span>Algorithmic generation and uncertain provenance.</span></div>
         </div>
         <div class="takeaway">The shift is from machines that curate symbolic content to machines that also create it.</div>
       </div>
       <div class="footer"><span>Part 1 &middot; Foundation</span><span>4</span></div>
-      <aside class="speaker-notes">About four minutes. The point for leaders is that each disruption changed what schools had to teach and protect. Optional: Play scene runs 18 seconds with no audio; Esc returns to the deck.</aside>
+      <aside class="speaker-notes">About three minutes. The point for leaders is that each disruption changed what schools had to teach and protect. Optional: Play scene runs 18 seconds with soft music (the player has a volume control); Esc returns to the deck.</aside>
     </section>
-    <section class="slide" data-title="Tertiary Algorithmicity">
+    <section class="slide tight" data-title="Five Stages" style="--z:1.2">
       <div class="kicker">Dissertation framework</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-stages.mp4" data-clip-title="Five Stages of the Word" data-clip-desc="30 seconds, with music. Walter Ong&rsquo;s three stages, then the two proposed in this study. An illustration, not study data.">Play Five Stages <span>Ong and after &middot; 0:30</span></button>
       <div class="content">
         <h2>Why &ldquo;tertiary algorithmicity&rdquo;</h2>
-        <div class="grid3">
-          <div class="card"><h3>Ong (1982/2002)</h3><p><strong>Orality, literacy, secondary orality.</strong> Media change how people think and communicate.</p></div>
-          <div class="card"><h3>Stalder (2016/2018)</h3><p><strong>Algorithmicity.</strong> Algorithms select, organize, and give form to cultural material.</p></div>
-          <div class="card"><h3>This study</h3><p><strong>Tertiary algorithmicity.</strong> Algorithmic systems both curate and generate symbolic content, making human authorship optional at scale.</p></div>
+        <div class="stages">
+          <div class="stage-band ong">Walter Ong (1982/2002)</div>
+          <div class="stage-band mine">Proposed in this study, building on Stalder (2016/2018)</div>
+          <div class="stage"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="24" r="6"/><path d="M25 16a12 12 0 0 1 0 16M32 10a20 20 0 0 1 0 28"/></svg><span class="num">I</span><h3>Primary orality</h3><p>Knowledge lives in memory and voice.</p></div>
+          <div class="stage"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 13c-5-3-11-3-16-1v24c5-2 11-2 16 1 5-3 11-3 16-1V12c-5-2-11-2-16 1zM24 13v24"/></svg><span class="num">II</span><h3>Literacy and print</h3><p>Writing holds the word still, so it can be revisited and compared.</p></div>
+          <div class="stage"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 23v19M17 42h14"/><circle cx="24" cy="19" r="3"/><path d="M16 27a11 11 0 0 1 0-16M32 11a11 11 0 0 1 0 16M10 33a20 20 0 0 1 0-28M38 5a20 20 0 0 1 0 28"/></svg><span class="num">III</span><h3>Secondary orality</h3><p>Broadcast carries a voice to distant listeners, built on writing and print.</p></div>
+          <div class="stage mine"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 13h20M7 24h30M7 35h14"/><path d="M39 41V29M34 34l5-5 5 5"/></svg><span class="num">IV</span><h3>Algorithmic secondary orality</h3><p>People still write the words. Algorithms decide whose words circulate.</p></div>
+          <div class="stage mine"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 5l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/><path d="M28 33h14M23 41h19"/></svg><span class="num">V</span><h3>Tertiary algorithmicity</h3><p>Algorithms also generate the words. Human authorship becomes optional at scale.</p></div>
         </div>
         <div class="takeaway">A qualitative shift calls for new leadership frameworks, not only new classroom rules.</div>
       </div>
-      <div class="footer"><span>Dissertation proposal, Chapter Two</span><span>5</span></div>
-      <aside class="speaker-notes">One theory beat. The definitions match the defended proposal. Move on once leaders can say the difference between curating and generating.</aside>
+      <div class="footer"><span>Stages IV and V are proposals, not established terms &middot; Take home: <a href="https://minerclass.github.io/echoes/" target="_blank" rel="noopener">play Echoes</a></span><span>5</span></div>
+      <aside class="speaker-notes">One theory beat, about three minutes with the clip. Ong named the first three stages. Stalder&rsquo;s algorithmicity, in which algorithms select, organize, and give form to cultural material, is the bridge to the two stages this study proposes. Move on once leaders can say the difference between curating and generating. Optional: Play Five Stages runs 30 seconds with chiptune music and ends on &ldquo;Which stage are your students learning in?&rdquo;</aside>
     </section>
-    <section class="slide light tight" data-title="The Technoskeptical Stance">
+    <section class="slide light tight" data-title="The Technoskeptical Stance" style="--z:1.45">
       <div class="kicker">Part 1 &middot; The stance</div>
       <div class="content">
         <h2>Technoskeptical leadership refuses both technophobia and techno-utopianism.</h2>
@@ -740,10 +788,63 @@
         </div>
         <div class="takeaway">Not a ban and not a rollout. A stance that asks better questions first.</div>
       </div>
-      <div class="footer"><span>Part 1 &middot; Foundation</span><span>6</span></div>
+      <div class="footer"><span>Draws on Postman (1998); Krutka, Metzger, &amp; Seitz (2022); Civics of Technology</span><span>6</span></div>
       <aside class="speaker-notes">This is the stance the rest of the session puts into practice. Innovation is welcome; it has to earn its place in a discipline built on evidence.</aside>
     </section>
-    <section class="slide" data-title="Leadership Diagnostic">
+    <section class="slide tight" data-title="Five Technoskeptical Questions" style="--z:1.15">
+      <div class="kicker">Part 1 &middot; Five technoskeptical questions</div>
+      <div class="content">
+        <h2>The five technoskeptical questions</h2>
+        <p>Neil Postman&rsquo;s five ideas about technological change (1998), turned into questions by Dan Krutka and Scott Metzger for Civics of Technology.</p>
+        <div class="grid5" data-choice-group="tsq">
+          <button class="choice active" type="button" data-result="Question 1, asked of generative AI: When AI drafts the essay or solves the problem, which capacities for attention, authorship, and judgment are quietly traded away?"><h3>1 &middot; Every technology is a trade-off</h3><p>What does society give up for the benefits of the technology?</p></button>
+          <button class="choice" type="button" data-result="Question 2, asked of generative AI: Who gains time, profit, or authority from AI in schools, and who absorbs the surveillance, deskilling, and exclusion?"><h3>2 &middot; There are winners and losers</h3><p>Who is harmed and who benefits from the technology?</p></button>
+          <button class="choice" type="button" data-result="Question 3, asked of generative AI: What does generative AI require to work: student data, constant connectivity, and a definition of learning as efficient completion?"><h3>3 &middot; Every technology carries an idea</h3><p>What does the technology need?</p></button>
+          <button class="choice" type="button" data-result="Question 4, asked of generative AI: How does AI reshape assessment, teacher judgment, student relationships, and curricular authority, all at once?"><h3>4 &middot; Change is ecological, not additive</h3><p>What are the unintended or unexpected changes caused by the technology?</p></button>
+          <button class="choice" type="button" data-result="Question 5, asked of generative AI: When did &ldquo;AI is inevitable in schools&rdquo; stop being a claim to argue and start feeling like weather to endure?"><h3>5 &middot; Technologies become mythic</h3><p>Why is it difficult to imagine our world without the technology?</p></button>
+        </div>
+        <div class="result-box" id="tsqResult">Question 1, asked of generative AI: When AI drafts the essay or solves the problem, which capacities for attention, authorship, and judgment are quietly traded away?</div>
+      </div>
+      <div class="footer"><span>Postman (1998) &middot; Questions as worded at <a href="https://www.civicsoftechnology.org/curriculum" target="_blank" rel="noopener">civicsoftechnology.org/curriculum</a></span><span>7</span></div>
+      <aside class="speaker-notes">About two minutes. Each card heading paraphrases one of Postman&rsquo;s five ideas from his March 28, 1998 talk in Denver; the question under it is quoted as worded on the Civics of Technology curriculum page, where Dan Krutka and Scott Metzger adapted the ideas into questions. Click a card for a generative-AI prompt from the technoskepticism primer. Ask the room which question their district has never asked out loud.</aside>
+    </section>
+    <section class="slide light tight" data-title="Thought Exercise" style="--z:1.35">
+      <div class="kicker">Part 1 &middot; Thought exercise</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-questions.mp4" data-clip-title="Five Questions" data-clip-desc="28 seconds, with music. The five technoskeptical questions, each under the Postman idea it came from. An illustration, not study data.">Play Five Questions <span>Before the gate opens &middot; 0:28</span></button>
+      <div class="content">
+        <h2>Five questions, five stages</h2>
+        <p>One minute on your own. Run each question through a different stage of the word.</p>
+        <div class="grid5" data-choice-group="thought">
+          <button class="choice active" type="button" data-result="Question 1. Plato has Socrates warn that writing would weaken memory. What did writing give up, and what did it give back?"><h3>1 &middot; Literacy and print</h3><p>What did a culture of memory give up for writing?</p></button>
+          <button class="choice" type="button" data-result="Question 2. When a few voices could reach millions, who was harmed and who benefited?"><h3>2 &middot; Secondary orality</h3><p>Who gained a microphone, and who lost one?</p></button>
+          <button class="choice" type="button" data-result="Question 3. A feed needs attention, data, and a steady supply of human posts. What does it need from your students?"><h3>3 &middot; Algorithmic secondary orality</h3><p>What does a feed need from us?</p></button>
+          <button class="choice" type="button" data-result="Question 4. When systems generate the words, what changes without anyone deciding? Start with the essay as evidence of learning."><h3>4 &middot; Tertiary algorithmicity</h3><p>What changed that nobody chose?</p></button>
+          <button class="choice" type="button" data-result="Question 5. Which of these stages do your students no longer notice as a technology at all? That is where the questions are hardest to ask."><h3>5 &middot; All five stages</h3><p>Which one no longer looks like a technology?</p></button>
+        </div>
+        <div class="result-box" id="thoughtResult">Question 1. Plato has Socrates warn that writing would weaken memory. What did writing give up, and what did it give back?</div>
+      </div>
+      <div class="footer"><span>One quiet minute, then the debate &middot; Take home: <a href="https://minerclass.github.io/answerable/" target="_blank" rel="noopener">play Answerable</a></span><span>8</span></div>
+      <aside class="speaker-notes">About two minutes. Click through the five cards, give the room one quiet minute, and take one answer. Each card pairs one technoskeptical question with one stage from slide 5. The Plato reference is to the Phaedrus, which Ong discusses in Orality and Literacy. Optional: Play Five Questions runs 28 seconds with chiptune music and ends on &ldquo;Which one has your district never asked out loud?&rdquo; [Draft: the five prompts are suggestions; reword them.]</aside>
+    </section>
+    <section class="slide light tight" data-title="Debate" style="--z:1.3">
+      <div class="kicker">Part 1 &middot; Put the questions to work</div>
+      <div class="content">
+        <h2>Debate it: is a ban enough?</h2>
+        <div class="grid2">
+          <div class="card"><h3>The pouch</h3><p>A restriction sets a boundary. It can change access, interruption, and the visible norms around attention.</p></div>
+          <div class="card"><h3>The bypass</h3><p>The same habit moves to the next available screen, often one the school issued. Removing one screen does not redesign the ecology.</p></div>
+        </div>
+        <div class="audit-choices" data-choice-group="debate">
+          <button class="choice active" type="button" data-result="Motion: a bell-to-bell phone ban will improve learning in our social studies classrooms. One side argues for it. The other answers with question 4: what unintended or unexpected changes follow, and on which screen?"><h3>Phone bans</h3><p>Where does the phone go, and what happens next?</p></button>
+          <button class="choice" type="button" data-result="Motion: our district should cap student screen minutes. One side argues for it. The other answers that the harder question is not how much screen time is too much. It is what the screen is asking students to practice."><h3>Screen time</h3><p>How many minutes, or which practice?</p></button>
+          <button class="choice" type="button" data-result="Motion: generative AI should be banned for essays in social studies. One side argues for it. The other answers with questions 1 and 2: what do we give up, and who is harmed and who benefits?"><h3>Generative AI</h3><p>Ban it, adopt it, or ask better questions first?</p></button>
+        </div>
+        <div class="result-box" id="debateResult">Motion: a bell-to-bell phone ban will improve learning in our social studies classrooms. One side argues for it. The other answers with question 4: what unintended or unexpected changes follow, and on which screen?</div>
+      </div>
+      <div class="footer"><span>From <a href="https://minerclass.github.io/ietl-pouch-and-bypass/" target="_blank" rel="noopener">The Pouch and the Bypass</a> and <a href="https://minerclass.github.io/screen-time-wrong-question/" target="_blank" rel="noopener">Screen Time Is the Wrong Question</a> &middot; Take home: <a href="https://minerclass.github.io/trailhead/" target="_blank" rel="noopener">play Trailhead</a></span><span>9</span></div>
+      <aside class="speaker-notes">Two minutes. Pick one motion, split the room in half, give each side 45 seconds with a neighbor, then ask for one sentence from each side. The point is the move, not the verdict: restriction creates a boundary; leadership, design, and partnership create change. The pouch and bypass language comes from the IETL talk The Pouch and the Bypass; the screen-practice question comes from the CoSN post Screen Time Is the Wrong Question. [Draft: the three motions are suggestions; reword them for this room.]</aside>
+    </section>
+    <section class="slide tight" data-title="Leadership Diagnostic" style="--z:1.3">
       <div class="kicker">Part 2 &middot; Technoskeptical leadership diagnostic</div>
       <div class="content">
         <h2>Where does your system stand today?</h2>
@@ -755,12 +856,12 @@
         </div>
         <div class="result-box" id="diagResult">Look at pacing guides, grading windows, and dashboard metrics. Name one place where finishing counts more than thinking.</div>
       </div>
-      <div class="footer"><span>Answer alone for 3 minutes, then pair and share for 3</span><span>7</span></div>
+      <div class="footer"><span>Pick one question. Two minutes with a neighbor.</span><span>10</span></div>
       <aside class="speaker-notes">The four questions come from the proposal. [Draft: the follow-up prompts under each question are suggestions; rewrite them in your own words.] Paired sharing usually surfaces the same two or three challenges across districts.</aside>
     </section>
-    <section class="slide light" data-title="Infrastructure Friction">
+    <section class="slide light" data-title="Infrastructure Friction" style="--z:1.45">
       <div class="kicker">Part 3 &middot; The central concept</div>
-      <button class="clip-launch clip-corner" type="button" data-clip="../assets/twenty-eight-essays.mp4" data-clip-title="Twenty-eight essays" data-clip-desc="18 seconds, no audio. A teacher redesigns a task, and the system makes room for it. An illustration, not study data.">Play scene <span>Twenty-eight essays &middot; 0:18</span></button>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/twenty-eight-essays.mp4" data-clip-title="Twenty-eight essays" data-clip-desc="18 seconds, with soft music. A teacher redesigns a task, and the system makes room for it. An illustration, not study data.">Play scene <span>Twenty-eight essays &middot; 0:18</span></button>
       <div class="content">
         <h2>Infrastructure friction</h2>
         <p class="lead">Intentional system design, through policy, professional learning, and assessment, that maintains productive struggle at the organizational level, not just in one classroom.</p>
@@ -769,10 +870,10 @@
           <div class="card"><h3>Infrastructure friction</h3><p>The system makes room for that struggle in every classroom: time, guidance, assessment, and permission.</p></div>
         </div>
       </div>
-      <div class="footer"><span>Part 3 &middot; Framework</span><span>8</span></div>
-      <aside class="speaker-notes">The scene shows the idea in 18 seconds: a teacher redesigns a task, and the principal and the pacing guide make room for it. Optional: Play scene runs 18 seconds with no audio; Esc returns to the deck.</aside>
+      <div class="footer"><span>Part 3 &middot; Framework</span><span>11</span></div>
+      <aside class="speaker-notes">The scene shows the idea in 18 seconds: a teacher redesigns a task, and the principal and the pacing guide make room for it. Optional: Play scene runs 18 seconds with soft music (the player has a volume control); Esc returns to the deck.</aside>
     </section>
-    <section class="slide tight" data-title="Four Domains">
+    <section class="slide tight" data-title="Four Domains" style="--z:1.2">
       <div class="kicker">Part 3 &middot; Four domains</div>
       <div class="content">
         <h2>Where leaders can build infrastructure friction</h2>
@@ -790,11 +891,12 @@
           </div>
         </div>
       </div>
-      <div class="footer"><span>Click each domain</span><span>9</span></div>
-      <aside class="speaker-notes">About eight minutes across the four domains; the whole framework segment is 12. Before naming Beach Park, confirm which district examples are current and shareable; the proposal promised participants adaptable policy documents, PD agendas, rubrics, and communication samples.</aside>
+      <div class="footer"><span>Click each domain</span><span>12</span></div>
+      <aside class="speaker-notes">About six minutes across the four domains; the whole framework segment is 11. Before naming Beach Park, confirm which district examples are current and shareable; the proposal promised participants adaptable policy documents, PD agendas, rubrics, and communication samples.</aside>
     </section>
-    <section class="slide light" data-title="Coherence Check">
+    <section class="slide light tight" data-title="Coherence Check" style="--z:1.2">
       <div class="kicker">Part 3 &middot; Four domains, one direction</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-nssla-2.mp4" data-clip-title="Inquiry Quest 2: Four Signs" data-clip-desc="20 seconds, with music. Four signs point four ways until the leader redraws the level. An illustration, not study data.">Play Inquiry Quest 2 <span>Four Signs &middot; 0:20</span></button>
       <div class="content">
         <h2>Do your four domains point the same way?</h2>
         <div class="grid4">
@@ -805,66 +907,40 @@
         </div>
         <div class="takeaway">Coherence is the friction. When one domain contradicts another, teachers default to speed.</div>
       </div>
-      <div class="footer"><span>Part 3 &middot; Framework</span><span>10</span></div>
-      <aside class="speaker-notes">[Draft: these four questions condense the framework for the sprint; adjust as you like.] Spend about a minute here as the bridge into the design sprint.</aside>
+      <div class="footer"><span>Part 3 &middot; Framework</span><span>13</span></div>
+      <aside class="speaker-notes">[Draft: these four questions condense the framework; adjust as you like.] Spend about two minutes here as the bridge into the activity. Optional: Inquiry Quest 2 ends on &ldquo;Which sign in your system points the wrong way?&rdquo; Use it as the hand-off into the activity.</aside>
     </section>
-    <section class="slide tight" data-title="Design Sprint">
-      <div class="kicker">Part 4 &middot; Guided design sprint</div>
+    <section class="slide tight" data-title="Activity" style="--z:1.2">
+      <div class="kicker">Part 4 &middot; Try it</div>
       <div class="content">
-        <h2>Draft your Social Studies + GenAI Leadership Brief</h2>
-        <p class="lead">In 15 minutes, draft parts 1 and 2. Jot headings for parts 3 and 4 to finish back home.</p>
+        <h2>One task, four decisions</h2>
+        <p class="lead">Pick one task your teachers assign, such as a DBQ, a seminar, or a current events analysis. Turn to a neighbor and make four calls.</p>
         <div class="grid4">
-          <div class="card"><h3>1. Purpose statement</h3><p>Two or three sentences. What is AI for, and not for, in our social studies classrooms?</p></div>
-          <div class="card"><h3>2. Minimum expectations</h3><p>Three to five bullets. What must every teacher require of students when AI is involved?</p></div>
-          <div class="card"><h3>3. Tool boundaries</h3><p>A short list. What is approved and not approved? What is the data privacy floor?</p></div>
-          <div class="card"><h3>4. Implementation support</h3><p>Action steps. What professional learning, assessment guidance, and communication do teachers need from us?</p></div>
+          <div class="card"><h3>Keep</h3><p>What thinking must stay human in this task?</p></div>
+          <div class="card"><h3>Scaffold</h3><p>Where could AI support access without doing the thinking?</p></div>
+          <div class="card"><h3>Shift</h3><p>What could move to AI so time goes to harder work?</p></div>
+          <div class="card"><h3>Remove</h3><p>Which friction here is only a barrier?</p></div>
         </div>
+        <div class="takeaway">Then ask: which of your four domains would have to change for that call to hold in every classroom?</div>
       </div>
-      <div class="footer"><span>15 minutes &middot; tables of four to six</span><span>11</span></div>
-      <aside class="speaker-notes">Circulate. Share examples and help tables work through their real constraints. The next slide holds the three that come up most. At 55 minutes, a strong purpose statement and minimum expectations are the realistic goal.</aside>
+      <div class="footer"><span>6 minutes &middot; turn and talk &middot; Take home: <a href="https://minerclass.github.io/friction-game/" target="_blank" rel="noopener">play Friction Lab</a></span><span>14</span></div>
+      <aside class="speaker-notes">About six minutes: one minute to pick a task, three to talk, two to hear from the room. Nobody writes anything down. Take two or three answers to the last question, since it ties the classroom call back to policy, professional learning, assessment, and communication. This replaces the proposal&rsquo;s design sprint, constraints, and feedback swap. [Draft: the four card questions restate the keep, scaffold, shift, remove framing; reword them as you like.]</aside>
     </section>
-    <section class="slide light" data-title="Real Constraints">
-      <div class="kicker">Part 4 &middot; Plan for the constraints you actually face</div>
-      <div class="content">
-        <h2>Write the brief for your real context.</h2>
-        <div class="grid3">
-          <div class="card"><h3>Board mandates</h3><p>What has the board already asked for, and how does your brief answer it?</p></div>
-          <div class="card"><h3>Vendor contracts</h3><p>Which tools are already purchased, and what do their data terms allow?</p></div>
-          <div class="card"><h3>Union considerations</h3><p>Which expectations touch working conditions or evaluation, and who needs to be at the table?</p></div>
-        </div>
-      </div>
-      <div class="footer"><span>Keep drafting</span><span>12</span></div>
-      <aside class="speaker-notes">The three constraints come from the proposal. [Draft: the questions under each are suggestions.] Leave this up while tables work.</aside>
-    </section>
-    <section class="slide" data-title="Feedback Swap">
-      <div class="kicker">Part 5 &middot; Peer feedback</div>
-      <div class="content">
-        <h2>Quick feedback swap</h2>
-        <p class="lead">Pass your draft to the next table. Leave one short note for each question.</p>
-        <div class="grid3">
-          <div class="card"><h3>Clear</h3><p>What is clearest about this guidance?</p></div>
-          <div class="card"><h3>Confusing</h3><p>What would a teacher still be confused about?</p></div>
-          <div class="card"><h3>Adaptable</h3><p>What would you adapt for your own context?</p></div>
-        </div>
-      </div>
-      <div class="footer"><span>4 minutes &middot; pass drafts clockwise</span><span>13</span></div>
-      <aside class="speaker-notes">The proposal planned a gallery walk. At 55 minutes, a table swap keeps the feedback without the walking time. If time is short, skip to the commitments.</aside>
-    </section>
-    <section class="slide light" data-title="The Study">
-      <div class="kicker">Part 6 &middot; Research in progress &middot; No findings yet</div>
+    <section class="slide light tight" data-title="The Study" style="--z:1.45">
+      <div class="kicker">Part 5 &middot; Research in progress &middot; No findings yet</div>
       <div class="content">
         <h2>What my dissertation study is asking</h2>
         <div class="grid2">
           <div class="card"><h3>RQ2 &middot; Conditions</h3><p>How do educators and school-system leaders make sense of and respond to the policy, professional-learning, assessment, access, and governance conditions surrounding generative AI?</p></div>
           <div class="card"><h3>RQ3 &middot; Supports</h3><p>What language, assessment expectations, instructional practices, professional supports, and leadership approaches do educators and school-system leaders identify as important for preserving forms of friction that support learning while reducing unnecessary barriers?</p></div>
         </div>
-        <div class="takeaway">The study is collecting data through February 2027. These are the questions, not findings.</div>
+        <div class="takeaway">Data collection continues into early 2027. These are the questions, not findings.</div>
       </div>
-      <div class="footer"><span>NLU IRB protocol ER01884 &middot; Research in progress</span><span>14</span></div>
+      <div class="footer"><span>NLU IRB protocol ER01884 &middot; Research in progress</span><span>15</span></div>
       <aside class="speaker-notes">The submitted proposal described preliminary findings. Data collection is still underway, so present the questions only and make no claims about results. RQ wording matches the defended proposal.</aside>
     </section>
-    <section class="slide" data-title="Action Planning">
-      <div class="kicker">Part 6 &middot; Action planning</div>
+    <section class="slide" data-title="Action Planning" style="--z:1.45">
+      <div class="kicker">Part 6 &middot; Next steps</div>
       <div class="content">
         <h2>Leave with three commitments</h2>
         <div class="grid3">
@@ -873,10 +949,10 @@
           <div class="card"><h3>One friction point</h3><p>One place in your system where you will strengthen infrastructure friction.</p></div>
         </div>
       </div>
-      <div class="footer"><span>Write them on your brief before you leave</span><span>15</span></div>
-      <aside class="speaker-notes">About four minutes, including the study slide. Ask one or two leaders to share a commitment aloud.</aside>
+      <div class="footer"><span>Choose one before you leave the room</span><span>16</span></div>
+      <aside class="speaker-notes">About three minutes. Ask one or two leaders to share a commitment aloud.</aside>
     </section>
-    <section class="slide light tight" data-title="Resources">
+    <section class="slide light tight" data-title="Resources" style="--z:1.05">
       <div class="kicker">Part 7 &middot; Resources</div>
       <div class="content">
         <h2>Take these back to your district</h2>
@@ -884,24 +960,28 @@
           <a class="card" href="../ncss-historical-inquiry/"><h3>Teaching History Among Algorithms</h3><p>The NCSS session deck, December 4: media ecology, misinformation, and democratic learning.</p></a>
           <a class="card" href="../"><h3>When AI Does the Thinking</h3><p>The full interactive deck on preserving historical inquiry.</p></a>
           <a class="card" href="https://minerclass.github.io/technoskepticism-primer/" target="_blank" rel="noopener"><h3>Technoskepticism Primer</h3><p>The five technoskeptical questions and their Postman roots.</p></a>
+          <a class="card" href="https://minerclass.github.io/games-hub/" target="_blank" rel="noopener"><h3>Games Hub</h3><p>Every game in one place, to share with your teachers.</p></a>
+          <a class="card" href="https://minerclass.github.io/echoes/" target="_blank" rel="noopener"><h3>Echoes</h3><p>Walk the five stages of the word, from a grove to a generated bridge.</p></a>
+          <a class="card" href="https://minerclass.github.io/trailhead/" target="_blank" rel="noopener"><h3>Trailhead</h3><p>Device bans, AI bypass, and access barriers on one mountain trail.</p></a>
           <a class="card" href="https://minerclass.github.io/answerable/" target="_blank" rel="noopener"><h3>Answerable</h3><p>A game for practicing the five technoskeptical questions.</p></a>
           <a class="card" href="https://minerclass.github.io/friction-game/" target="_blank" rel="noopener"><h3>Friction Lab</h3><p>Try the framework on one of your own assignments.</p></a>
           <a class="card" href="https://digitalcommons.nl.edu/ie/vol18/iss1/4/" target="_blank" rel="noopener"><h3>When the Output Looks Like Learning</h3><p>The <em>i.e.: inquiry in education</em> article behind tertiary algorithmicity and pedagogical friction.</p></a>
         </div>
       </div>
-      <div class="footer"><span>Links to take home</span><span>16</span></div>
-      <aside class="speaker-notes">The proposal promised a digital resource packet with templates, a Friction Labs guide, rubrics, and communication samples. Add its link here when it is ready.</aside>
+      <div class="footer"><span>Links to take home</span><span>17</span></div>
+      <aside class="speaker-notes">The proposal promised a digital resource packet with templates, a Friction Labs guide, rubrics, and communication samples. Add its link here when it is ready. The games are take-home links; none is meant to be played in the session.</aside>
     </section>
     <section class="slide" data-title="Closing">
       <div class="kicker">Closing</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-nssla-3.mp4" data-clip-title="Inquiry Quest 3: Room for the Climb" data-clip-desc="20 seconds, with music. The redrawn map makes room for the climb in every classroom. An illustration, not study data.">Play Inquiry Quest 3 <span>Room for the Climb &middot; 0:20</span></button>
       <div class="content">
         <h2>Infrastructure friction is what makes sustained, high-quality social studies possible every day.</h2>
         <p class="lead">The schools that will be ready decide, on purpose, what to keep difficult.</p>
       </div>
-      <div class="footer"><span>Thank you</span><span>17</span></div>
-      <aside class="speaker-notes">Close on the systems point, then invite questions.</aside>
+      <div class="footer"><span>Thank you</span><span>18</span></div>
+      <aside class="speaker-notes">Close on the systems point, then invite questions. Optional: Inquiry Quest 3 closes the story and ends on &ldquo;What will you keep difficult on purpose?&rdquo;</aside>
     </section>
-    <section class="slide light" data-title="Survey Invitation">
+    <section class="slide light" data-title="Survey Invitation" style="--z:1.15">
       <div class="kicker">Survey invitation</div>
       <div class="content">
         <div class="survey-layout">
@@ -912,25 +992,29 @@
           <a class="survey-qr" href="https://forms.cloud.microsoft/r/UbTcf4EHKn" target="_blank" rel="noopener"><img src="../assets/er01884-survey-qr.svg" alt="QR code for the survey link, https://forms.cloud.microsoft/r/UbTcf4EHKn"><strong>forms.cloud.microsoft/r/UbTcf4EHKn</strong></a>
         </div>
       </div>
-      <div class="footer"><span>NLU IRB protocol ER01884 &middot; Approved notice text</span><span>18</span></div>
+      <div class="footer"><span>NLU IRB protocol ER01884 &middot; Approved notice text</span><span>19</span></div>
       <aside class="speaker-notes">Optional. Show it at the end or leave it up after questions. The text is the approved survey notice (B), word for word, with the survey link and its QR code. Mention it in your own words if you like, but do not ask anyone to pass it on.</aside>
     </section>
-    <section class="slide" data-title="References">
+    <section class="slide" data-title="References" style="--z:1.3">
       <div class="kicker">References</div>
       <div class="content">
         <div class="refs">
+          <p>Civics of Technology. (n.d.). <em>Curriculum: The five technoskeptical questions</em> (D. Krutka &amp; S. Metzger, adapt.). civicsoftechnology.org/curriculum</p>
+          <p>Krutka, D. G., Metzger, S. A., &amp; Seitz, R. Z. (2022). &ldquo;Technology inevitably involves trade-offs&rdquo;: The framing of technology in social studies standards. <em>Theory &amp; Research in Social Education, 50</em>(2), 226&ndash;254. https://doi.org/10.1080/00933104.2022.2042444</p>
+          <p>Miner, M. J. (2026). When the output looks like learning: Tertiary algorithmicity, unproductive success, and the case for pedagogical friction in K&ndash;12 schools. <em>i.e.: inquiry in education, 18</em>(1), Article 4. https://digitalcommons.nl.edu/ie/vol18/iss1/4/</p>
           <p>Ong, W. J. (2002). <em>Orality and literacy: The technologizing of the word</em> (2nd ed.). Routledge. (Original work published 1982)</p>
+          <p>Postman, N. (1998, March 28). <em>Five things we need to know about technological change</em> [Address]. Denver, Colorado.</p>
           <p>Stalder, F. (2018). <em>The digital condition</em> (V. A. Pakis, Trans.). Polity Press. (Original work published 2016)</p>
         </div>
       </div>
-      <div class="footer"><span>Not presented</span><span>19</span></div>
+      <div class="footer"><span>Not presented</span><span>20</span></div>
       <aside class="speaker-notes">Not presented. Here for anyone following along on their own device.</aside>
     </section>
   </main>
 
   <nav class="controls" aria-label="Slide controls">
     <button type="button" id="prev" aria-label="Previous slide">&lt;</button>
-    <span class="counter" id="counter">1 / 19</span>
+    <span class="counter" id="counter">1 / 20</span>
     <button type="button" id="next" aria-label="Next slide">&gt;</button>
   </nav>
 
@@ -1024,6 +1108,7 @@
         event.preventDefault();
         showSlide(current - 1);
       }
+      if ((event.key === "n" || event.key === "N") && !event.target.closest("input, textarea, select")) document.body.classList.toggle("show-notes");
       if (event.key === "Home") showSlide(0);
       if (event.key === "End") showSlide(slides.length - 1);
     });
