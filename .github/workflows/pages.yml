@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
 
@@ -45,24 +45,38 @@ jobs:
         with:
           path: .
 
-      # deploy-pages looks the artifact up the moment the upload finishes. On
-      # 2026-11-25 the artifact list lagged behind the upload by more than that,
-      # and three deploys in a row failed with "No artifacts named github-pages
-      # were found". Wait until the list shows it.
+      # deploy-pages looks the artifact up the moment the upload finishes, and the
+      # artifact list is not consistent for a short while after an upload. On
+      # 2026-11-25 several deploys failed with "No artifacts named github-pages
+      # were found"; one of them failed after a single check had already seen
+      # the artifact listed. So: wait until it is listed three times in a row,
+      # let it settle, and retry the deploy once if it still fails.
       - name: Wait for the artifact to be listed
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for i in $(seq 1 30); do
+          seen=0
+          for i in $(seq 1 40); do
             n=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=github-pages" --jq '.total_count' 2>/dev/null || echo 0)
-            if [ "${n:-0}" -ge 1 ]; then
-              echo "Artifact listed after $i checks"
+            if [ "${n:-0}" -ge 1 ]; then seen=$((seen + 1)); else seen=0; fi
+            if [ "$seen" -ge 3 ]; then
+              echo "Artifact listed on three checks in a row (check $i); settling"
+              sleep 15
               exit 0
             fi
-            sleep 2
+            sleep 3
           done
-          echo "The artifact was not listed after 60 seconds"
+          echo "The artifact was not listed reliably after two minutes"
           exit 1
 
       - id: deployment
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Wait before retrying the deploy
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 45
+
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v5
