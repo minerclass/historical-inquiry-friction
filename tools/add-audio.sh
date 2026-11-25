@@ -1,6 +1,8 @@
 #!/bin/sh
-# Generates the soundtracks and adds them to the nine clips in assets/.
-# Run from the repository root on a Mac:  sh tools/add-audio.sh
+# Generates the soundtracks and adds them to the clips in assets/.
+# Run from the repository root on a Mac:
+#   sh tools/add-audio.sh                      every clip
+#   sh tools/add-audio.sh inquiry-quest-audit  only the clips named (no .mp4)
 # Safe to run again: each run replaces whatever sound a clip already has.
 set -e
 work=$(mktemp -d)
@@ -8,6 +10,9 @@ swiftc -O tools/add-audio.swift -o "$work/add-audio" 2>/dev/null
 python3 tools/clip-audio.py "$work"
 for wav in "$work"/*.wav; do
   name=$(basename "$wav" .wav)
+  if [ $# -gt 0 ]; then
+    case " $* " in *" $name "*) ;; *) continue ;; esac
+  fi
   afconvert -f m4af -d aac -b 160000 "$wav" "$work/$name.m4a"
   "$work/add-audio" "assets/$name.mp4" "$work/$name.m4a" "$work/$name.mp4"
   mv "$work/$name.mp4" "assets/$name.mp4"

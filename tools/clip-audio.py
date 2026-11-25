@@ -3,7 +3,7 @@
 
     python3 tools/clip-audio.py <output-dir>
 
-Writes one 16-bit WAV per clip. The eight Inquiry Quest clips get an original
+Writes one 16-bit WAV per clip. The Inquiry Quest clips get an original
 chiptune score with sound effects timed to the scenes in assets/inquiry-quest.js;
 the three earlier 18-second clips get a quiet ambient bed. tools/add-audio.sh
 turns each WAV into AAC and adds it to the matching MP4.
@@ -101,6 +101,7 @@ BEAT = 0.5  # 120 beats a minute; a bar is two seconds
 CHORDS = {
     'C': ('C3', ['C4', 'E4', 'G4']), 'Am': ('A2', ['A3', 'C4', 'E4']), 'F': ('F2', ['F3', 'A3', 'C4']),
     'G': ('G2', ['G3', 'B3', 'D4']), 'Dm': ('D3', ['D4', 'F4', 'A4']), 'E': ('E2', ['E3', 'G#3', 'B3']),
+    'Em': ('E2', ['E3', 'G3', 'B3']), 'D': ('D3', ['D4', 'F#4', 'A4']), 'B': ('B2', ['B3', 'D#4', 'F#4']),
 }
 # The quest theme (hopeful) and the gate theme (uneasy). Each bar: chord, then (note, beats).
 BARS = {
@@ -113,6 +114,16 @@ BARS = {
     'B1': ('F',  [('F5', .5), ('G5', .5), ('F5', 1), ('C5', .5), ('A4', .5), ('C5', 1)]),
     'B2': ('Dm', [('D5', .5), ('E5', .5), ('F5', 1), ('D5', .5), ('A4', .5), ('D5', 1)]),
     'B3': ('E',  [('E5', 1), ('G#5', .5), ('B5', .5), ('G#5', 1), ('E5', 1)]),
+    # The NCSS set has its own tune, in G: an archive theme (C bars) and an uneasy one (D bars).
+    'U':  ('G',  [('G4', .5), ('B4', .5), ('D5', .5), ('G5', .5), ('B5', 2)]),
+    'C0': ('G',  [('D5', 1), ('B4', .5), ('D5', .5), ('G5', 1), ('D5', 1)]),
+    'C1': ('Em', [('E5', .5), ('G5', .5), ('B5', 1), ('G5', .5), ('E5', .5), ('B4', 1)]),
+    'C2': ('C',  [('C5', 1), ('E5', .5), ('G5', .5), ('E5', 1), ('C5', 1)]),
+    'C3': ('D',  [('D5', .5), ('F#5', .5), ('A5', 1), ('F#5', .5), ('A5', .5), ('D6', 1)]),
+    'D0': ('Em', [('B4', .5), ('C5', .5), ('B4', 1), ('G4', .5), ('E4', .5), ('G4', 1)]),
+    'D1': ('C',  [('C5', .5), ('D5', .5), ('C5', 1), ('G4', .5), ('E4', .5), ('G4', 1)]),
+    'D2': ('Am', [('A4', .5), ('B4', .5), ('C5', 1), ('A4', .5), ('E4', .5), ('A4', 1)]),
+    'D3': ('B',  [('B4', 1), ('D#5', .5), ('F#5', .5), ('D#5', 1), ('B4', 1)]),
 }
 
 
@@ -120,10 +131,11 @@ def bar(m, t0, key, layers='lbad'):
     """One two-second bar. layers picks the parts: l lead, b bass, a arpeggio, d drums."""
     chord, lead = BARS[key]
     root, tones = CHORDS[chord]
-    title, uneasy = key == 'T', key.startswith('B')
+    title, uneasy, archive = key in ('T', 'U'), key[0] in 'BD', key[0] in 'UCD'
     t = t0
     for note, beats in lead:
-        m.tone(t, beats * BEAT * 0.92, hz(note), 0.12, 'sq', 0.5 if uneasy else 0.25, release=0.05)
+        duty = 0.5 if uneasy else (0.125 if archive else 0.25)   # a thinner lead for the archive theme
+        m.tone(t, beats * BEAT * 0.92, hz(note), 0.12, 'sq', duty, release=0.05)
         if title:
             m.tone(t, beats * BEAT * 0.92, hz(note) / 2, 0.05, 'sq', 0.5, release=0.05)
         t += beats * BEAT
@@ -222,12 +234,13 @@ def whoosh(s, t, rng):
     s.noise(t, 0.3, 0.07, hold=2, rng=rng)
 
 
-def ending(e, t, warm, total=20):
+def ending(e, t, warm, total=20, archive=False):
     """A two-note pause chime and a held chord under the end card."""
-    a, b = ('G5', 'C6') if warm else ('E5', 'A5')
+    a, b = (('D5', 'G5') if warm else ('B4', 'E5')) if archive else (('G5', 'C6') if warm else ('E5', 'A5'))
     e.tone(t + 0.15, 0.5, hz(a), 0.11, 'tri', decay=0.25)
     e.tone(t + 0.4, 0.9, hz(b), 0.11, 'tri', decay=0.4)
-    for n in (('C3', 'G3', 'E4', 'C5') if warm else ('A2', 'E3', 'B3', 'E4')):
+    chord = (('G2', 'D3', 'B3', 'G4') if warm else ('E2', 'B2', 'F#3', 'B3')) if archive else (('C3', 'G3', 'E4', 'C5') if warm else ('A2', 'E3', 'B3', 'E4'))
+    for n in chord:
         e.tone(t + 0.5, total - 0.6 - t - 0.5, hz(n), 0.05, 'sin', attack=0.5, release=1.4)
         e.tone(t + 0.5, total - 0.6 - t - 0.5, hz(n) * 1.003, 0.03, 'tri', attack=0.5, release=1.4)
 
@@ -326,13 +339,105 @@ def questions(s, rng):
     shimmer(s, 20.6, 1.4, rng, 0.02)
 
 
+def paths(s, rng):
+    """Two paths: AI as exit from 2.2, AI as entry from 10.2."""
+    whoosh(s, 2.1, rng); blip(s, 3.6); sweep(s, 4.4, 0.6); shimmer(s, 4.4, 0.6, rng); sweep(s, 5.4, 0.3, up=False)
+    womp(s, 6.0); womp(s, 6.7, 147); blip(s, 7.4); typing(s, 7.1, 62, VALE)
+    whoosh(s, 10.1, rng); typing(s, 10.5, 62, PIP); coin(s, 11.7); blip(s, 12.8, 1568); ask(s, 14.2); jingle(s, 14.6)
+    jump(s, 15.6); coin(s, 16.1); jump(s, 16.8); coin(s, 17.3); fanfare(s, 18.4); shimmer(s, 18.8, 0.7, rng, 0.03)
+
+
+def moves(s, rng):
+    """Four moves of inquiry, 4.5 seconds each from 2.2."""
+    for k in range(4):
+        t0 = 2.2 + k * 4.5
+        if k:
+            whoosh(s, t0 - 0.15, rng)
+        typing(s, t0 + 0.3, (38, 42, 54, 62)[k], 1000)
+    for k in range(4):
+        blip(s, 2.8 + k * 0.75, hz(('E6', 'G6', 'A6', 'C7')[k]), 0.06, 0.07)
+    for k in range(3):
+        blip(s, 7.5 + k * 0.5, 1175, 0.05, 0.05)
+    blip(s, 12.2, 1319, 0.06, 0.08); womp(s, 12.9, 220); blip(s, 13.6, 1319, 0.06, 0.08)
+    fanfare(s, 17.3); shimmer(s, 17.7, 0.7, rng, 0.03)
+
+
+def audit(s, rng):
+    """The smooth answer from 2.2, then three audits of 4.4 seconds from 6.2."""
+    shimmer(s, 2.6, 0.5, rng); typing(s, 3.2, 86, GATE, 0.125)
+    for k in range(3):
+        t0 = 6.2 + k * 4.4
+        whoosh(s, t0 - 0.15, rng); alert(s, t0 + 0.5); typing(s, t0 + 0.4, (68, 56, 62)[k], VALE)
+        jingle(s, t0 + 3.2)
+    for k in range(3):
+        blip(s, 7.2 + k * 0.6, 440 - k * 40, 0.05, 0.12)
+        coin(s, 11.5 + k * 0.7)
+    womp(s, 15.6)
+
+
+def provenance(s, rng):
+    """One document by three routes, 5.6 seconds each from 2.2."""
+    for k in range(3):
+        t0 = 2.2 + k * 5.6
+        whoosh(s, t0 - 0.15, rng); typing(s, t0 + 0.3, 62, 1000)
+        for j in range(3):
+            if (1, 1, 1, 0, 1, 0, 0, 0, 0)[k * 3 + j]:
+                blip(s, t0 + 1.4 + j * 0.8, 1568, 0.06, 0.08)
+            else:
+                womp(s, t0 + 1.4 + j * 0.8, 220 - j * 20)
+    shimmer(s, 13.9, 1.2, rng, 0.03); alert(s, 17.0)
+
+
+def seminar(s, rng):
+    """A contested question from 2.2, the turn-taking from 8.2, common ground from 14.2."""
+    alert(s, 3.0); alert(s, 3.4); thud(s, 3.8); shimmer(s, 4.6, 0.6, rng); typing(s, 5.0, 56, GATE, 0.125)
+    whoosh(s, 8.1, rng); typing(s, 8.5, 52, VALE)
+    for k in range(3):
+        coin(s, 9.4 + k * 1.4)
+    whoosh(s, 14.1, rng); fanfare(s, 15.2); typing(s, 14.9, 36, PIP)
+    for k in range(3):
+        blip(s, 16.4 + k * 0.5, hz(('G5', 'B5', 'D6')[k]), 0.07, 0.1)
+
+
+def past(s, rng):
+    """Five ways to meet the past, 4.4 seconds each from 2.4."""
+    for k in range(5):
+        t0 = 2.4 + k * 4.4
+        if k:
+            whoosh(s, t0 - 0.15, rng)
+        typing(s, t0 + 0.3, (38, 56, 58, 64, 60)[k], 1000)
+        blip(s, t0 + 1.6, 1568 if k < 4 else 330, 0.06, 0.1)
+    for k in range(4):
+        s.tone(3.1 + k * 0.7, 0.3, hz(('D4', 'G4', 'A4', 'G4')[k]), 0.06, 'tri', decay=0.2)
+    for k in range(6):
+        blip(s, 11.7 + k * 0.55, 1568, 0.04, 0.04)
+    shimmer(s, 20.3, 3.4, rng, 0.022); ask(s, 23.8)
+
+
+def press(s, rng):
+    """Then and now: five questions, four seconds each from 2.2."""
+    for k in range(5):
+        t0 = 2.2 + k * 4.0
+        ask(s, t0 + 0.3); typing(s, t0 + 0.5, (60, 50, 30, 70, 62)[k], 1000)
+        thud(s, t0 + 0.9); thud(s, t0 + 1.5)
+        shimmer(s, t0 + 2.1, 0.5, rng, 0.03); blip(s, t0 + 2.6, 1319, 0.06, 0.08)
+
+
 EPISODES = {
+    'inquiry-quest-past': (['U', 'C0', 'C1', 'C2', 'C3', 'C0', 'C1', 'C2', 'D0', 'D1', 'D2', 'D3'], 24.4, False, past,
+                           30, ['', 'ld', 'ld', 'lbd', 'lbd']),
+    'inquiry-quest-press': (['U', 'C0', 'D0', 'C1', 'D1', 'C2', 'D2', 'C3', 'D3', 'C0', 'D0'], 22.2, False, press, 28),
+    'inquiry-quest-provenance': (['U', 'C0', 'C1', 'C2', 'D0', 'D1', 'D2', 'D3', 'D0', 'C3'], 19.0, False, provenance, 26),
+    'inquiry-quest-seminar': (['U', 'D0', 'D1', 'D2', 'D3', 'C0', 'C1', 'C2', 'C3', 'C0'], 19.4, True, seminar, 26),
+    'inquiry-quest-paths': (['U', 'D0', 'D1', 'D2', 'D3', 'C0', 'C1', 'C2', 'C3', 'C0'], 20.2, True, paths, 26),
+    'inquiry-quest-moves': (['U', 'C0', 'C1', 'C2', 'C3', 'C0', 'C1', 'C2', 'C3', 'C0'], 20.2, True, moves, 26),
+    'inquiry-quest-audit': (['U', 'D0', 'D1', 'C0', 'C1', 'D0', 'D1', 'C2', 'C3'], 19.4, True, audit, 26),
     'inquiry-quest-stages': (['T', 'A0', 'A1', 'A2', 'A3', 'A0', 'A1', 'A2', 'B0', 'B1', 'B2', 'B3'], 24.4, False, stages,
                              30, ['', 'ld', 'ld', 'lbd', 'lbd']),
     'inquiry-quest-questions': (['T', 'A0', 'A1', 'B0', 'B1', 'A2', 'A3', 'B2', 'B3', 'A0', 'A1'], 22.2, False, questions, 28),
-    'inquiry-quest-ncss-1':  (['T', 'A0', 'A1', 'B0', 'B1', 'B2', 'B3', 'B0'], 15.2, False, ncss1),
-    'inquiry-quest-ncss-2':  (['T', 'A0', 'B0', 'B1', 'A0', 'B0', 'A2', 'A3'], 15.0, True, ncss2),
-    'inquiry-quest-ncss-3':  (['T', 'A0', 'A1', 'A2', 'A3', 'A0', 'A1', 'A3'], 14.8, True, ncss3),
+    'inquiry-quest-ncss-1':  (['U', 'C0', 'C1', 'D0', 'D1', 'D2', 'D3', 'D0'], 15.2, False, ncss1),
+    'inquiry-quest-ncss-2':  (['U', 'C0', 'D0', 'D1', 'C0', 'D0', 'C2', 'C3'], 15.0, True, ncss2),
+    'inquiry-quest-ncss-3':  (['U', 'C0', 'C1', 'C2', 'C3', 'C0', 'C1', 'C3'], 14.8, True, ncss3),
     'inquiry-quest-nssla-1': (['T', 'A0', 'A1', 'A2', 'B0', 'B1', 'B3', 'B0'], 15.0, False, nssla1),
     'inquiry-quest-nssla-2': (['T', 'B0', 'B1', 'B3', 'A0', 'A1', 'A2', 'A3'], 15.0, True, nssla2),
     'inquiry-quest-nssla-3': (['T', 'A0', 'A1', 'A2', 'A3', 'A0', 'A1', 'A3'], 15.0, True, nssla3),
@@ -349,7 +454,7 @@ def episode(name, out_dir):
         bar(music, i * 2.0, key, layers[i] if i < len(layers) and layers[i] else 'lbad')
     music.gain(end - 0.1, end + 0.25, 1.0, 0.0)
     events(sfx, rng)
-    ending(tail, end, warm, total)
+    ending(tail, end, warm, total, bars[0] == 'U')
     write_wav(os.path.join(out_dir, name + '.wav'), [music, sfx, tail], total)
 
 

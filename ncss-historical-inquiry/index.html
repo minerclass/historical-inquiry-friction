@@ -631,80 +631,222 @@
     @media print { .clip-launch, .clip-player { display: none !important; } }
       .clip-row { margin-top: 6px; color: var(--teal); }
     .slide > .clip-corner { position: absolute; top: clamp(30px, 4.4vw, 62px); right: clamp(34px, 5vw, 70px); z-index: 2; color: var(--teal); }
+
+    /* Shared with the NSSLA deck */
+    .rail.rail7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    a.card { text-decoration: none; color: inherit; display: block; }
+    a.card:hover, a.card:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+    .slide.light > .clip-corner { color: #1d5f5c; }
+    .slide.tight .content { gap: 14px; }
+    .slide.tight h2 { font-size: clamp(1.7rem, 3.7vw, 3.8rem); }
+    .slide.tight .timeline { gap: 4px; }
+    .slide.tight .timeline-item { padding: 8px 0; }
+    .slide.tight .card { padding: 14px 18px; }
+    .slide.tight .card h3 { margin-bottom: 4px; }
+    .slide.tight .card p, .slide.tight .tab-pane p, .slide.tight .timeline-item span { font-size: clamp(.92rem, 1.25vw, 1.3rem); }
+    .slide.tight .takeaway { padding-top: 10px; padding-bottom: 10px; }
+    .slide.tight .artifact { padding: 12px 16px; gap: 8px; }
+    .slide.tight .checklist { gap: 6px; }
+    .slide.tight .checklist li { padding: 7px 12px; }
+    .slide.tight .audit-choices .choice { min-height: 0; padding: 10px 14px; }
+    .slide.tight .audit-choices .choice h3 { margin-bottom: 4px; }
+    .slide.tight .result-box { min-height: 0; padding: 12px 16px; }
+    /* Projector fit: on landscape screens each slide scales its body text by its own --z
+       (set on the section), so the slide fills the screen. */
+    @media screen and (min-aspect-ratio: 3/2) and (min-width: 901px) {
+      .slide .content > :not(h1):not(h2):not(.lead):not(.claim):not(.big):not(.survey-qr) { zoom: var(--z, 1); }
+    }
+    /* Center each slide's content between the kicker and the footer (not on phones, where slides scroll) */
+    @media screen and (min-width: 901px) { .slide .content { align-content: center; } }
+    /* Full HD and wider: the base type sizes stop growing, so scale a little further */
+    @media screen and (min-aspect-ratio: 3/2) and (min-width: 1800px) {
+      .slide .content > :not(h1):not(h2):not(.lead):not(.claim):not(.big):not(.survey-qr) { zoom: calc(var(--z, 1) * 1.18); }
+    }
+    /* Speaker notes: press N to show or hide them for the current slide */
+    body.show-notes .slide.active .speaker-notes { display: block; position: fixed; z-index: 35; left: 20px; bottom: 18px; width: min(46vw, 760px); max-height: 32vh; overflow: auto; padding: 14px 18px; border: 1px solid rgba(248, 242, 232, .25); border-radius: 8px; background: rgba(17, 24, 32, .95); color: #f8f2e8; font-size: clamp(.95rem, 1.15vw, 1.2rem); line-height: 1.4; }
+    .light .survey-notice a { color: #174a7c; }
+    .grid5 { display: grid; gap: 18px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .grid5 .choice { min-height: 0; padding: clamp(12px, 1.4vw, 20px); }
+    .grid5 .choice h3 { font-size: clamp(.95rem, 1.22vw, 1.3rem); color: var(--gold); }
+    .light .grid5 .choice h3 { color: var(--gold-text); }
+    .footer a { color: inherit; }
+    /* Five-stage diagram */
+    .stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 16px; }
+    .stage-band { grid-row: 1; padding: 4px 2px 8px; border-bottom: 3px solid; font-weight: 800; font-size: clamp(.74rem, .95vw, 1rem); letter-spacing: .06em; text-transform: uppercase; }
+    .stage-band.ong { grid-column: 1 / span 3; color: var(--teal); }
+    .stage-band.mine { grid-column: 4 / span 2; color: var(--gold); }
+    .stage { position: relative; padding: clamp(12px, 1.4vw, 20px); border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255, 255, 255, .055); }
+    .stage.mine { border-color: rgba(217, 164, 65, .55); background: rgba(217, 164, 65, .08); }
+    .stage .num { position: absolute; top: clamp(10px, 1.2vw, 18px); right: clamp(12px, 1.4vw, 20px); font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: clamp(1rem, 1.5vw, 1.6rem); color: var(--muted); }
+    .stage h3 { margin: 0 0 6px; font-size: clamp(.98rem, 1.28vw, 1.35rem); line-height: 1.15; }
+    .stage p { font-size: clamp(.88rem, 1.12vw, 1.15rem); line-height: 1.35; }
+    .stage:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -14px; border-left: 9px solid var(--gold); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+    .refs p { padding-left: 2em; text-indent: -2em; max-width: 1100px; margin-bottom: 14px; }
+    @media (max-width: 900px) { .stages { grid-template-columns: 1fr; } .stage-band { grid-column: 1 !important; grid-row: auto; } .stage::after { display: none; } }
+    .strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+    .strip-label { font-weight: 800; font-size: clamp(.72rem, .9vw, .95rem); letter-spacing: .08em; text-transform: uppercase; color: #174a7c; }
+    .strip-label.mine { margin-left: 10px; color: var(--gold-text); }
+    .chip { padding: 5px 12px; border: 1px solid var(--line2); border-radius: 999px; background: rgba(255, 255, 255, .7); font-weight: 700; font-size: clamp(.78rem, .98vw, 1.02rem); }
+    .chip.mine { border-color: rgba(131, 96, 16, .6); background: rgba(217, 164, 65, .2); }
+    /* Pixel icons, letter tiles, sequence arrows, and hero art (same sprites as the Inquiry Quest clips) */
+    /* Each icon sits in a dark inventory slot so it reads the same on light and dark slides */
+    .px { display: block; box-sizing: content-box; width: clamp(44px, 4.2vw, 70px); height: clamp(44px, 4.2vw, 70px); margin: 0 0 12px; padding: clamp(6px, .6vw, 10px); border: 2px solid rgba(217, 164, 65, .7); border-radius: 4px; background: #1b2733; box-shadow: 3px 3px 0 rgba(0, 0, 0, .28); shape-rendering: crispEdges; }
+    .choice .px { margin-left: auto; margin-right: auto; }
+    .big .px { display: inline-block; width: .62em; height: .62em; margin: 0 .22em 0 0; padding: .08em; vertical-align: -.04em; }
+    .tile { display: grid; place-items: center; width: 1.9em; height: 1.9em; margin: 0 0 12px; background: var(--gold); color: #17212b; font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 900; font-size: clamp(1.5rem, 2.6vw, 2.7rem); box-shadow: .12em .12em 0 rgba(0, 0, 0, .4); }
+    .light .tile { box-shadow: .12em .12em 0 rgba(23, 33, 43, .22); }
+    .seq > * { position: relative; }
+    .seq > :not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -14px; border-left: 9px solid var(--gold); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+    .hero { display: block; box-sizing: border-box; width: min(100%, clamp(340px, 52vw, 860px)); height: auto; padding: clamp(8px, 1vw, 16px) clamp(12px, 1.4vw, 22px); border: 2px solid rgba(217, 164, 65, .6); border-radius: 4px; background: #111820; box-shadow: 4px 4px 0 rgba(0, 0, 0, .25); shape-rendering: crispEdges; }
+    .gamelinks a { color: inherit; }
+    @media (max-width: 900px) { .seq > ::after { display: none; } }
+    /* Tabbed panel: spread the heading, text, and example through the panel instead of stacking them at the top */
+    .tab-pane { display: flex; flex-direction: column; justify-content: center; gap: clamp(16px, 2.6vh, 30px); }
+    .tab-pane h3 { margin: 0; }
+    .tab-pane p { max-width: none; line-height: 1.45; }
+    .tab-list { gap: clamp(10px, 1.6vh, 18px); }
+    .grid5 .card { padding: clamp(12px, 1.5vw, 20px); }
+    .grid5 .card h3 { font-size: clamp(1rem, 1.42vw, 1.45rem); }
+    .refs p { font-size: clamp(.95rem, 1.25vw, 1.3rem); }
+    @media (max-width: 900px) { .grid5 { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <symbol id="px-hourglass" viewBox="0 0 16 16"><rect x="3" y="1" width="10" height="2" fill="#7a563c"/><rect x="3" y="13" width="10" height="2" fill="#7a563c"/><rect x="4" y="3" width="8" height="1" fill="#f3efe6"/><rect x="5" y="4" width="6" height="1" fill="#f5c86a"/><rect x="6" y="5" width="4" height="1" fill="#f5c86a"/><rect x="7" y="6" width="2" height="4" fill="#f5c86a"/><rect x="6" y="10" width="4" height="1" fill="#f3efe6"/><rect x="5" y="11" width="6" height="1" fill="#f5c86a"/><rect x="4" y="12" width="8" height="1" fill="#f5c86a"/></symbol>
+    <symbol id="px-scroll" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="2" fill="#8fa0aa"/><rect x="3" y="4" width="10" height="8" fill="#f3efe6"/><rect x="2" y="12" width="12" height="2" fill="#8fa0aa"/><rect x="5" y="6" width="6" height="1" fill="#22303b"/><rect x="5" y="8" width="6" height="1" fill="#22303b"/><rect x="5" y="10" width="4" height="1" fill="#22303b"/></symbol>
+    <symbol id="px-chest" viewBox="0 0 16 16"><rect x="2" y="4" width="12" height="3" fill="#d86b63"/><rect x="2" y="7" width="12" height="7" fill="#91462f"/><rect x="2" y="7" width="12" height="1" fill="#22303b"/><rect x="7" y="7" width="2" height="3" fill="#f5c86a"/></symbol>
+    <symbol id="px-lantern" viewBox="0 0 16 16"><rect x="3" y="2" width="10" height="1" fill="#f3efe6"/><rect x="4" y="3" width="8" height="7" fill="#22303b"/><rect x="5" y="4" width="6" height="5" fill="#f5c86a"/><rect x="7" y="5" width="2" height="3" fill="#f3efe6"/><rect x="7" y="10" width="2" height="4" fill="#f3efe6"/><rect x="5" y="14" width="6" height="1" fill="#f3efe6"/></symbol>
+    <symbol id="px-gate" viewBox="0 0 16 16"><rect x="3" y="1" width="10" height="2" fill="#9a7bd0"/><rect x="3" y="3" width="2" height="12" fill="#9a7bd0"/><rect x="11" y="3" width="2" height="12" fill="#9a7bd0"/><rect x="5" y="3" width="6" height="12" fill="#22303b"/><rect x="5" y="3" width="2" height="2" fill="#68c6c3"/><rect x="7" y="3" width="2" height="2" fill="#f5c86a"/><rect x="9" y="3" width="2" height="2" fill="#9a7bd0"/><rect x="5" y="5" width="2" height="2" fill="#f5c86a"/><rect x="7" y="5" width="2" height="2" fill="#9a7bd0"/><rect x="9" y="5" width="2" height="2" fill="#68c6c3"/><rect x="5" y="7" width="2" height="2" fill="#9a7bd0"/><rect x="7" y="7" width="2" height="2" fill="#68c6c3"/><rect x="9" y="7" width="2" height="2" fill="#f5c86a"/><rect x="5" y="9" width="2" height="2" fill="#68c6c3"/><rect x="7" y="9" width="2" height="2" fill="#f5c86a"/><rect x="9" y="9" width="2" height="2" fill="#9a7bd0"/><rect x="5" y="11" width="2" height="2" fill="#f5c86a"/><rect x="7" y="11" width="2" height="2" fill="#9a7bd0"/><rect x="9" y="11" width="2" height="2" fill="#68c6c3"/><rect x="5" y="13" width="2" height="2" fill="#9a7bd0"/><rect x="7" y="13" width="2" height="2" fill="#68c6c3"/><rect x="9" y="13" width="2" height="2" fill="#f5c86a"/></symbol>
+    <symbol id="px-wall" viewBox="0 0 16 16"><rect x="2" y="1" width="12" height="1" fill="#d86b63"/><rect x="3" y="2" width="10" height="13" fill="#91462f"/><rect x="3" y="5" width="10" height="1" fill="#22303b"/><rect x="3" y="9" width="10" height="1" fill="#22303b"/><rect x="3" y="13" width="10" height="1" fill="#22303b"/><rect x="7" y="2" width="1" height="3" fill="#22303b"/><rect x="5" y="6" width="1" height="3" fill="#22303b"/><rect x="10" y="6" width="1" height="3" fill="#22303b"/><rect x="7" y="10" width="1" height="3" fill="#22303b"/></symbol>
+    <symbol id="px-key" viewBox="0 0 16 16"><rect x="2" y="5" width="5" height="6" fill="#f5c86a"/><rect x="4" y="7" width="1" height="2" fill="#22303b"/><rect x="7" y="7" width="7" height="2" fill="#f5c86a"/><rect x="10" y="9" width="1" height="2" fill="#f5c86a"/><rect x="12" y="9" width="2" height="2" fill="#f5c86a"/></symbol>
+    <symbol id="px-steps" viewBox="0 0 16 16"><rect x="2" y="12" width="4" height="3" fill="#68c6c3"/><rect x="6" y="9" width="4" height="6" fill="#68c6c3"/><rect x="10" y="6" width="4" height="9" fill="#68c6c3"/><rect x="2" y="12" width="4" height="1" fill="#f3efe6"/><rect x="6" y="9" width="4" height="1" fill="#f3efe6"/><rect x="10" y="6" width="4" height="1" fill="#f3efe6"/><rect x="12" y="1" width="1" height="5" fill="#f3efe6"/><rect x="9" y="1" width="3" height="2" fill="#f5c86a"/></symbol>
+    <symbol id="px-magnifier" viewBox="0 0 16 16"><rect x="4" y="2" width="5" height="1" fill="#f5c86a"/><rect x="3" y="3" width="1" height="1" fill="#f5c86a"/><rect x="9" y="3" width="1" height="1" fill="#f5c86a"/><rect x="2" y="4" width="1" height="5" fill="#f5c86a"/><rect x="10" y="4" width="1" height="5" fill="#f5c86a"/><rect x="3" y="9" width="1" height="1" fill="#f5c86a"/><rect x="9" y="9" width="1" height="1" fill="#f5c86a"/><rect x="4" y="10" width="5" height="1" fill="#f5c86a"/><rect x="3" y="4" width="7" height="5" fill="#68c6c3"/><rect x="4" y="3" width="5" height="7" fill="#68c6c3"/><rect x="10" y="10" width="2" height="2" fill="#7a563c"/><rect x="12" y="12" width="2" height="2" fill="#7a563c"/></symbol>
+    <symbol id="px-clock" viewBox="0 0 16 16"><rect x="5" y="2" width="6" height="1" fill="#f3efe6"/><rect x="4" y="3" width="8" height="1" fill="#f3efe6"/><rect x="3" y="4" width="10" height="8" fill="#f3efe6"/><rect x="4" y="12" width="8" height="1" fill="#f3efe6"/><rect x="5" y="13" width="6" height="1" fill="#f3efe6"/><rect x="8" y="5" width="1" height="4" fill="#22303b"/><rect x="8" y="8" width="3" height="1" fill="#22303b"/></symbol>
+    <symbol id="px-twoscrolls" viewBox="0 0 16 16"><rect x="2" y="2" width="7" height="10" fill="#f3efe6"/><rect x="3" y="4" width="5" height="1" fill="#22303b"/><rect x="3" y="6" width="5" height="1" fill="#22303b"/><rect x="3" y="8" width="3" height="1" fill="#22303b"/><rect x="8" y="5" width="6" height="10" fill="#e3dccd"/><rect x="9" y="7" width="4" height="1" fill="#22303b"/><rect x="9" y="9" width="4" height="1" fill="#22303b"/><rect x="9" y="11" width="2" height="1" fill="#22303b"/></symbol>
+    <symbol id="px-speech" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="8" fill="#f3efe6"/><rect x="4" y="11" width="2" height="2" fill="#f3efe6"/><rect x="4" y="13" width="1" height="1" fill="#f3efe6"/><rect x="4" y="6" width="2" height="2" fill="#22303b"/><rect x="7" y="6" width="2" height="2" fill="#22303b"/><rect x="10" y="6" width="2" height="2" fill="#22303b"/></symbol>
+    <symbol id="px-people" viewBox="0 0 16 16"><rect x="2" y="4" width="3" height="3" fill="#c48a66"/><rect x="1" y="8" width="5" height="6" fill="#68c6c3"/><rect x="11" y="4" width="3" height="3" fill="#c48a66"/><rect x="10" y="8" width="5" height="6" fill="#d86b63"/><rect x="6" y="2" width="4" height="4" fill="#c48a66"/><rect x="5" y="7" width="6" height="8" fill="#f5c86a"/></symbol>
+    <symbol id="px-scale" viewBox="0 0 16 16"><rect x="7" y="3" width="2" height="10" fill="#f3efe6"/><rect x="4" y="13" width="8" height="1" fill="#f3efe6"/><rect x="2" y="4" width="12" height="1" fill="#f3efe6"/><rect x="3" y="5" width="1" height="4" fill="#8fa0aa"/><rect x="12" y="5" width="1" height="2" fill="#8fa0aa"/><rect x="1" y="9" width="5" height="1" fill="#f5c86a"/><rect x="10" y="7" width="5" height="1" fill="#f5c86a"/></symbol>
+    <symbol id="px-shield" viewBox="0 0 16 16"><rect x="3" y="2" width="10" height="7" fill="#68c6c3"/><rect x="4" y="9" width="8" height="2" fill="#68c6c3"/><rect x="5" y="11" width="6" height="2" fill="#68c6c3"/><rect x="7" y="13" width="2" height="1" fill="#68c6c3"/><rect x="7" y="4" width="2" height="7" fill="#f3efe6"/><rect x="5" y="6" width="6" height="2" fill="#f3efe6"/></symbol>
+    <symbol id="px-feed" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="3" fill="#8fa0aa"/><rect x="1" y="6" width="14" height="4" fill="#f5c86a"/><rect x="2" y="11" width="12" height="3" fill="#8fa0aa"/><rect x="3" y="7" width="8" height="1" fill="#22303b"/></symbol>
+    <symbol id="px-spark" viewBox="0 0 16 16"><rect x="7" y="1" width="2" height="14" fill="#f5c86a"/><rect x="1" y="7" width="14" height="2" fill="#f5c86a"/><rect x="5" y="5" width="6" height="6" fill="#f5c86a"/><rect x="6" y="6" width="4" height="4" fill="#f3efe6"/></symbol>
+    <symbol id="px-pencil" viewBox="0 0 16 16"><rect x="6" y="1" width="4" height="2" fill="#d86b63"/><rect x="6" y="3" width="4" height="8" fill="#f5c86a"/><rect x="6" y="11" width="4" height="1" fill="#e3dccd"/><rect x="7" y="12" width="2" height="2" fill="#22303b"/></symbol>
+    <symbol id="px-eye" viewBox="0 0 16 16"><rect x="4" y="5" width="8" height="6" fill="#f3efe6"/><rect x="2" y="7" width="12" height="2" fill="#f3efe6"/><rect x="3" y="6" width="10" height="4" fill="#f3efe6"/><rect x="6" y="6" width="4" height="4" fill="#68c6c3"/><rect x="7" y="7" width="2" height="2" fill="#22303b"/></symbol>
+    <symbol id="px-flag" viewBox="0 0 16 16"><rect x="4" y="2" width="1" height="13" fill="#f3efe6"/><rect x="5" y="2" width="8" height="5" fill="#f5c86a"/><rect x="2" y="14" width="5" height="1" fill="#f3efe6"/></symbol>
+    <symbol id="px-path" viewBox="0 0 16 16"><rect x="2" y="11" width="4" height="3" fill="#f5c86a"/><rect x="7" y="7" width="4" height="3" fill="#f5c86a"/><rect x="11" y="2" width="4" height="3" fill="#f5c86a"/><rect x="4" y="10" width="1" height="1" fill="#f3efe6"/><rect x="9" y="6" width="1" height="1" fill="#f3efe6"/><rect x="13" y="1" width="1" height="1" fill="#f3efe6"/></symbol>
+    <symbol id="px-check" viewBox="0 0 16 16"><rect x="2" y="8" width="2" height="2" fill="#68c6c3"/><rect x="4" y="10" width="2" height="2" fill="#68c6c3"/><rect x="6" y="12" width="2" height="2" fill="#68c6c3"/><rect x="8" y="10" width="2" height="2" fill="#68c6c3"/><rect x="10" y="8" width="2" height="2" fill="#68c6c3"/><rect x="12" y="6" width="2" height="2" fill="#68c6c3"/></symbol>
+    <symbol id="px-mast" viewBox="0 0 16 16"><rect x="7" y="5" width="2" height="10" fill="#f3efe6"/><rect x="4" y="15" width="8" height="1" fill="#f3efe6"/><rect x="7" y="3" width="2" height="2" fill="#d86b63"/><rect x="4" y="2" width="1" height="5" fill="#68c6c3"/><rect x="11" y="2" width="1" height="5" fill="#68c6c3"/><rect x="2" y="1" width="1" height="7" fill="#68c6c3"/><rect x="13" y="1" width="1" height="7" fill="#68c6c3"/></symbol>
+    <symbol id="px-book" viewBox="0 0 16 16"><rect x="2" y="3" width="6" height="10" fill="#f3efe6"/><rect x="8" y="3" width="6" height="10" fill="#e3dccd"/><rect x="7" y="3" width="2" height="10" fill="#8fa0aa"/><rect x="3" y="5" width="3" height="1" fill="#22303b"/><rect x="3" y="7" width="3" height="1" fill="#22303b"/><rect x="3" y="9" width="2" height="1" fill="#22303b"/><rect x="10" y="5" width="3" height="1" fill="#22303b"/><rect x="10" y="7" width="3" height="1" fill="#22303b"/><rect x="10" y="9" width="2" height="1" fill="#22303b"/></symbol>
+  </defs></svg>
   <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
 
   <main class="deck" aria-live="polite">
-    <section class="slide active" data-title="Title">
+    <section class="slide active" data-title="Title" style="--z:0.9">
       <div class="kicker">106th NCSS Annual Conference &middot; Chicago &middot; December 4, 2026</div>
       <div class="content">
         <h1>Teaching History Among Algorithms</h1>
         <p class="lead">Media ecology, misinformation, and democratic learning.</p>
         <div class="badge-row">
           <span class="badge">Micah Miner</span>
-          <span class="badge">Beach Park District 3</span>
+          <span class="badge">Director of Innovation &amp; Technology</span>
+          <span class="badge">Beach Park CCSD 3</span>
           <span class="badge">Social studies inquiry</span>
           <a class="badge" href="../">Full interactive deck</a>
         </div>
-        <div class="clip-row"><button class="clip-launch" type="button" data-clip="../assets/how-a-student-meets-the-past.mp4" data-clip-title="How a student meets the past" data-clip-desc="18 seconds, no audio. Print, broadcast, feed, generated: where did this come from? An illustration, not a real document.">Play scene <span>How a student meets the past &middot; 0:18</span></button></div>
+        <svg class="hero" viewBox="0 0 132 36" role="img" aria-label="Pip, Ms. Vale, a source chest, the Skip Gate, and an unlit lantern"><rect x="0" y="34" width="132" height="2" fill="#4a5a66"/><rect x="8" y="16" width="4" height="1" fill="#2a1a10"/><rect x="7" y="17" width="6" height="1" fill="#2a1a10"/><rect x="6" y="18" width="8" height="1" fill="#2a1a10"/><rect x="6" y="19" width="1" height="1" fill="#2a1a10"/><rect x="7" y="19" width="6" height="1" fill="#a8704f"/><rect x="13" y="19" width="1" height="1" fill="#2a1a10"/><rect x="6" y="20" width="1" height="1" fill="#2a1a10"/><rect x="7" y="20" width="1" height="1" fill="#a8704f"/><rect x="8" y="20" width="1" height="1" fill="#17232d"/><rect x="9" y="20" width="2" height="1" fill="#a8704f"/><rect x="11" y="20" width="1" height="1" fill="#17232d"/><rect x="12" y="20" width="1" height="1" fill="#a8704f"/><rect x="13" y="20" width="2" height="1" fill="#2a1a10"/><rect x="6" y="21" width="8" height="1" fill="#a8704f"/><rect x="7" y="22" width="6" height="1" fill="#a8704f"/><rect x="8" y="23" width="4" height="1" fill="#a8704f"/><rect x="6" y="24" width="3" height="1" fill="#91462f"/><rect x="9" y="24" width="2" height="1" fill="#f3efe6"/><rect x="11" y="24" width="3" height="1" fill="#91462f"/><rect x="5" y="25" width="4" height="1" fill="#91462f"/><rect x="9" y="25" width="1" height="1" fill="#f3efe6"/><rect x="10" y="25" width="1" height="1" fill="#2f6970"/><rect x="11" y="25" width="4" height="1" fill="#91462f"/><rect x="5" y="26" width="4" height="1" fill="#91462f"/><rect x="9" y="26" width="1" height="1" fill="#f3efe6"/><rect x="10" y="26" width="1" height="1" fill="#2f6970"/><rect x="11" y="26" width="4" height="1" fill="#91462f"/><rect x="5" y="27" width="1" height="1" fill="#a8704f"/><rect x="6" y="27" width="3" height="1" fill="#91462f"/><rect x="9" y="27" width="1" height="1" fill="#f3efe6"/><rect x="10" y="27" width="1" height="1" fill="#2f6970"/><rect x="11" y="27" width="3" height="1" fill="#91462f"/><rect x="14" y="27" width="1" height="1" fill="#a8704f"/><rect x="6" y="28" width="8" height="1" fill="#91462f"/><rect x="6" y="29" width="8" height="1" fill="#91462f"/><rect x="7" y="30" width="6" height="1" fill="#22303b"/><rect x="7" y="31" width="2" height="1" fill="#22303b"/><rect x="11" y="31" width="2" height="1" fill="#22303b"/><rect x="7" y="32" width="2" height="1" fill="#22303b"/><rect x="11" y="32" width="2" height="1" fill="#22303b"/><rect x="6" y="33" width="3" height="1" fill="#0c1218"/><rect x="11" y="33" width="3" height="1" fill="#0c1218"/><rect x="13" y="15" width="3" height="3" fill="#2a1a10"/><rect x="25" y="18" width="6" height="1" fill="#3a2414"/><rect x="24" y="19" width="8" height="1" fill="#3a2414"/><rect x="24" y="20" width="2" height="1" fill="#3a2414"/><rect x="26" y="20" width="5" height="1" fill="#c48a66"/><rect x="31" y="20" width="1" height="1" fill="#3a2414"/><rect x="24" y="21" width="1" height="1" fill="#3a2414"/><rect x="25" y="21" width="2" height="1" fill="#c48a66"/><rect x="27" y="21" width="1" height="1" fill="#17232d"/><rect x="28" y="21" width="2" height="1" fill="#c48a66"/><rect x="30" y="21" width="1" height="1" fill="#17232d"/><rect x="31" y="21" width="1" height="1" fill="#c48a66"/><rect x="32" y="21" width="1" height="1" fill="#3a2414"/><rect x="24" y="22" width="8" height="1" fill="#c48a66"/><rect x="25" y="23" width="6" height="1" fill="#c48a66"/><rect x="24" y="24" width="1" height="1" fill="#f5c86a"/><rect x="25" y="24" width="7" height="1" fill="#7fc4c9"/><rect x="23" y="25" width="2" height="1" fill="#f5c86a"/><rect x="25" y="25" width="7" height="1" fill="#7fc4c9"/><rect x="32" y="25" width="1" height="1" fill="#c48a66"/><rect x="23" y="26" width="2" height="1" fill="#f5c86a"/><rect x="25" y="26" width="8" height="1" fill="#7fc4c9"/><rect x="23" y="27" width="2" height="1" fill="#f5c86a"/><rect x="25" y="27" width="7" height="1" fill="#7fc4c9"/><rect x="24" y="28" width="1" height="1" fill="#f5c86a"/><rect x="25" y="28" width="7" height="1" fill="#7fc4c9"/><rect x="25" y="29" width="6" height="1" fill="#34506b"/><rect x="25" y="30" width="2" height="1" fill="#34506b"/><rect x="29" y="30" width="2" height="1" fill="#34506b"/><rect x="25" y="31" width="2" height="1" fill="#34506b"/><rect x="29" y="31" width="2" height="1" fill="#34506b"/><rect x="25" y="32" width="2" height="1" fill="#34506b"/><rect x="29" y="32" width="2" height="1" fill="#34506b"/><rect x="24" y="33" width="3" height="1" fill="#17232d"/><rect x="29" y="33" width="3" height="1" fill="#17232d"/><use href="#px-chest" x="42" y="20" width="16" height="16"/><use href="#px-gate" x="64" y="6" width="30" height="30"/><use href="#px-steps" x="96" y="15" width="20" height="20"/><use href="#px-lantern" x="116" y="19" width="16" height="16"/><rect x="121" y="23" width="6" height="5" fill="#4a5a66"/></svg>
       </div>
-      <div class="footer"><span>NCSS 2026 session deck</span><span>1</span></div>
-      <aside class="speaker-notes">Open by naming the central design problem: AI can help social studies teachers, but it can also remove the struggle that makes historical thinking educative. Optional: Play scene runs 18 seconds with no audio; Esc returns to the deck.</aside>
+      <div class="footer"><span>NCSS 2026 session deck &middot; Hyatt Regency Chicago, Room San Francisco</span><span>1</span></div>
+      <aside class="speaker-notes">Open by naming the central design problem: AI can help social studies teachers, but it can also remove the struggle that makes historical thinking educative.</aside>
     </section>
 
-    <section class="slide light" data-title="Ten Seconds">
+    <section class="slide light tight" data-title="Ten Seconds" style="--z:1.3">
       <div class="kicker">The present problem</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-ncss-1.mp4" data-clip-title="Inquiry Quest 1: The Skip Gate" data-clip-desc="20 seconds, with music. Pip takes the shortcut. The scroll is finished and the lantern stays dark. An illustration, not study data.">Play Inquiry Quest 1 <span>The Skip Gate &middot; 0:20</span></button>
       <div class="content">
-        <div class="big">10 seconds</div>
+        <div class="big"><svg class="px" aria-hidden="true"><use href="#px-hourglass"/></svg>10 seconds</div>
         <h2>That is enough time to generate a polished answer.</h2>
         <div class="grid3">
-          <div class="card"><h3>American Revolution essay</h3><p>Causes, evidence, conclusion, and citations appear fully formed.</p></div>
-          <div class="card"><h3>Federalist counterargument</h3><p>A plausible critique arrives before the student has wrestled with the text.</p></div>
-          <div class="card"><h3>Civic action plan</h3><p>The artifact can look like engagement while the civic reasoning remains invisible.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-scroll"/></svg><h3>American Revolution essay</h3><p>Causes, evidence, conclusion, and citations appear fully formed.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-speech"/></svg><h3>Federalist counterargument</h3><p>A plausible critique arrives before the student has wrestled with the text.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-flag"/></svg><h3>Civic action plan</h3><p>The artifact can look like engagement while the civic reasoning remains invisible.</p></div>
         </div>
       </div>
       <div class="footer"><span>Speed changes the task.</span><span>2</span></div>
-      <aside class="speaker-notes">This opening comes directly from the session proposal and the social studies article's frictionless-learning paradox.</aside>
+      <aside class="speaker-notes">This opening comes directly from the session proposal and the social studies article's frictionless-learning paradox. Optional: Inquiry Quest 1 runs 20 seconds with chiptune music and sound effects (check the room audio; the player has a volume control) and ends on a pause question, &ldquo;What did Pip skip?&rdquo; Take two or three answers, then move on.</aside>
     </section>
 
-    <section class="slide" data-title="Audience Poll">
+    <section class="slide tight" data-title="Audience Poll" style="--z:1.35">
       <div class="kicker">Audience pulse check</div>
       <div class="content">
         <h2>When AI writes the answer, what is most at risk?</h2>
         <div class="grid4" data-choice-group="risk">
-          <button class="choice active" type="button" data-result="Process is the first risk: the visible product may survive while sourcing, contextualization, corroboration, and revision disappear."><h3>Process</h3><p>The work behind the work becomes harder to see.</p></button>
-          <button class="choice" type="button" data-result="Evidence is at risk when sources become decoration rather than the ground of the argument."><h3>Evidence</h3><p>Fluent claims can outrun verification.</p></button>
-          <button class="choice" type="button" data-result="Judgment is at risk when students receive certainty before practicing uncertainty."><h3>Judgment</h3><p>The answer arrives before the dilemma.</p></button>
-          <button class="choice" type="button" data-result="Community is at risk when dialogue is replaced by private automated completion."><h3>Community</h3><p>The seminar can become a solo transaction.</p></button>
+          <button class="choice active" type="button" data-result="Process is the first risk: the visible product may survive while sourcing, contextualization, corroboration, and revision disappear."><svg class="px" aria-hidden="true"><use href="#px-path"/></svg><h3>Process</h3><p>The work behind the work becomes harder to see.</p></button>
+          <button class="choice" type="button" data-result="Evidence is at risk when sources become decoration rather than the ground of the argument."><svg class="px" aria-hidden="true"><use href="#px-chest"/></svg><h3>Evidence</h3><p>Fluent claims can outrun verification.</p></button>
+          <button class="choice" type="button" data-result="Judgment is at risk when students receive certainty before practicing uncertainty."><svg class="px" aria-hidden="true"><use href="#px-scale"/></svg><h3>Judgment</h3><p>The answer arrives before the dilemma.</p></button>
+          <button class="choice" type="button" data-result="Community is at risk when dialogue is replaced by private automated completion."><svg class="px" aria-hidden="true"><use href="#px-people"/></svg><h3>Community</h3><p>The seminar can become a solo transaction.</p></button>
         </div>
         <div class="result-box" id="riskResult">Process is the first risk: the visible product may survive while sourcing, contextualization, corroboration, and revision disappear.</div>
       </div>
       <div class="footer"><span>Click a card during the session.</span><span>3</span></div>
-      <aside class="speaker-notes">Use this as a quick chat or show-of-hands moment. The interaction previews the four dimensions that will recur throughout the deck.</aside>
+      <aside class="speaker-notes">Use this as a quick show-of-hands moment. The interaction previews the four dimensions that will recur throughout the deck.</aside>
     </section>
 
-    <section class="slide light" data-title="Session Map">
+    <section class="slide light" data-title="Session Map" style="--z:1.4">
       <div class="kicker">Session arc</div>
       <div class="content">
         <h2>A practical middle path</h2>
         <div class="rail">
           <button type="button" class="active" data-result="First, we name the classroom problem: the artifact can remain while the learning process disappears."><span class="n">01</span>Problem</button>
-          <button type="button" data-result="Second, we ask what historical thinking actually requires from students."><span class="n">02</span>Inquiry</button>
-          <button type="button" data-result="Third, we use constructivist and media-ecology lenses to explain why friction matters."><span class="n">03</span>Theory</button>
+          <button type="button" data-result="Second, we anchor in media theory: each medium changes how students meet the past."><span class="n">02</span>Media theory</button>
+          <button type="button" data-result="Third, we ask what historical thinking requires from students, and why the struggle matters for learning."><span class="n">03</span>Inquiry</button>
           <button type="button" data-result="Fourth, we design AI roles that preserve sourcing, dialogue, evidence, and judgment."><span class="n">04</span>Design</button>
           <button type="button" data-result="Finally, we leave with a redesign protocol educators can apply to one real task."><span class="n">05</span>Practice</button>
         </div>
         <div class="result-box" id="railResult">First, we name the classroom problem: the artifact can remain while the learning process disappears.</div>
       </div>
       <div class="footer"><span>Pedagogy for the Present</span><span>4</span></div>
-      <aside class="speaker-notes">This makes the session feel like a workshop, not just a lecture.</aside>
+      <aside class="speaker-notes">This makes the session feel like a workshop, not just a lecture. Run of show for 50 minutes: 0-6 ten-second problem and poll; 6-18 media theory, the classroom version, the same-artifact contrast, historical inquiry, learning theory, and the stakes; 18-30 five technoskeptical questions, balanced history, productive friction, AI role chooser; 30-42 American Revolution lab, algorithm audit, and redesign sprint; 42-50 share-out, policy, closing.</aside>
     </section>
 
-    <section class="slide" data-title="Same Artifact">
+    <section class="slide tight" data-title="Media Theory" style="--z:1.15">
+      <div class="kicker">Media theory &middot; The anchor for this session</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-past.mp4" data-clip-title="Meeting the Past" data-clip-desc="30 seconds, with music. Five stages of the word, told as how a student meets a source in each. An illustration, not study data.">Play Meeting the Past <span>The long view &middot; 0:30</span></button>
+      <div class="content">
+        <h2>Each medium changes how students meet the past.</h2>
+        <div class="stages">
+          <div class="stage-band ong">Walter Ong (1982/2002)</div>
+          <div class="stage-band mine">Proposed in this study, building on Stalder (2016/2018)</div>
+          <div class="stage"><svg class="px" aria-hidden="true"><use href="#px-speech"/></svg><span class="num">I</span><h3>Primary orality</h3><p>The past arrives as a story told aloud.</p></div>
+          <div class="stage"><svg class="px" aria-hidden="true"><use href="#px-book"/></svg><span class="num">II</span><h3>Literacy and print</h3><p>The past arrives as a page you can reread and compare.</p></div>
+          <div class="stage"><svg class="px" aria-hidden="true"><use href="#px-mast"/></svg><span class="num">III</span><h3>Secondary orality</h3><p>The past arrives as a broadcast: one voice, many listeners.</p></div>
+          <div class="stage mine"><svg class="px" aria-hidden="true"><use href="#px-feed"/></svg><span class="num">IV</span><h3>Algorithmic secondary orality</h3><p>The past arrives ranked. A system chooses which voices circulate.</p></div>
+          <div class="stage mine"><svg class="px" aria-hidden="true"><use href="#px-spark"/></svg><span class="num">V</span><h3>Tertiary algorithmicity</h3><p>The past arrives generated. Human authorship becomes optional.</p></div>
+        </div>
+        <div class="takeaway">The question is not only what a source says. It is how the source reached the student.</div>
+      </div>
+      <div class="footer"><span>Ong (1982/2002); Stalder (2016/2018) &middot; Stages IV and V are proposals, not established terms</span><span>5</span></div>
+      <aside class="speaker-notes">The anchor for the session, about three minutes with the clip. Media ecology asks what a medium does to knowing, not only what it carries. Ong named the first three stages. Stalder&rsquo;s algorithmicity, in which algorithms select, organize, and give form to cultural material, is the bridge to the two stages this study proposes. Return to this slide when the audit and the five questions come up: both are ways of asking how a source reached the student. Optional: Play Meeting the Past runs 30 seconds with chiptune music and ends on &ldquo;How do your students meet it now?&rdquo;</aside>
+    </section>
+
+    <section class="slide light" data-title="Media Ecology" style="--z:1.15">
+      <div class="kicker">Media ecology &middot; In the classroom</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-provenance.mp4" data-clip-title="Trace the Source" data-clip-desc="26 seconds, with music. One document met through search, a feed, and generation, with its provenance checked each time. An illustration, not a real document.">Play Trace the Source <span>Archive level &middot; 0:26</span></button>
+      <div class="content">
+        <h2>The medium changes what students think learning is.</h2>
+        <div class="grid3 seq">
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-magnifier"/></svg><h3>Search</h3><p>Students choose among sources.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-feed"/></svg><h3>Feeds</h3><p><strong>Stage IV.</strong> Platforms curate what is visible.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-spark"/></svg><h3>Generative AI</h3><p><strong>Stage V.</strong> Systems generate and curate at once.</p></div>
+        </div>
+        <div class="takeaway">When the source becomes synthetic, verification becomes a civic practice.</div>
+      </div>
+      <div class="footer"><span>Ong (1982/2002) &middot; Stages IV and V are proposals, not established terms</span><span>6</span></div>
+      <aside class="speaker-notes">This is the classroom version of the last slide: feeds are stage IV and generative AI is stage V. The point for teachers is that AI is not only a resource students consult; it reorganizes the conditions of inquiry. Optional: Play Trace the Source runs 26 seconds with chiptune music and ends on &ldquo;How would your students trace it?&rdquo;</aside>
+    </section>
+
+    <section class="slide tight" data-title="Same Artifact" style="--z:1.4">
       <div class="kicker">Same artifact, different learning</div>
-      <button class="clip-launch clip-corner" type="button" data-clip="../assets/same-artifact-different-learning.mp4" data-clip-title="Same artifact, different learning" data-clip-desc="18 seconds, no audio. Two students, one polished answer, and a redesigned task. An illustration, not real student work.">Play scene <span>Same artifact, different learning &middot; 0:18</span></button>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-paths.mp4" data-clip-title="Two Paths" data-clip-desc="26 seconds, with music. The same polished scroll, reached with AI as an exit and then as an entry. An illustration, not real student work.">Play Two Paths <span>Side quest &middot; 0:26</span></button>
       <div class="content">
         <h2>Two students submit the same polished historical argument.</h2>
         <div class="path" data-choice-group="path">
@@ -717,7 +859,7 @@
               <div class="mini-step">Defends changes with evidence</div>
             </div>
           </button>
-          <div class="path-arrow">!=</div>
+          <div class="path-arrow" aria-label="is not the same as">&ne;</div>
           <button class="card interactive-card" type="button" data-result="AI as exit bypasses inquiry: the artifact appears complete before students practice sourcing, interpretation, or accountable revision.">
             <h3>AI as exit</h3>
             <div class="mini-steps">
@@ -730,145 +872,121 @@
         </div>
         <div class="result-box" id="pathResult">AI as entry preserves the inquiry sequence: students encounter sources, form an initial interpretation, then use AI as a challenge or mirror.</div>
       </div>
-      <div class="footer"><span>Assessment must recover the process.</span><span>5</span></div>
-      <aside class="speaker-notes">This draws from both candidate decks. It is the strongest recurring image: same output, different formation. Optional: Play scene runs 18 seconds with no audio; Esc returns to the deck.</aside>
+      <div class="footer"><span>Assessment must recover the process.</span><span>7</span></div>
+      <aside class="speaker-notes">This draws from both candidate decks. It is the strongest recurring image: same output, different formation. Optional: Play Two Paths runs 26 seconds with chiptune music and ends on &ldquo;Where does AI enter your assignment?&rdquo;</aside>
     </section>
 
-    <section class="slide light" data-title="Historical Inquiry">
+    <section class="slide light" data-title="Historical Inquiry" style="--z:1.25">
       <div class="kicker">What historical thinking requires</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-moves.mp4" data-clip-title="Four Moves" data-clip-desc="26 seconds, with music. Source, contextualize, corroborate, argue, with the question each move asks. An illustration, not real student work.">Play Four Moves <span>Training level &middot; 0:26</span></button>
       <div class="content">
         <h2>Historical inquiry is not answer retrieval.</h2>
-        <div class="grid4">
-          <div class="card"><h3>Source</h3><p>Who made this, when, why, and for whom?</p></div>
-          <div class="card"><h3>Contextualize</h3><p>What conditions shaped what could be said?</p></div>
-          <div class="card"><h3>Corroborate</h3><p>Where do accounts converge, conflict, or remain silent?</p></div>
-          <div class="card"><h3>Argue</h3><p>What claim can the evidence support, and what remains uncertain?</p></div>
+        <div class="grid4 seq">
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-magnifier"/></svg><h3>Source</h3><p>Who made this, when, why, and for whom?</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-clock"/></svg><h3>Contextualize</h3><p>What conditions shaped what could be said?</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-twoscrolls"/></svg><h3>Corroborate</h3><p>Where do accounts converge, conflict, or remain silent?</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-lantern"/></svg><h3>Argue</h3><p>What claim can the evidence support, and what remains uncertain?</p></div>
         </div>
       </div>
-      <div class="footer"><span>The inquiry moves are the curriculum.</span><span>6</span></div>
-      <aside class="speaker-notes">Anchor the session in disciplinary thinking. The question is not whether AI can produce a historical answer, but whether students are still practicing historical thinking.</aside>
+      <div class="footer"><span>The inquiry moves are the curriculum.</span><span>8</span></div>
+      <aside class="speaker-notes">Anchor the session in disciplinary thinking. The question is not whether AI can produce a historical answer, but whether students are still practicing historical thinking. Optional: Play Four Moves runs 26 seconds with chiptune music and ends on &ldquo;Which move does AI skip first?&rdquo;</aside>
     </section>
 
-    <section class="slide" data-title="Learning Theory">
+    <section class="slide tight" data-title="Learning Theory" style="--z:1.35">
       <div class="kicker">Why struggle matters</div>
       <div class="content">
         <h2>Constructivism becomes urgent again.</h2>
         <div class="grid4">
-          <div class="card"><h3>Dewey</h3><p>Learning grows from meaningful experience and reflective inquiry.</p></div>
-          <div class="card"><h3>Vygotsky</h3><p>Students stretch through social mediation, not isolated answer delivery.</p></div>
-          <div class="card"><h3>Piaget</h3><p>Disequilibrium helps students revise what they think they know.</p></div>
-          <div class="card"><h3>Freire</h3><p>Education should form agency, not passive reception.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-path"/></svg><h3>Dewey</h3><p>Learning grows from meaningful experience and reflective inquiry.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-people"/></svg><h3>Vygotsky</h3><p>Students stretch through social mediation, not isolated answer delivery.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-steps"/></svg><h3>Piaget</h3><p>Disequilibrium helps students revise what they think they know.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-key"/></svg><h3>Freire</h3><p>Education should form agency, not passive reception.</p></div>
         </div>
         <div class="takeaway">Friction is not the enemy of learning. Some friction is the medium through which learning happens.</div>
       </div>
-      <div class="footer"><span>Research base from the social studies AI manuscript.</span><span>7</span></div>
+      <div class="footer"><span>The constructivist lineage behind productive struggle.</span><span>9</span></div>
       <aside class="speaker-notes">The Drive article foregrounds Dewey, Vygotsky, Piaget, Freire, McLuhan, Carr, Turkle, Krutka, Heath, and NCSS as the scholarly lineage.</aside>
     </section>
 
-    <section class="slide light" data-title="Media Ecology">
-      <div class="kicker">Media ecology</div>
-      <div class="content">
-        <h2>The medium changes what students think learning is.</h2>
-        <div class="timeline">
-          <div class="timeline-item"><strong>Search</strong><span>Students choose among sources and practice selection.</span></div>
-          <div class="timeline-item"><strong>Feeds</strong><span>Platforms curate what becomes visible and plausible.</span></div>
-          <div class="timeline-item"><strong>Generative AI</strong><span>Systems generate and curate symbolic content at the same time.</span></div>
-        </div>
-        <div class="takeaway">When the source becomes synthetic, verification becomes a civic practice.</div>
-      </div>
-      <div class="footer"><span>From content question to media question.</span><span>8</span></div>
-      <aside class="speaker-notes">Keep the Ong/McLuhan framing light here. The point for teachers is that AI is not only a resource students consult; it reorganizes the conditions of inquiry.</aside>
-    </section>
-
-    <section class="slide" data-title="Frictionless Paradox">
+    <section class="slide tight" data-title="Frictionless Paradox" style="--z:1.4">
       <div class="kicker">The paradox</div>
       <div class="content">
         <h2>Frictionless learning can become frictionless non-learning.</h2>
         <div class="grid2">
-          <div class="card"><h3>The promise</h3><p>Personalized help, fast feedback, reading support, new ideas, and access for students who need scaffolds.</p></div>
-          <div class="card"><h3>The risk</h3><p>Polished completion without source work, revision, dialogue, uncertainty, or ownership.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-key"/></svg><h3>The promise</h3><p>Personalized help, fast feedback, reading support, new ideas, and access for students who need scaffolds.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-gate"/></svg><h3>The risk</h3><p>Polished completion without source work, revision, dialogue, uncertainty, or ownership.</p></div>
         </div>
         <div class="takeaway">The design challenge is not AI or no AI. It is where AI enters the learning sequence.</div>
       </div>
-      <div class="footer"><span>Sequence matters.</span><span>9</span></div>
+      <div class="footer"><span>Sequence matters.</span><span>10</span></div>
       <aside class="speaker-notes">Connect to the blog series idea: policy should protect the learning sequence, not only decide whether a tool is allowed.</aside>
     </section>
 
-    <section class="slide light" data-title="Three Risks">
+    <section class="slide light" data-title="Three Risks" style="--z:1.35">
       <div class="kicker">Social studies stakes</div>
       <div class="content">
         <h2>Three risks sit at the center of this session.</h2>
         <div class="grid3">
-          <div class="card"><h3>Misinformation</h3><p>Fluent explanations can hide weak sourcing, fabricated detail, or distorted emphasis.</p></div>
-          <div class="card"><h3>Bias</h3><p>Models can flatten cultural complexity or reproduce dominant narratives.</p></div>
-          <div class="card"><h3>Agency</h3><p>Students may outsource uncertainty before learning how to judge it.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-scroll"/></svg><h3>Misinformation</h3><p>Fluent explanations can hide weak sourcing, fabricated detail, or distorted emphasis.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-scale"/></svg><h3>Bias</h3><p>Models can flatten cultural complexity or reproduce dominant narratives.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-key"/></svg><h3>Agency</h3><p>Students may outsource uncertainty before learning how to judge it.</p></div>
         </div>
       </div>
-      <div class="footer"><span>Fast answers need slower judgment.</span><span>10</span></div>
+      <div class="footer"><span>Fast answers need slower judgment.</span><span>11</span></div>
       <aside class="speaker-notes">These are the core risks named in the social studies AI article: misinformation, algorithmic bias, and eroded agency.</aside>
     </section>
 
-    <section class="slide" data-title="Balanced History">
+    <section class="slide tight" data-title="Five Technoskeptical Questions" style="--z:1.2">
+      <div class="kicker">A classroom routine &middot; Five technoskeptical questions</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-press.mp4" data-clip-title="Ask the Press" data-clip-desc="28 seconds, with music. The five technoskeptical questions asked of a printing press and then of the Skip Gate. An illustration, not a historical account.">Play Ask the Press <span>Time travel level &middot; 0:28</span></button>
+      <div class="content">
+        <h2>Five questions students can ask of any technology</h2>
+        <p>Neil Postman&rsquo;s five ideas about technological change (1998), turned into questions by Dan Krutka and Scott Metzger for Civics of Technology.</p>
+        <div class="grid5" data-choice-group="tsq">
+          <button class="choice active" type="button" data-result="Then: what did the printing press cost the scribe and the memorizer? Now: when AI drafts the essay, which capacities for attention, authorship, and judgment are quietly traded away?"><h3>1 &middot; Every technology is a trade-off</h3><p>What does society give up for the benefits of the technology?</p></button>
+          <button class="choice" type="button" data-result="Then: who could buy and read a printed book, and who could not? Now: who gains time, profit, or authority from AI in schools, and who absorbs the costs?"><h3>2 &middot; There are winners and losers</h3><p>Who is harmed and who benefits from the technology?</p></button>
+          <button class="choice" type="button" data-result="Then: a press needed paper, type, and readers. Now: what does generative AI require to work: student data, constant connectivity, and a definition of learning as efficient completion?"><h3>3 &middot; Every technology carries an idea</h3><p>What does the technology need?</p></button>
+          <button class="choice" type="button" data-result="Then: what followed the press that nobody planned? Now: how does AI reshape assessment, teacher judgment, and classroom relationships, all at once?"><h3>4 &middot; Change is ecological, not additive</h3><p>What are the unintended or unexpected changes caused by the technology?</p></button>
+          <button class="choice" type="button" data-result="Then: when did a printed book stop looking like a technology? Now: when did &ldquo;AI is inevitable in schools&rdquo; stop being a claim to argue?"><h3>5 &middot; Technologies become mythic</h3><p>Why is it difficult to imagine our world without the technology?</p></button>
+        </div>
+        <div class="result-box" id="tsqResult">Then: what did the printing press cost the scribe and the memorizer? Now: when AI drafts the essay, which capacities for attention, authorship, and judgment are quietly traded away?</div>
+      </div>
+      <div class="footer"><span>Postman (1998) &middot; Questions as worded at <a href="https://www.civicsoftechnology.org/curriculum" target="_blank" rel="noopener">civicsoftechnology.org/curriculum</a></span><span>12</span></div>
+      <aside class="speaker-notes">About two minutes. The history-teacher move is to ask each question twice: of a past technology, then of generative AI. Each card heading paraphrases one of Postman&rsquo;s five ideas from his March 28, 1998 talk in Denver; the question under it is quoted as worded on the Civics of Technology curriculum page, where Dan Krutka and Scott Metzger adapted the ideas into questions. Optional: Play Ask the Press runs 28 seconds with chiptune music and ends on &ldquo;Which question would your students ask first?&rdquo; [Draft: the then-and-now prompts are suggestions; reword them, and check the printing-press examples against what you teach.]</aside>
+    </section>
+
+    <section class="slide tight" data-title="Balanced History" style="--z:1.4">
       <div class="kicker">Balanced history in a polarized world</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-seminar.mp4" data-clip-title="The Seminar" data-clip-desc="26 seconds, with music. A contested question, a shortcut refused, and better reasons heard in common. An illustration, not real student work.">Play The Seminar <span>Town hall level &middot; 0:26</span></button>
       <div class="content">
         <h2>Social studies teachers are navigating more than a tool problem.</h2>
         <div class="grid3">
-          <div class="card"><h3>Polarization</h3><p>Families, boards, and states contest what histories should be taught.</p></div>
-          <div class="card"><h3>Platform logic</h3><p>Digital environments reward speed, outrage, and certainty.</p></div>
-          <div class="card"><h3>AI acceleration</h3><p>Generative tools can scale plausible narratives without shared accountability.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-people"/></svg><h3>Polarization</h3><p>Families, boards, and states contest what histories should be taught.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-feed"/></svg><h3>Platform logic</h3><p>Digital environments reward speed, outrage, and certainty.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-spark"/></svg><h3>AI acceleration</h3><p>Generative tools can scale plausible narratives without shared accountability.</p></div>
         </div>
         <div class="takeaway">The goal is to teach students how to think, not what to think. Game: <a href="../common-ground/" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">play Common Ground</a> to navigate these classroom moments.</div>
       </div>
-      <div class="footer"><span>From your balanced-history writing.</span><span>11</span></div>
-      <aside class="speaker-notes">This slide brings in your SS School Service balanced-history draft and its point about civil discourse, diverse perspectives, and teaching students how to think.</aside>
+      <div class="footer"><span>Teaching balanced history in a polarized world.</span><span>13</span></div>
+      <aside class="speaker-notes">This slide brings in your SS School Service balanced-history draft and its point about civil discourse, diverse perspectives, and teaching students how to think. Optional: Play The Seminar runs 26 seconds with chiptune music and ends on &ldquo;Where do your students practice disagreeing well?&rdquo;</aside>
     </section>
 
-    <section class="slide light" data-title="CORE">
-      <div class="kicker">C.O.R.E.</div>
-      <div class="content">
-        <h2>A classroom disposition framework for inquiry</h2>
-        <div class="grid4">
-          <div class="card"><h3>Critical Thinking</h3><p>Analyze multiple angles and challenge assumptions.</p></div>
-          <div class="card"><h3>Openness</h3><p>Seek diverse perspectives and primary sources.</p></div>
-          <div class="card"><h3>Respect</h3><p>Engage opposing viewpoints without flattening human dignity.</p></div>
-          <div class="card"><h3>Engagement</h3><p>Enter controversy through inquiry, not performance.</p></div>
-        </div>
-      </div>
-      <div class="footer"><span>Values become design moves.</span><span>12</span></div>
-      <aside class="speaker-notes">Use this as a quick orientation, then move into design. C.O.R.E. is not decoration; it becomes a protocol for AI-mediated source work.</aside>
-    </section>
-
-    <section class="slide" data-title="HEART">
-      <div class="kicker">H.E.A.R.T.</div>
-      <div class="content">
-        <h2>A human-centered frame for AI use</h2>
-        <div class="grid5 grid4">
-          <div class="card"><h3>Honesty</h3><p>Verify claims and disclose tool use.</p></div>
-          <div class="card"><h3>Empathy</h3><p>Ask whose experience the output misses.</p></div>
-          <div class="card"><h3>Accountability</h3><p>Stand behind the interpretation.</p></div>
-          <div class="card"><h3>Responsibility</h3><p>Use sources and technology ethically.</p></div>
-        </div>
-        <div class="takeaway">Thoughtfulness: pause long enough to ask what this tool is doing to the learning.</div>
-      </div>
-      <div class="footer"><span>Human-centered AI in social studies.</span><span>13</span></div>
-      <aside class="speaker-notes">The H.E.A.R.T. PDF and balanced-history draft both emphasize honesty, empathy, accountability, responsibility, and thoughtfulness as a humane AI posture.</aside>
-    </section>
-
-    <section class="slide light" data-title="Productive Or Exclusionary">
+    <section class="slide light tight" data-title="Productive Or Exclusionary" style="--z:1.4">
       <div class="kicker">A necessary distinction</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-ncss-2.mp4" data-clip-title="Inquiry Quest 2: Two Walls" data-clip-desc="20 seconds, with music. One wall blocks access and one climb builds understanding. An illustration, not study data.">Play Inquiry Quest 2 <span>Two Walls &middot; 0:20</span></button>
       <div class="content">
         <h2>Not all friction deserves protection.</h2>
         <div class="grid2">
-          <div class="card"><h3>Productive friction</h3><p>Confusion that leads to schema change, source conflict, revision, accountable dialogue, and transfer.</p></div>
-          <div class="card"><h3>Exclusionary friction</h3><p>Barriers that block access without building historical understanding, such as inaccessible formats or needless language load.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-steps"/></svg><h3>Productive friction</h3><p>Confusion that leads to schema change, source conflict, revision, accountable dialogue, and transfer.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-wall"/></svg><h3>Exclusionary friction</h3><p>Barriers that block access without building historical understanding, such as inaccessible formats or needless language load.</p></div>
         </div>
         <div class="takeaway">AI may reduce barriers. It should not erase the thinking the task was designed to develop.</div>
       </div>
       <div class="footer"><span>Access and rigor belong together.</span><span>14</span></div>
-      <aside class="speaker-notes">This distinction is essential for equity. It prevents the framework from sounding like nostalgia for harder schooling.</aside>
+      <aside class="speaker-notes">This distinction is essential for equity. It prevents the framework from sounding like nostalgia for harder schooling. Optional: Inquiry Quest 2 picks the story back up and ends on &ldquo;Which friction would you remove?&rdquo; Ask pairs to name one of each kind from their own classes.</aside>
     </section>
 
-    <section class="slide" data-title="Friction Dimensions">
+    <section class="slide tight" data-title="Friction Dimensions" style="--z:1.2">
       <div class="kicker">Click through the framework</div>
       <div class="content">
         <h2>Which friction should stay in the lesson?</h2>
@@ -890,15 +1008,15 @@
       <aside class="speaker-notes">This adapts your four-dimension friction framework into a teacher-facing diagnostic tool.</aside>
     </section>
 
-    <section class="slide light" data-title="AI Role Chooser">
+    <section class="slide light" data-title="AI Role Chooser" style="--z:1.1">
       <div class="kicker">AI role chooser</div>
       <div class="content">
         <h2>Use AI around inquiry, not instead of inquiry.</h2>
         <div class="grid4" data-choice-group="role">
-          <button class="choice active" type="button" data-result="Access role: AI reduces exclusionary friction through vocabulary support, language scaffolds, and reading bridges."><h3>Access</h3><p>Lower the barrier to the source.</p></button>
-          <button class="choice" type="button" data-result="Challenge role: AI becomes a rival interpretation students must test against evidence."><h3>Challenge</h3><p>Make the answer contestable.</p></button>
-          <button class="choice" type="button" data-result="Feedback role: AI asks what is missing, unclear, unsupported, or overclaimed."><h3>Feedback</h3><p>Improve reasoning after a draft exists.</p></button>
-          <button class="choice" type="button" data-result="Reflection role: AI output becomes a mirror students compare with their own judgment."><h3>Reflection</h3><p>Name what changed and why.</p></button>
+          <button class="choice active" type="button" data-result="Access role: AI reduces exclusionary friction through vocabulary support, language scaffolds, and reading bridges."><svg class="px" aria-hidden="true"><use href="#px-key"/></svg><h3>Access</h3><p>Lower the barrier to the source.</p></button>
+          <button class="choice" type="button" data-result="Challenge role: AI becomes a rival interpretation students must test against evidence."><svg class="px" aria-hidden="true"><use href="#px-gate"/></svg><h3>Challenge</h3><p>Make the answer contestable.</p></button>
+          <button class="choice" type="button" data-result="Feedback role: AI asks what is missing, unclear, unsupported, or overclaimed."><svg class="px" aria-hidden="true"><use href="#px-speech"/></svg><h3>Feedback</h3><p>Improve reasoning after a draft exists.</p></button>
+          <button class="choice" type="button" data-result="Reflection role: AI output becomes a mirror students compare with their own judgment."><svg class="px" aria-hidden="true"><use href="#px-eye"/></svg><h3>Reflection</h3><p>Name what changed and why.</p></button>
         </div>
         <div class="result-box" id="roleResult">Access role: AI reduces exclusionary friction through vocabulary support, language scaffolds, and reading bridges.</div>
       </div>
@@ -906,23 +1024,24 @@
       <aside class="speaker-notes">This builds from the practical strategies spreadsheet and the balanced-history blog: generate perspectives, scaffold source analysis, and structure dialogue without surrendering judgment.</aside>
     </section>
 
-    <section class="slide" data-title="American Revolution Lab">
+    <section class="slide tight" data-title="American Revolution Lab" style="--z:1.35">
       <div class="kicker">Mini-lab</div>
       <div class="content">
         <h2>American Revolution: from output task to inquiry sequence</h2>
-        <div class="timeline">
-          <div class="timeline-item"><strong>Step 1: Friction first</strong><span>Students annotate primary sources and name what is confusing, contested, or missing.</span></div>
-          <div class="timeline-item"><strong>Step 2: AI as contrast</strong><span>AI generates a clean explanation of the causes. Students treat it as a source to audit.</span></div>
-          <div class="timeline-item"><strong>Step 3: Human judgment</strong><span>Students revise their claim, identify what AI flattened, and defend the evidence.</span></div>
+        <div class="grid3 seq">
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-chest"/></svg><h3>1 &middot; Friction first</h3><p>Annotate primary sources. Name what is confusing, contested, or missing.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-gate"/></svg><h3>2 &middot; AI as contrast</h3><p>AI writes a clean explanation. Students audit it as a source.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-lantern"/></svg><h3>3 &middot; Human judgment</h3><p>Revise the claim, name what AI flattened, defend the evidence.</p></div>
         </div>
-        <div class="takeaway">Try the companion activities: <a href="../keepers-of-inquiry/" target="_blank" rel="noopener" style="color: inherit;">play Keepers of Inquiry</a>, <a href="../out-of-time/" target="_blank" rel="noopener" style="color: inherit;">Out of Time</a>, <a href="../informed-action/" target="_blank" rel="noopener" style="color: inherit;">Informed Action</a>, <a href="../common-ground/" target="_blank" rel="noopener" style="color: inherit;">Common Ground</a>, or <a href="https://minerclass.github.io/source_game/" target="_blank" rel="noopener" style="color: inherit;">Keeper of the Source</a>.</div>
+        <div class="takeaway gamelinks">Companion games: <a href="../keepers-of-inquiry/" target="_blank" rel="noopener">Keepers of Inquiry</a> &middot; <a href="../out-of-time/" target="_blank" rel="noopener">Out of Time</a> &middot; <a href="../informed-action/" target="_blank" rel="noopener">Informed Action</a> &middot; <a href="../common-ground/" target="_blank" rel="noopener">Common Ground</a> &middot; <a href="https://minerclass.github.io/source_game/" target="_blank" rel="noopener">Keeper of the Source</a></div>
       </div>
       <div class="footer"><span>Stamp Act / causes of Revolution example.</span><span>17</span></div>
       <aside class="speaker-notes">This uses the lesson-design ideas from the AECT manuscript feedback and strategy spreadsheet: friction logs, algorithm audits, and primary-source comparison. Use Keepers of Inquiry here if you want participants to try the American Revolution scenario before discussing the sequence.</aside>
     </section>
 
-    <section class="slide light" data-title="Algorithm Audit">
+    <section class="slide light tight" data-title="Algorithm Audit" style="--z:1.2">
       <div class="kicker">Algorithm audit</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-audit.mp4" data-clip-title="Audit the Answer" data-clip-desc="26 seconds, with music. A smooth AI summary audited for omission, evidence, and overconfidence. An illustration, not real AI output or student work.">Play Audit the Answer <span>Boss level &middot; 0:26</span></button>
       <div class="content">
         <h2>Turn the AI output into a contested text.</h2>
         <div class="source-audit">
@@ -951,19 +1070,18 @@
           <button class="choice" type="button" data-result="Overconfidence audit: have students identify where the output sounds more certain than the historical record permits."><h3>Overconfidence</h3><p>Where is it too smooth?</p></button>
         </div>
         <div class="result-box" id="auditResult">Omission audit: ask whose motives, costs, voices, or conflicts disappear when the explanation gets too clean.</div>
-        <div class="takeaway">Game connection: <a href="../keepers-of-inquiry/" target="_blank" rel="noopener" style="color: inherit;">use Keepers of Inquiry</a> for inquiry moves, <a href="../out-of-time/" target="_blank" rel="noopener" style="color: inherit;">Out of Time</a> for contextualization, <a href="../informed-action/" target="_blank" rel="noopener" style="color: inherit;">Informed Action</a> for civic reasoning, <a href="../common-ground/" target="_blank" rel="noopener" style="color: inherit;">Common Ground</a> for classroom polarization, then <a href="https://minerclass.github.io/source_game/" target="_blank" rel="noopener" style="color: inherit;">Keeper of the Source</a> for source evaluation and corroboration.</div>
       </div>
       <div class="footer"><span>Audit for omissions, bias, and overconfidence.</span><span>18</span></div>
-      <aside class="speaker-notes">Do not present the AI paragraph as factual text; present it as a demo artifact. The teacher would use a district-approved tool or teacher-generated output. Keepers of Inquiry extends this slide by making the audience choose inquiry moves and see the friction/inquiry consequences.</aside>
+      <aside class="speaker-notes">Do not present the AI paragraph as factual text; present it as a demo artifact. The teacher would use a district-approved tool or teacher-generated output. Keepers of Inquiry extends this slide by making the audience choose inquiry moves and see the friction/inquiry consequences. Optional: Play Audit the Answer runs 26 seconds with chiptune music and ends on &ldquo;What would your students audit first?&rdquo;</aside>
     </section>
 
-    <section class="slide" data-title="Federalist Challenge">
+    <section class="slide" data-title="Federalist Challenge" style="--z:1.1">
       <div class="kicker">AI devil's advocate</div>
       <div class="content">
         <h2>A counterargument should create more thinking, not less.</h2>
         <div class="grid2">
-          <div class="card"><h3>Weak use</h3><p>Generate a counterargument to Federalist No. 10 and paste the strongest sentence into the essay.</p></div>
-          <div class="card"><h3>Stronger use</h3><p>Generate a counterargument, locate its assumptions, test it against the text, and decide whether the challenge holds.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-gate"/></svg><h3>Weak use</h3><p>Generate a counterargument to Federalist No. 10 and paste the strongest sentence into the essay.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-magnifier"/></svg><h3>Stronger use</h3><p>Generate a counterargument, locate its assumptions, test it against the text, and decide whether the challenge holds.</p></div>
         </div>
         <div class="takeaway">The friction is verification, interpretation, and defense.</div>
       </div>
@@ -971,14 +1089,14 @@
       <aside class="speaker-notes">This draws directly from the strategy spreadsheet's AI Devil's Advocate idea and the session prompt's Federalist Papers example.</aside>
     </section>
 
-    <section class="slide light" data-title="Friction Log">
+    <section class="slide light" data-title="Friction Log" style="--z:1.0">
       <div class="kicker">Make struggle visible</div>
       <div class="content">
         <h2>Ask students to document the moment before the answer.</h2>
         <div class="grid3" data-choice-group="log">
-          <button class="lab-card prompt-card active" type="button" data-result="Confusion prompt: this protects the moment when students notice uncertainty instead of rushing past it."><h3>I was confused by...</h3><p>Students name the source difficulty, not just the answer.</p></button>
-          <button class="lab-card prompt-card" type="button" data-result="Testing prompt: this turns AI output into something students must verify, challenge, or revise."><h3>I tested this by...</h3><p>Students show how they verified or challenged an AI claim.</p></button>
-          <button class="lab-card prompt-card" type="button" data-result="Revision prompt: this makes changed thinking visible as evidence of learning."><h3>My thinking changed when...</h3><p>Students mark revision as evidence of learning.</p></button>
+          <button class="lab-card prompt-card active" type="button" data-result="Confusion prompt: this protects the moment when students notice uncertainty instead of rushing past it."><svg class="px" aria-hidden="true"><use href="#px-speech"/></svg><h3>I was confused by...</h3><p>Students name the source difficulty, not just the answer.</p></button>
+          <button class="lab-card prompt-card" type="button" data-result="Testing prompt: this turns AI output into something students must verify, challenge, or revise."><svg class="px" aria-hidden="true"><use href="#px-magnifier"/></svg><h3>I tested this by...</h3><p>Students show how they verified or challenged an AI claim.</p></button>
+          <button class="lab-card prompt-card" type="button" data-result="Revision prompt: this makes changed thinking visible as evidence of learning."><svg class="px" aria-hidden="true"><use href="#px-steps"/></svg><h3>My thinking changed when...</h3><p>Students mark revision as evidence of learning.</p></button>
         </div>
         <div class="result-box" id="logResult">Confusion prompt: this protects the moment when students notice uncertainty instead of rushing past it.</div>
       </div>
@@ -986,94 +1104,65 @@
       <aside class="speaker-notes">This turns productive struggle into evidence without turning the classroom into surveillance.</aside>
     </section>
 
-    <section class="slide" data-title="Evidence Of Learning">
+    <section class="slide" data-title="Evidence Of Learning" style="--z:1.25">
       <div class="kicker">Assessment redesign</div>
       <div class="content">
         <h2>Look for traces of inquiry, not only completion.</h2>
         <div class="grid4">
-          <div class="card"><h3>Annotated sources</h3><p>Questions, tensions, and uncertainty are visible.</p></div>
-          <div class="card"><h3>Claim log</h3><p>The argument changes over time.</p></div>
-          <div class="card"><h3>Verification note</h3><p>Students explain what AI got right, wrong, or flattened.</p></div>
-          <div class="card"><h3>Defense</h3><p>Students answer a live follow-up question.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-scroll"/></svg><h3>Annotated sources</h3><p>Questions, tensions, and uncertainty are visible.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-steps"/></svg><h3>Claim log</h3><p>The argument changes over time.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-check"/></svg><h3>Verification note</h3><p>Students explain what AI got right, wrong, or flattened.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-speech"/></svg><h3>Defense</h3><p>Students answer a live follow-up question.</p></div>
         </div>
       </div>
       <div class="footer"><span>Recover process without chasing detection.</span><span>21</span></div>
       <aside class="speaker-notes">This connects to the blog series point about the illusion of completion and the need for process-visible learning.</aside>
     </section>
 
-    <section class="slide light" data-title="Design Sprint">
+    <section class="slide light" data-title="Design Sprint" style="--z:1.2">
       <div class="kicker">Participant redesign sprint</div>
       <div class="content">
         <h2>Redesign one task so AI cannot skip the thinking.</h2>
-        <div class="grid4">
-          <div class="card"><h3>1. Task</h3><p>Name a DBQ, seminar, current event analysis, essay, or civic project.</p></div>
-          <div class="card"><h3>2. AI role</h3><p>Access, challenge, feedback, or reflection?</p></div>
-          <div class="card"><h3>3. Protected friction</h3><p>What must students still source, compare, explain, revise, or defend?</p></div>
-          <div class="card"><h3>4. Evidence</h3><p>What will show the inquiry happened?</p></div>
+        <div class="grid4 seq">
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-scroll"/></svg><h3>1. Task</h3><p>Name a DBQ, seminar, current event analysis, essay, or civic project.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-gate"/></svg><h3>2. AI role</h3><p>Access, challenge, feedback, or reflection?</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-steps"/></svg><h3>3. Protected friction</h3><p>What must students still source, compare, explain, revise, or defend?</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-lantern"/></svg><h3>4. Evidence</h3><p>What will show the inquiry happened?</p></div>
         </div>
       </div>
       <div class="footer"><span>8 minute activity</span><span>22</span></div>
-      <aside class="speaker-notes">Have participants post four short responses in chat or a shared document. Then invite one or two quick share-outs.</aside>
+      <aside class="speaker-notes">Have participants jot four short responses with a partner. Then invite one or two quick share-outs.</aside>
     </section>
 
-    <section class="slide" data-title="Policy">
+    <section class="slide" data-title="Policy" style="--z:1.25">
       <div class="kicker">From classroom to system</div>
       <div class="content">
         <h2>Policy should protect the learning sequence.</h2>
-        <div class="grid4">
-          <div class="card"><h3>Before AI</h3><p>Name the human first move: read, draft, attempt, question, or source.</p></div>
-          <div class="card"><h3>During AI</h3><p>Define allowed roles: contrast, feedback, accessibility, or extension.</p></div>
-          <div class="card"><h3>After AI</h3><p>Require reflection, verification, disclosure, and revision.</p></div>
-          <div class="card"><h3>Always</h3><p>Protect privacy, equity, and teacher-visible process.</p></div>
+        <div class="grid4 seq">
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-pencil"/></svg><h3>Before AI</h3><p>Name the human first move: read, draft, attempt, question, or source.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-gate"/></svg><h3>During AI</h3><p>Define allowed roles: contrast, feedback, accessibility, or extension.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-eye"/></svg><h3>After AI</h3><p>Require reflection, verification, disclosure, and revision.</p></div>
+          <div class="card"><svg class="px" aria-hidden="true"><use href="#px-shield"/></svg><h3>Always</h3><p>Protect privacy, equity, and teacher-visible process.</p></div>
         </div>
       </div>
       <div class="footer"><span>Governance is instructional design at scale.</span><span>23</span></div>
       <aside class="speaker-notes">This borrows from the K-12 leadership blog series: do not write AI policy only around permission; write it around sequence and decision rights.</aside>
     </section>
 
-    <section class="slide light" data-title="Run Of Show">
-      <div class="kicker">Suggested 50-minute arc</div>
-      <div class="content">
-        <h2>A more interactive session plan</h2>
-        <div class="timeline">
-          <div class="timeline-item"><strong>0-7 min</strong><span>Ten-second problem, audience poll, same-artifact contrast.</span></div>
-          <div class="timeline-item"><strong>7-18 min</strong><span>Historical inquiry, learning theory, media ecology, and social studies stakes.</span></div>
-          <div class="timeline-item"><strong>18-30 min</strong><span>C.O.R.E., H.E.A.R.T., productive friction, and AI role chooser.</span></div>
-          <div class="timeline-item"><strong>30-42 min</strong><span>American Revolution algorithm audit and participant redesign sprint.</span></div>
-          <div class="timeline-item"><strong>42-50 min</strong><span>Share-out, policy implications, and closing discussion.</span></div>
-        </div>
-      </div>
-      <div class="footer"><span>Presentation plus practice.</span><span>24</span></div>
-      <aside class="speaker-notes">This pacing gets the deck into the user's desired 23-26 slide range while leaving room for interaction.</aside>
-    </section>
-
-    <section class="slide" data-title="Source Base">
-      <div class="kicker">Source base reviewed</div>
-      <div class="content">
-        <h2>This revision draws from your social studies writing and research files.</h2>
-        <div class="grid3">
-          <div class="card"><h3>Frictionless learning article</h3><p>Constructivism, media theory, C.O.R.E./H.E.A.R.T., misinformation, bias, and agency.</p></div>
-          <div class="card"><h3>Balanced history blog draft</h3><p>Polarization, civil discourse, multiple perspectives, and teaching students how to think.</p></div>
-          <div class="card"><h3>Strategy spreadsheet</h3><p>Algorithm audits, AI Devil's Advocate, friction logs, primary-document comparison, and civic debates.</p></div>
-        </div>
-        <div class="takeaway">Switch versions: <a href="../" style="color: inherit;">open the full interactive deck</a>.</div>
-      </div>
-      <div class="footer"><span>Internal source slide for presenter orientation.</span><span>25</span></div>
-      <aside class="speaker-notes">This slide can be hidden for a live audience if desired. It is included to make the deck's source basis transparent for presenter planning without exposing private Drive links.</aside>
-    </section>
-
-    <section class="slide light" data-title="Closing">
+    <section class="slide light" data-title="Closing" style="--z:0.7">
       <div class="kicker">Closing claim</div>
+      <button class="clip-launch clip-corner" type="button" data-clip="../assets/inquiry-quest-ncss-3.mp4" data-clip-title="Inquiry Quest 3: The Defense" data-clip-desc="20 seconds, with music. Pip defends the claim and the lantern lights. An illustration, not study data.">Play Inquiry Quest 3 <span>The Defense &middot; 0:20</span></button>
       <div class="content">
         <h2>The goal is not slower work for its own sake.</h2>
         <p class="lead">The goal is students who can investigate, deliberate, judge evidence, and participate responsibly in public life.</p>
         <p class="claim" style="color:#174a7c;">AI should strengthen historical inquiry, not quietly remove it.</p>
+        <svg class="hero" viewBox="0 0 132 36" role="img" aria-label="Pip, Ms. Vale, a source chest, the Skip Gate, and a lit lantern"><rect x="0" y="34" width="132" height="2" fill="#4a5a66"/><rect x="8" y="16" width="4" height="1" fill="#2a1a10"/><rect x="7" y="17" width="6" height="1" fill="#2a1a10"/><rect x="6" y="18" width="8" height="1" fill="#2a1a10"/><rect x="6" y="19" width="1" height="1" fill="#2a1a10"/><rect x="7" y="19" width="6" height="1" fill="#a8704f"/><rect x="13" y="19" width="1" height="1" fill="#2a1a10"/><rect x="6" y="20" width="1" height="1" fill="#2a1a10"/><rect x="7" y="20" width="1" height="1" fill="#a8704f"/><rect x="8" y="20" width="1" height="1" fill="#17232d"/><rect x="9" y="20" width="2" height="1" fill="#a8704f"/><rect x="11" y="20" width="1" height="1" fill="#17232d"/><rect x="12" y="20" width="1" height="1" fill="#a8704f"/><rect x="13" y="20" width="2" height="1" fill="#2a1a10"/><rect x="6" y="21" width="8" height="1" fill="#a8704f"/><rect x="7" y="22" width="6" height="1" fill="#a8704f"/><rect x="8" y="23" width="4" height="1" fill="#a8704f"/><rect x="6" y="24" width="3" height="1" fill="#91462f"/><rect x="9" y="24" width="2" height="1" fill="#f3efe6"/><rect x="11" y="24" width="3" height="1" fill="#91462f"/><rect x="5" y="25" width="4" height="1" fill="#91462f"/><rect x="9" y="25" width="1" height="1" fill="#f3efe6"/><rect x="10" y="25" width="1" height="1" fill="#2f6970"/><rect x="11" y="25" width="4" height="1" fill="#91462f"/><rect x="5" y="26" width="4" height="1" fill="#91462f"/><rect x="9" y="26" width="1" height="1" fill="#f3efe6"/><rect x="10" y="26" width="1" height="1" fill="#2f6970"/><rect x="11" y="26" width="4" height="1" fill="#91462f"/><rect x="5" y="27" width="1" height="1" fill="#a8704f"/><rect x="6" y="27" width="3" height="1" fill="#91462f"/><rect x="9" y="27" width="1" height="1" fill="#f3efe6"/><rect x="10" y="27" width="1" height="1" fill="#2f6970"/><rect x="11" y="27" width="3" height="1" fill="#91462f"/><rect x="14" y="27" width="1" height="1" fill="#a8704f"/><rect x="6" y="28" width="8" height="1" fill="#91462f"/><rect x="6" y="29" width="8" height="1" fill="#91462f"/><rect x="7" y="30" width="6" height="1" fill="#22303b"/><rect x="7" y="31" width="2" height="1" fill="#22303b"/><rect x="11" y="31" width="2" height="1" fill="#22303b"/><rect x="7" y="32" width="2" height="1" fill="#22303b"/><rect x="11" y="32" width="2" height="1" fill="#22303b"/><rect x="6" y="33" width="3" height="1" fill="#0c1218"/><rect x="11" y="33" width="3" height="1" fill="#0c1218"/><rect x="13" y="15" width="3" height="3" fill="#2a1a10"/><rect x="25" y="18" width="6" height="1" fill="#3a2414"/><rect x="24" y="19" width="8" height="1" fill="#3a2414"/><rect x="24" y="20" width="2" height="1" fill="#3a2414"/><rect x="26" y="20" width="5" height="1" fill="#c48a66"/><rect x="31" y="20" width="1" height="1" fill="#3a2414"/><rect x="24" y="21" width="1" height="1" fill="#3a2414"/><rect x="25" y="21" width="2" height="1" fill="#c48a66"/><rect x="27" y="21" width="1" height="1" fill="#17232d"/><rect x="28" y="21" width="2" height="1" fill="#c48a66"/><rect x="30" y="21" width="1" height="1" fill="#17232d"/><rect x="31" y="21" width="1" height="1" fill="#c48a66"/><rect x="32" y="21" width="1" height="1" fill="#3a2414"/><rect x="24" y="22" width="8" height="1" fill="#c48a66"/><rect x="25" y="23" width="6" height="1" fill="#c48a66"/><rect x="24" y="24" width="1" height="1" fill="#f5c86a"/><rect x="25" y="24" width="7" height="1" fill="#7fc4c9"/><rect x="23" y="25" width="2" height="1" fill="#f5c86a"/><rect x="25" y="25" width="7" height="1" fill="#7fc4c9"/><rect x="32" y="25" width="1" height="1" fill="#c48a66"/><rect x="23" y="26" width="2" height="1" fill="#f5c86a"/><rect x="25" y="26" width="8" height="1" fill="#7fc4c9"/><rect x="23" y="27" width="2" height="1" fill="#f5c86a"/><rect x="25" y="27" width="7" height="1" fill="#7fc4c9"/><rect x="24" y="28" width="1" height="1" fill="#f5c86a"/><rect x="25" y="28" width="7" height="1" fill="#7fc4c9"/><rect x="25" y="29" width="6" height="1" fill="#34506b"/><rect x="25" y="30" width="2" height="1" fill="#34506b"/><rect x="29" y="30" width="2" height="1" fill="#34506b"/><rect x="25" y="31" width="2" height="1" fill="#34506b"/><rect x="29" y="31" width="2" height="1" fill="#34506b"/><rect x="25" y="32" width="2" height="1" fill="#34506b"/><rect x="29" y="32" width="2" height="1" fill="#34506b"/><rect x="24" y="33" width="3" height="1" fill="#17232d"/><rect x="29" y="33" width="3" height="1" fill="#17232d"/><use href="#px-chest" x="42" y="20" width="16" height="16"/><use href="#px-gate" x="64" y="6" width="30" height="30"/><use href="#px-steps" x="96" y="15" width="20" height="20"/><use href="#px-lantern" x="116" y="19" width="16" height="16"/></svg>
       </div>
-      <div class="footer"><span>Discussion</span><span>26</span></div>
-      <aside class="speaker-notes">End with the middle path: preserve human thinking, reduce exclusionary barriers, and design AI use around the learning sequence.</aside>
+      <div class="footer"><span>Discussion</span><span>24</span></div>
+      <aside class="speaker-notes">End with the middle path: preserve human thinking, reduce exclusionary barriers, and design AI use around the learning sequence. Optional: Inquiry Quest 3 closes the story and ends on &ldquo;What will you keep difficult on purpose?&rdquo; Leave that question up for the discussion.</aside>
     </section>
 
-    <section class="slide" data-title="Survey Invitation">
+    <section class="slide" data-title="Survey Invitation" style="--z:1.15">
       <div class="kicker">Survey invitation</div>
       <div class="content survey-layout">
         <div>
@@ -1082,14 +1171,43 @@
         </div>
         <a class="survey-qr" href="https://forms.cloud.microsoft/r/UbTcf4EHKn" target="_blank" rel="noopener"><img src="../assets/er01884-survey-qr.svg" alt="QR code for the survey link, https://forms.cloud.microsoft/r/UbTcf4EHKn"><strong>forms.cloud.microsoft/r/UbTcf4EHKn</strong></a>
       </div>
-      <div class="footer"><span>NLU IRB protocol ER01884 &middot; Approved notice text</span><span>27</span></div>
+      <div class="footer"><span>NLU IRB protocol ER01884 &middot; Approved notice text</span><span>25</span></div>
       <aside class="speaker-notes">Optional. Show it at the end or leave it up after questions. The text is the approved survey notice (B), word for word, with the survey link and its QR code. Mention it in your own words if you like, but do not ask anyone to pass it on.</aside>
+    </section>
+    <section class="slide light" data-title="Sources" style="--z:1.2">
+      <div class="kicker">Sources and further reading</div>
+      <div class="content">
+        <h2>Where this session comes from</h2>
+        <div class="grid2">
+          <a class="card" href="https://digitalcommons.nl.edu/ie/vol18/iss1/4/" target="_blank" rel="noopener"><h3>When the Output Looks Like Learning</h3><p>The <em>i.e.: inquiry in education</em> article behind pedagogical friction.</p></a>
+          <a class="card" href="https://www.socialstudies.org/standards/c3" target="_blank" rel="noopener"><h3>NCSS C3 Framework</h3><p>The inquiry arc and disciplinary practices this session protects.</p></a>
+          <a class="card" href="https://minerclass.github.io/technoskepticism-primer/" target="_blank" rel="noopener"><h3>Technoskepticism Primer</h3><p>The five technoskeptical questions and their Postman roots.</p></a>
+          <a class="card" href="../"><h3>When AI Does the Thinking</h3><p>The full interactive deck, with the companion games.</p></a>
+        </div>
+      </div>
+      <div class="footer"><span>Not presented</span><span>26</span></div>
+      <aside class="speaker-notes">Not presented. Here for anyone following along on their own device.</aside>
+    </section>
+    <section class="slide" data-title="References" style="--z:1.3">
+      <div class="kicker">References</div>
+      <div class="content">
+        <div class="refs">
+          <p>Civics of Technology. (n.d.). <em>Curriculum: The five technoskeptical questions</em> (D. Krutka &amp; S. Metzger, adapt.). civicsoftechnology.org/curriculum</p>
+          <p>Krutka, D. G., Metzger, S. A., &amp; Seitz, R. Z. (2022). &ldquo;Technology inevitably involves trade-offs&rdquo;: The framing of technology in social studies standards. <em>Theory &amp; Research in Social Education, 50</em>(2), 226&ndash;254. https://doi.org/10.1080/00933104.2022.2042444</p>
+          <p>Miner, M. J. (2026). When the output looks like learning: Tertiary algorithmicity, unproductive success, and the case for pedagogical friction in K&ndash;12 schools. <em>i.e.: inquiry in education, 18</em>(1), Article 4. https://digitalcommons.nl.edu/ie/vol18/iss1/4/</p>
+          <p>Ong, W. J. (2002). <em>Orality and literacy: The technologizing of the word</em> (2nd ed.). Routledge. (Original work published 1982)</p>
+          <p>Postman, N. (1998, March 28). <em>Five things we need to know about technological change</em> [Address]. Denver, Colorado.</p>
+          <p>Stalder, F. (2018). <em>The digital condition</em> (V. A. Pakis, Trans.). Polity Press. (Original work published 2016)</p>
+        </div>
+      </div>
+      <div class="footer"><span>Not presented</span><span>27</span></div>
+      <aside class="speaker-notes">Not presented. Here for anyone following along on their own device. These entries match the NSSLA deck&rsquo;s reference slide.</aside>
     </section>
   </main>
 
   <nav class="controls" aria-label="Slide controls">
     <button type="button" id="prev" aria-label="Previous slide">&lt;</button>
-    <span class="counter" id="counter">1 / 26</span>
+    <span class="counter" id="counter">1 / 27</span>
     <button type="button" id="next" aria-label="Next slide">&gt;</button>
   </nav>
 
@@ -1183,6 +1301,7 @@
         event.preventDefault();
         showSlide(current - 1);
       }
+      if ((event.key === "n" || event.key === "N") && !event.target.closest("input, textarea, select")) document.body.classList.toggle("show-notes");
       if (event.key === "Home") showSlide(0);
       if (event.key === "End") showSlide(slides.length - 1);
     });
