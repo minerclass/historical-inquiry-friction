@@ -93,6 +93,10 @@ The NCSS deck (27 slides, 50 minutes) is anchored in media theory. Slide 5 shows
 
 The NCSS deck uses the same pixel sprites as the clips. Cards carry small pixel icons in dark "inventory slots" (a source chest, the Skip Gate, a lantern, a wall, steps, and so on), C.O.R.E. and H.E.A.R.T. use letter tiles, sequences have arrows between their steps, and the title and closing slides show the cast in a strip. The icons are drawn as one inline SVG sprite at the top of the page (`<symbol id="px-…">`) and placed with `<use>`. Every NCSS clip is in the pixel style; the two earlier flat-style clips no longer play in that deck.
 
+## Title-slide QR codes
+
+The NSSLA and NCSS decks each show a QR code on the title slide, in a pixel frame, that opens that deck's own GitHub Pages address so the room can follow along. Each code is an inline SVG built from the address (error correction M, four-module quiet zone, dark modules on a light ground) and was decoded and checked against the address on November 25, 2026. If a deck moves to a new address, its code has to be regenerated.
+
 ## Survey invitation slide
 
 Each deck ends with a survey invitation slide after Closing: slide 26 of the full deck, slide 25 of the NCSS version, and slide 19 of the NSSLA deck (before its references). It shows the approved survey notice (B) for NLU IRB protocol ER01884 word for word, with the survey link and a QR code for it (`assets/er01884-survey-qr.svg`, with a PNG copy for other slide tools). The QR code opens `https://forms.cloud.microsoft/r/UbTcf4EHKn`. It was decoded and checked against the link on November 5, 2026, including from 1280x720 and 1920x1080 renders of both slides.
